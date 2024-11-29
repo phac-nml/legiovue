@@ -1,0 +1,13 @@
+name: plotting
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - r-base
+  - r-argparse
+  - r-tidyverse
+  - r-patchwork
+  - samtools
+  - pysamstats
+  - bwa
+  - minimap2
