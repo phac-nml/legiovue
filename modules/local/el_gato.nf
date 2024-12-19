@@ -121,7 +121,7 @@ process EL_GATO_REPORT {
 
     script:
     """
-    el_gato.py \\
+    elgato_report.py \\
         -i *.json \\
         -o el_gato_report.pdf
 
