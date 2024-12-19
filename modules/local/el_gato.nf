@@ -25,10 +25,9 @@ process EL_GATO_READS {
     path "versions.yml", emit: versions
 
     script:
-    def run_cmd = workflow.containerEngine == 'singularity' || workflow.containerEngine == 'apptainer' ? '/usr/local/bin/_entrypoint.sh el_gato.py' : 'el_gato.py'
     def reads_in = "--read1 ${reads[0]} --read2 ${reads[1]}"
     """
-    $run_cmd \\
+    el_gato.py \\
         --threads $task.cpus \\
         --out out \\
         --sample ${meta.id} \\
@@ -51,7 +50,7 @@ process EL_GATO_READS {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        el_gato: \$($run_cmd --version | sed 's/^el_gato version: //')
+        el_gato: \$(el_gato.py --version | sed 's/^el_gato version: //')
     END_VERSIONS
     """
 }
@@ -82,9 +81,8 @@ process EL_GATO_ASSEMBLY {
     path "versions.yml", emit: versions
 
     script:
-    def run_cmd = workflow.containerEngine == 'singularity' || workflow.containerEngine == 'apptainer' ? '/usr/local/bin/_entrypoint.sh el_gato.py' : 'el_gato.py'
     """
-    $run_cmd \\
+    el_gato.py \\
         --threads $task.cpus \\
         --out out \\
         --sample ${meta.id} \\
@@ -98,7 +96,7 @@ process EL_GATO_ASSEMBLY {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        el_gato: \$($run_cmd --version | sed 's/^el_gato version: //')
+        el_gato: \$(el_gato.py --version | sed 's/^el_gato version: //')
     END_VERSIONS
     """
 }
@@ -122,15 +120,14 @@ process EL_GATO_REPORT {
     path "versions.yml", emit: versions
 
     script:
-    def run_cmd = workflow.containerEngine == 'singularity' || workflow.containerEngine == 'apptainer' ? '/usr/local/bin/_entrypoint.sh elgato_report.py' : 'elgato_report.py'
     """
-    $run_cmd \\
+    el_gato.py \\
         -i *.json \\
         -o el_gato_report.pdf
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        el_gato: \$($run_cmd --version | sed 's/^el_gato version: //')
+        el_gato: \$(el_gato.py --version | sed 's/^el_gato version: //')
     END_VERSIONS
     """
 }
