@@ -8,12 +8,12 @@ process EL_GATO_READS {
     publishDir "${params.outdir}/el_gato/reads", pattern: "*.json", mode: 'copy'
     publishDir "${params.outdir}/el_gato/reads", pattern: "*_possible_mlsts.txt", mode: 'copy'
 
-    conda "bioconda::el_gato=1.20.1"
-    // When fixed can go back to official spot
-    // container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-    //     'https://depot.galaxyproject.org/singularity/el_gato:1.20.1--py311h7e72e81_0' :
-    //     'biocontainers/el_gato:1.20.1--py311h7e72e81_0' }"
-    container "docker://darianhole/el_gato:1.20.2"
+    conda "bioconda::el_gato=1.20.2"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/el_gato:1.20.2--py311h7e72e81_0' :
+        'biocontainers/el_gato:1.20.2--py311h7e72e81_0' }"
+    // Previous, for pre-fixed release
+    // container "docker://darianhole/el_gato:1.20.2"
 
     input:
     tuple val(meta), path(reads)

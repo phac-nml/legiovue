@@ -37,7 +37,7 @@ To run the pipeline the following basic command is all that is required:
 
 ```bash
 nextflow run phac-nml/legiovue \
-    -p <PROFILE> \
+    -profile <PROFILE> \
     --fastq_dir </PATH/TO/PAIRED_FASTQS> \
     [Optional Args]
 ```

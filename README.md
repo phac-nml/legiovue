@@ -21,7 +21,7 @@ This project serves as a repository for tools, notes, and informtation regarding
 - [Legal](#legal)
 
 ## Installation
-Installation requires both [nextflow](https://www.nextflow.io/) and a dependency management system to run.
+Installation requires both [nextflow](https://www.nextflow.io/) (minimum version tested `23.10.1`) and a dependency management system to run.
 
 Steps:
 1. Download and install nextflow
@@ -30,8 +30,7 @@ Steps:
     2. Install with the instructions at https://www.nextflow.io/
 
 2. Determine which dependency management system works best for you
-    - *Note*: Currently `el_gato` and the plotting are using custom docker containers
-        - `el_gato` will transition back to the proper one once a new release is made
+    - *Note*: Currently the plotting process is using a custom docker container
 
 3. Run the pipeline with one of the following profiles to handle dependencies (or use your [own profile](https://nf-co.re/docs/usage/getting_started/configuration) if you have one for your institution! The NML one is included as an example):
     - `conda`
@@ -51,13 +50,13 @@ To just get started and run the pipeline, the following basic command is all tha
 
 ```bash
 nextflow run phac-nml/legiovue \
-    -p <PROFILE> \
+    -profile <PROFILE> \
     --fastq_dir </PATH/TO/PAIRED_FASTQS> \
     [Optional Args]
 ```
 
 Where: 
-- `-p <PROFILE>`: The nextflow profile to use.
+- `-profile <PROFILE>`: The nextflow profile to use.
     - Specification of a dependency management system (docker, singularity, conda)
 - `--fastq_dir </PATH/TO/PAIRED_FASTQS>`: Path to directory containing paired Illumina `_R1` and `_R2` fastq files
     - Fastqs must be formatted as `<NAME>_{R1,R2}\*.fastq\*`
