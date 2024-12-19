@@ -12,8 +12,6 @@ process EL_GATO_READS {
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/el_gato:1.20.2--py311h7e72e81_0' :
         'biocontainers/el_gato:1.20.2--py311h7e72e81_0' }"
-    // Previous, for pre-fixed release
-    // container "docker://darianhole/el_gato:1.20.2"
 
     input:
     tuple val(meta), path(reads)
@@ -69,12 +67,10 @@ process EL_GATO_ASSEMBLY {
     publishDir "${params.outdir}/el_gato/assembly", pattern: "*.log", mode: 'copy'
     publishDir "${params.outdir}/el_gato/assembly", pattern: "*.json", mode: 'copy'
 
-    conda "bioconda::el_gato=1.20.1"
-    // When fixed can go back to official spot
-    // container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-    //     'https://depot.galaxyproject.org/singularity/el_gato:1.20.1--py311h7e72e81_0' :
-    //     'biocontainers/el_gato:1.20.1--py311h7e72e81_0' }"
-    container "docker://darianhole/el_gato:1.20.2"
+    conda "bioconda::el_gato=1.20.2"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/el_gato:1.20.2--py311h7e72e81_0' :
+        'biocontainers/el_gato:1.20.2--py311h7e72e81_0' }"
 
     input:
     tuple val(meta), path(assembly)
@@ -112,12 +108,10 @@ process EL_GATO_REPORT {
 
     publishDir "${params.outdir}/el_gato", pattern: "*.pdf", mode: 'copy'
 
-    conda "bioconda::el_gato=1.20.1"
-    // When fixed can go back to official spot
-    // container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-    //     'https://depot.galaxyproject.org/singularity/el_gato:1.20.1--py311h7e72e81_0' :
-    //     'biocontainers/el_gato:1.20.1--py311h7e72e81_0' }"
-    container "docker://darianhole/el_gato:1.20.2"
+    conda "bioconda::el_gato=1.20.2"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/el_gato:1.20.2--py311h7e72e81_0' :
+        'biocontainers/el_gato:1.20.2--py311h7e72e81_0' }"
 
     input:
     path read_jsons
