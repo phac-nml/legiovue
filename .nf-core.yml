@@ -1,1 +1,16 @@
 repository_type: pipeline
+nf_core_version: 3.0.2
+bump_version: null
+lint:
+  files_exist:
+    - LegioVue-WGS-Workflow.png
+    - CITATIONS.md
+  files_unchanged:
+    - LICENSE
+    - .gitignore
+  multiqc_config: false
+  pipeline_name_conventions: false
+  actions_awsfulltest: false
+
+template:
+  prefix: phac-nml

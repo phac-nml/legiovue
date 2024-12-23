@@ -1,6 +1,9 @@
 process PLOT_PYSAMSTATS_TSV {
     tag "$meta.id"
     label 'process_low'
+    // Apptainer v1.3.4-1.el9 (not sure if other versions) issue that I have to resolve
+    //  As its just affects a plot output better to ignore the error for now
+    label 'error_ignore'
 
     publishDir "${params.outdir}/el_gato/plots", pattern: "*_allele_plots.pdf", mode: 'copy'
 

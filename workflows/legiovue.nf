@@ -168,21 +168,23 @@ workflow LEGIOVUE {
         // Alleles Stats with pysamstats and plots
         //  Visualize the called alleles to help
         //  investigate potential issue calls
-        PYSAMSTATS_MAPQ(
-            EL_GATO_READS.out.bam_bai,
-            "mapq"
-        )
-        PYSAMSTATS_BASEQ(
-            EL_GATO_READS.out.bam_bai,
-            "baseq"
-        )
-        CSVTK_COMBINE_STATS(
-            PYSAMSTATS_MAPQ.out.tsv
-                .join(PYSAMSTATS_BASEQ.out.tsv, by:[0])
-        )
-        PLOT_PYSAMSTATS_TSV(
-            CSVTK_COMBINE_STATS.out.tsv
-        )
+        if ( ! params.skip_plotting ){
+            PYSAMSTATS_MAPQ(
+                EL_GATO_READS.out.bam_bai,
+                "mapq"
+            )
+            PYSAMSTATS_BASEQ(
+                EL_GATO_READS.out.bam_bai,
+                "baseq"
+            )
+            CSVTK_COMBINE_STATS(
+                PYSAMSTATS_MAPQ.out.tsv
+                    .join(PYSAMSTATS_BASEQ.out.tsv, by:[0])
+            )
+            PLOT_PYSAMSTATS_TSV(
+                CSVTK_COMBINE_STATS.out.tsv
+            )
+        }
     }
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
