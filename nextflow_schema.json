@@ -1,0 +1,185 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/phac-nml/LegioVue/master/nextflow_schema.json",
+    "title": "phac-nml/LegioVue pipeline parameters",
+    "description": "Legionella pneumophila WGS analysis",
+    "type": "object",
+    "$defs": {
+        "input_data_option_choose_1": {
+            "title": "Input data option (choose 1)",
+            "type": "object",
+            "fa_icon": "fas fa-terminal",
+            "description": "Define where the pipeline should find input data",
+            "properties": {
+                "input": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "schema": "assets/schema_input.json",
+                    "mimetype": "text/csv",
+                    "pattern": "^\\S+\\.csv$",
+                    "description": "Path to comma-separated file containing information about the samples in the experiment.",
+                    "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row.",
+                    "fa_icon": "fas fa-file-csv"
+                },
+                "fastq_dir": {
+                    "type": "string",
+                    "fa_icon": "fas fa-folder-open",
+                    "description": "Path to directory containing paired (_R1/_R2) gzipped fastq files",
+                    "format": "directory-path"
+                }
+            }
+        },
+        "filtering_options": {
+            "title": "Filtering options",
+            "type": "object",
+            "description": "Options on minimum values for filtering out input data",
+            "default": "",
+            "properties": {
+                "kraken2_db": {
+                    "type": "string",
+                    "default": "s3://genome-idx/kraken/standard_08gb_20240904",
+                    "fa_icon": "fas fa-server",
+                    "description": "Kraken2 database to use for abundance checks"
+                },
+                "min_abundance_percent": {
+                    "type": "number",
+                    "default": 10,
+                    "description": "Minimum L.pn abundance to keep sample in pipeline",
+                    "fa_icon": "fas fa-percentage",
+                    "minimum": 1,
+                    "maximum": 99
+                },
+                "min_reads": {
+                    "type": "integer",
+                    "default": 150000,
+                    "description": "Minimum number of paired reads to keep sample in pipeline",
+                    "minimum": 1
+                }
+            },
+            "fa_icon": "fas fa-filter"
+        },
+        "skipping_options": {
+            "title": "Skipping options",
+            "type": "object",
+            "description": "Processes that can be skipped through parameters",
+            "default": "",
+            "properties": {
+                "skip_el_gato": {
+                    "type": "boolean",
+                    "description": "Skip running all el_gato Sequence Typing aspects",
+                    "fa_icon": "fas fa-forward"
+                },
+                "skip_plotting": {
+                    "type": "boolean",
+                    "description": "Skip plotting el_gato allele profiles",
+                    "fa_icon": "fas fa-forward"
+                }
+            },
+            "fa_icon": "fas fa-forward"
+        },
+        "quast_options": {
+            "title": "Quast options",
+            "type": "object",
+            "description": "Options for quast",
+            "default": "",
+            "properties": {
+                "quast_ref": {
+                    "type": "string",
+                    "default": "data/C9_S.reference.fna",
+                    "format": "file-path",
+                    "fa_icon": "fas fa-file-alt",
+                    "description": "Path to reference fasta file to base quast metrics off of"
+                }
+            }
+        },
+        "chewbbaca_options": {
+            "title": "Chewbbaca options",
+            "type": "object",
+            "description": "Options to specify the chewbbaca schema to use",
+            "default": "",
+            "properties": {
+                "schema_targets": {
+                    "type": "string",
+                    "description": "Schema targets"
+                },
+                "prepped_schema": {
+                    "type": "string",
+                    "default": "data/SeqSphere_1521_schema",
+                    "description": "Chewbbaca prepped schema",
+                    "format": "directory-path"
+                }
+            },
+            "fa_icon": "fab fa-cc-diners-club"
+        },
+        "generic_options": {
+            "title": "Generic options",
+            "type": "object",
+            "fa_icon": "fas fa-file-import",
+            "description": "Less common options for the pipeline, typically set in a config file.",
+            "help_text": "These options are common to all nf-core pipelines and allow you to customise some of the core preferences for how the pipeline runs.\n\nTypically these options would be set in a Nextflow config file loaded for all pipeline runs, such as `~/.nextflow/config`.",
+            "properties": {
+                "outdir": {
+                    "type": "string",
+                    "format": "directory-path",
+                    "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
+                    "fa_icon": "fas fa-folder-open",
+                    "default": "results"
+                },
+                "max_memory": {
+                    "type": "string",
+                    "default": "128.GB",
+                    "fa_icon": "fas fa-database",
+                    "description": "Maximum memory to allow for a process to assign"
+                },
+                "max_cpus": {
+                    "type": "integer",
+                    "default": 16,
+                    "fa_icon": "fas fa-microchip",
+                    "description": "Maximum CPUs to allow for a process to assign"
+                },
+                "max_time": {
+                    "type": "string",
+                    "default": "240.h",
+                    "fa_icon": "fas fa-clock",
+                    "description": "Maximum time to allow for a process to assign"
+                },
+                "help": {
+                    "type": "boolean",
+                    "description": "Display help info and exit",
+                    "fa_icon": "far fa-question-circle",
+                    "hidden": true
+                },
+                "version": {
+                    "type": "boolean",
+                    "description": "Display version and exit.",
+                    "fa_icon": "fas fa-question-circle",
+                    "hidden": true
+                }
+            },
+            "required": [
+                "outdir"
+            ]
+        }
+    },
+    "allOf": [
+        {
+            "$ref": "#/$defs/input_data_option_choose_1"
+        },
+        {
+            "$ref": "#/$defs/filtering_options"
+        },
+        {
+            "$ref": "#/$defs/skipping_options"
+        },
+        {
+            "$ref": "#/$defs/quast_options"
+        },
+        {
+            "$ref": "#/$defs/chewbbaca_options"
+        },
+        {
+            "$ref": "#/$defs/generic_options"
+        }
+    ]
+}
