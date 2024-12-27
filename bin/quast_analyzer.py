@@ -73,7 +73,7 @@ def init_parser() -> argparse.ArgumentParser:
         default=75,
         help='Thresold for minimum quast genome fraction percentage'
     )
-    
+
     # Version #
     parser.add_argument(
         '-v',
@@ -101,7 +101,7 @@ def parse_sample_line(sample_line: str, headers: list) -> dict:
     """Split sample line string into key-val dict based on headers
 
     Args:
-        sample_line (str): Tab separated sample data line 
+        sample_line (str): Tab separated sample data line
         headers (list): List of headers
 
     Returns:

@@ -145,7 +145,7 @@ def main() -> None:
     """Entry point"""
     parser = parse_args()
     args = parser.parse_args()
-    
+
     # Parse each given file to add to our outdict
     sample = str(args.sample)
     outdict = {'sample': sample}

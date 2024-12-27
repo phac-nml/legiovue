@@ -21,7 +21,7 @@ if ( params.version ){
 }
 
 // NF-Schema parts
-include { validateParameters; paramsSummaryLog; samplesheetToList } from 'plugin/nf-schema'
+include { validateParameters; paramsSummaryLog } from 'plugin/nf-schema'
 // Validate input parameters
 validateParameters()
 
@@ -32,7 +32,7 @@ log.info paramsSummaryLog(workflow)
 if ( ! params.fastq_dir && ! params.input ){
     log.error "Please provide input data with either: '--input input.csv' or '--fastq_dir <PATH/TO/PAIRED_FASTQS>'"
     exit 1
-} else if ( params.input && params.fastq_pass ) {
+} else if ( params.fastq_dir && params.input ) {
     log.error "Please provide input data with either: '--input input.csv' or '--fastq_dir <PATH/TO/PAIRED_FASTQS>' but not both"
     exit 1
 }

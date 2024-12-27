@@ -3,7 +3,7 @@
 Simple helper script to check that Bracken Lpn abundance
 is above the required input threshold
 
-In the future we may want to include this as part of the 
+In the future we may want to include this as part of the
 nextflow/groovy script over it being a full process but
 with development time it is here for now
 '''

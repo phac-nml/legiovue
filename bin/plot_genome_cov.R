@@ -55,7 +55,7 @@ create_plots <- function(gene, df) {
         area(2,1),
         area(3,1)
     )
-    combined_plot <- plot1/plot2/plot3 + 
+    combined_plot <- plot1/plot2/plot3 +
         plot_layout(
             design = areas
         ) +
