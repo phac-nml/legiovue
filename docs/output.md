@@ -16,7 +16,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes d
     - [el_gato Reads](#el_gato-reads) - Sequence type (ST) input sample reads
     - [el_gato Assembly](#el_gato-assembly) - Sequence type input sample assemblies when reads fail to generate an ST
     - [el_gato Report](#el_gato-report) - Create PDF summary el_gato report
-    - [Pysamstats](#pysamstats) - Calculate positional depth, mapq, and baseq for each ST allele 
+    - [Pysamstats](#pysamstats) - Calculate positional depth, mapq, and baseq for each ST allele
     - [Allele Reports](#allele-reports) - Create per-sample ST allele report pdf
 - [Assembly](#assembly)
     - [SPAdes](#spades) - *De novo* bacterial genome assembly
@@ -70,7 +70,7 @@ Simply python program that takes in the bracken abundance report and determines 
   - `*_paired_R2.fastq.gz`: Paired trimmed read 2 to be used in the following pipeline steps
   - `*_unpaired_R1.fastq.gz`: Unpaired trimmed reads 1 to assist in SPAdes assembly
   - `*_unpaired_R1.fastq.gz`: Unpaired trimmed reads 2 to assist in SPAdes assembly
-  - `*.summary.txt`: Trimmomatic output summary 
+  - `*.summary.txt`: Trimmomatic output summary
 </details>
 
 [Trimmomatic](http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf) removes Illumina adapters and trim reads according to quality
@@ -103,7 +103,7 @@ Simply python program that takes in the bracken abundance report and determines 
   - `*_run.log `: Program logging info
   - `*_ST.tsv`: Called Sequence Type
 </details>
-  
+
 Sequence-based Typing (SBT) of _Legionella pneumophila_ sequences using reads based on the identification and comparison of 7 loci (_flaA, pilE, asd, mip, mompS, proA, neuA/neuAh_) against an allele database.
 
 #### el_gato Assembly
@@ -173,8 +173,8 @@ Custom report plotting of the seven ST alleles looking at depth, map quality, an
 <summary>Output files</summary>
 
 - `quast/`
-  - `report.html`: 
-  - `transposed_report.tsv`: 
+  - `report.html`:
+  - `transposed_report.tsv`:
 </details>
 
 [QUAST](https://github.com/ablab/quast) is used to generate a single report with which to evaluate the quality of the assemblies sequence across all of the samples provided to the pipeline. Input genomes are compared to a _Legionella pneumophila_ [reference genome](../data/C9_S.reference.fna) and the transposed report is parsed downstream to report a final quality score.

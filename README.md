@@ -1,12 +1,12 @@
 # legiovue
-LegioVue is a nextflow pipeline for whole-genome analysis of *Legionella pneumophila*. It performs *in silico* sequence typing, genome assembly, and core-genome analysis. It also provides detailed information about the quality of *L. pneumophila* genomes. The name is an homage to the Bellevue-Stratford hotel, site of the first known outbreak of Legionnaire's Disease. 
+LegioVue is a nextflow pipeline for whole-genome analysis of *Legionella pneumophila*. It performs *in silico* sequence typing, genome assembly, and core-genome analysis. It also provides detailed information about the quality of *L. pneumophila* genomes. The name is an homage to the Bellevue-Stratford hotel, site of the first known outbreak of Legionnaire's Disease.
 
-This project serves as a repository for tools, notes, and informtation regarding the LegioVue pipeline. This project is a GRDI funded research project surrounding the **assessment and implementation of a whole genome sequencing scheme for rapid resolution of _Legionella pneumophila_ outbreaks within Canada to better protect vulnerable populations**. The goal is to generate and nationally deploy a standardized pipeline that will shift _L. pneumophila_ analysis from conventional sequence based typing to whole genome sequence-based typing and clustering, for rapid detection and response to Legionnaires' Disease outbreaks in Canada. 
+This project serves as a repository for tools, notes, and informtation regarding the LegioVue pipeline. This project is a GRDI funded research project surrounding the **assessment and implementation of a whole genome sequencing scheme for rapid resolution of _Legionella pneumophila_ outbreaks within Canada to better protect vulnerable populations**. The goal is to generate and nationally deploy a standardized pipeline that will shift _L. pneumophila_ analysis from conventional sequence based typing to whole genome sequence-based typing and clustering, for rapid detection and response to Legionnaires' Disease outbreaks in Canada.
 
 ## Big Picture Overview
 **LegioVue** contains a combination of tools that are used to do *de novo* assembly, sequence typing, cgMLST, and quality control for all input samples with the end goal in having the available data to confirm cluster outbreaks. Currently, clustering is not included in the pipeline but its addition is to come soon. With this, there are additional available steps on how to use all of the outputs to do cluster analysis.
 
-![LegioVue-WGS-Workflow.png](LegioVue-WGS-Workflow.png)  
+![LegioVue-WGS-Workflow.png](LegioVue-WGS-Workflow.png)
 ---
 
 ## Index
@@ -55,7 +55,7 @@ nextflow run phac-nml/legiovue \
     [Optional Args]
 ```
 
-Where: 
+Where:
 - `-profile <PROFILE>`: The nextflow profile to use.
     - Specification of a dependency management system (docker, singularity, conda)
 - `--fastq_dir </PATH/TO/PAIRED_FASTQS>`: Path to directory containing paired Illumina `_R1` and `_R2` fastq files
@@ -76,32 +76,32 @@ All of the outputs can be found in [the output docs](./docs/output.md). All outp
 
 **`Kraken2`** and **`Bracken`**
 
-[Kraken2](https://github.com/DerrickWood/kraken2) is used to taxonomically profile the paired Illumina reads against the standard Kraken RefSeq database with a confidence level of 0.1 (`--confidence 0.1`). [Bracken](https://github.com/jenniferlu717/Bracken) is then used to estimate taxonomic abundances (including potential contaminants) from the Kraken profile.  
+[Kraken2](https://github.com/DerrickWood/kraken2) is used to taxonomically profile the paired Illumina reads against the standard Kraken RefSeq database with a confidence level of 0.1 (`--confidence 0.1`). [Bracken](https://github.com/jenniferlu717/Bracken) is then used to estimate taxonomic abundances (including potential contaminants) from the Kraken profile.
 
 **`Trimmomatic`**
 
-[Trimmomatic](https://github.com/usadellab/Trimmomatic) is used to remove Illumina adapters (`ILLUMINACLIP:TruSeq3-PE.fa:2:30:10:2:True`) and trim reads according to quality (`LEADING:3`, `TRAILING:3`, `SLIDINGWINDOW:4:20`). Reads shorter than 100bp are dropped (`MINLEN:100`).  
+[Trimmomatic](https://github.com/usadellab/Trimmomatic) is used to remove Illumina adapters (`ILLUMINACLIP:TruSeq3-PE.fa:2:30:10:2:True`) and trim reads according to quality (`LEADING:3`, `TRAILING:3`, `SLIDINGWINDOW:4:20`). Reads shorter than 100bp are dropped (`MINLEN:100`).
 
 **`FastQC`**
 
-[FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) provides quality information about the trimmed reads including estimates of duplication, %GC, and N content. Samples retaining fewer than 150,000 high-quality read pairs after trimming are removed unless `--min_reads <COUNT>` is specified.  
+[FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) provides quality information about the trimmed reads including estimates of duplication, %GC, and N content. Samples retaining fewer than 150,000 high-quality read pairs after trimming are removed unless `--min_reads <COUNT>` is specified.
 
 **`SPAdes`** and **`QUAST`**
 
-High-quality reads (both paired and unpaired) are then assembled into Legionella genomes using the [SPAdes](https://github.com/ablab/spades) assembler and `--careful` option, which aims to minimize mismatches and short indels in the assembly. The quality of the resulting assemblies is evaluated with [QUAST](https://github.com/ablab/quast). At this step, genomes are compared to a _Legionella pneumophila_ [reference genome](data/C9_S.reference.fna) and an assembly quality score is calculated for each sample using a custom script.  
+High-quality reads (both paired and unpaired) are then assembled into Legionella genomes using the [SPAdes](https://github.com/ablab/spades) assembler and `--careful` option, which aims to minimize mismatches and short indels in the assembly. The quality of the resulting assemblies is evaluated with [QUAST](https://github.com/ablab/quast). At this step, genomes are compared to a _Legionella pneumophila_ [reference genome](data/C9_S.reference.fna) and an assembly quality score is calculated for each sample using a custom script.
 
-The `quast_analyzer.py` script assigns a score to each SPAdes assembly based on pre-cgMLST metrics (_e.g.,_ similarity to RefSeq complete _Lp_ genomes, N50, # contigs, %GC content) originally outlined in the supplementary appendix (Supplementary Table 2) of the following paper:  
-      
+The `quast_analyzer.py` script assigns a score to each SPAdes assembly based on pre-cgMLST metrics (_e.g.,_ similarity to RefSeq complete _Lp_ genomes, N50, # contigs, %GC content) originally outlined in the supplementary appendix (Supplementary Table 2) of the following paper:
+
 > Gorzynski, J., Wee, B., Llano, M., Alves, J., Cameron, R., McMenamin, J., et al. (2022). Epidemiological analysis of Legionnaires’ disease in Scotland: a genomic study. The Lancet Microbe 3, e835–e845. doi: 10.1016/S2666-5247(22)00231-2
-      
-Quality thresholds and score effects have been updated in this pipeline to better capture quality issues that are likely to affect the interpretation of the resulting cgMLST profile. Assemblies are assigned a quality score out of 6, where a score of 6/6 represents an "excellent" high-quality _Legionella pneumophila_ assembly.   
-  
+
+Quality thresholds and score effects have been updated in this pipeline to better capture quality issues that are likely to affect the interpretation of the resulting cgMLST profile. Assemblies are assigned a quality score out of 6, where a score of 6/6 represents an "excellent" high-quality _Legionella pneumophila_ assembly.
+
 **`el_gato`**
 
 [el_gato](https://github.com/appliedbinf/el_gato) performs _in silico_ Sequence-based Typing (SBT) of _Legionella pneumophila_ sequences based on the identification and comparison of 7 loci (_flaA, pilE, asd, mip, mompS, proA, neuA/neuAh_) against an allele database. In this pipeline SBT is first called on Illumina paired-end reads using a mapping/alignment approach that is recommended by the `el_gato` developers. If samples are not initially assigned a sequence type (ST = `MA?` or `MD-`), `el_gato` is run again on the assembled genome using an _in silico_ PCR-based approach. The resulting allele and ST calls are reported in `el_gato_st.tsv`.
 
 _Note: if the ST results are inconclusive after both approaches have been tried, users are encouraged to review the `possible_mlsts.txt` intermediate output for that sample in the pipeline results folder under `el_gato/reads/`_
-  
+
 **`chewBBACA`**
 
 Assembled _Legionella pneumophila_ genomes are passed to [chewBBACA](https://github.com/B-UMMI/chewBBACA), which performs Core Genome MultiLocus Sequence Typing (cgMLST) according to the published [Ridom SeqSphere](https://www.cgmlst.org/ncs/schema/Lpneumophila1410/locus/) 1521-loci cgMLST schema for _L. pneumophila_.
@@ -110,12 +110,12 @@ Assembled _Legionella pneumophila_ genomes are passed to [chewBBACA](https://git
 
 **`PHYLOViZ`** and **`reporTree`**
 
-_Note: Reportree requires an update before it can be properly incorporated into the nextflow pipeline. Users can run reportree on their pipeline output separately for now to produce the same visualizations._ 
+_Note: Reportree requires an update before it can be properly incorporated into the nextflow pipeline. Users can run reportree on their pipeline output separately for now to produce the same visualizations._
 
 Visualize cgMLST profiles alongside sample metadata using one of the following two methods:
 
-i) Either drop the cgMLST profile (e.g., `cgMLST100.tsv`) directly into [PhyloViz](https://online2.phyloviz.net/index) and upload metadata for visualization, or,  
-ii) Perform partitioning (clustering) with [ReporTree](https://github.com/insapathogenomics/ReporTree), which will generate outputs (MST and metadata) that can be visualized with the local version of [GrapeTree](https://achtman-lab.github.io/GrapeTree/MSTree_holder.html). 
+i) Either drop the cgMLST profile (e.g., `cgMLST100.tsv`) directly into [PhyloViz](https://online2.phyloviz.net/index) and upload metadata for visualization, or,
+ii) Perform partitioning (clustering) with [ReporTree](https://github.com/insapathogenomics/ReporTree), which will generate outputs (MST and metadata) that can be visualized with the local version of [GrapeTree](https://achtman-lab.github.io/GrapeTree/MSTree_holder.html).
 
 Detailed instructions for clustering and visualization are provided [separately](docs/clustering.md).
 

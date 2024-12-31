@@ -9,6 +9,8 @@ lint:
     - .github/ISSUE_TEMPLATE/bug_report.yml
     - .github/ISSUE_TEMPLATE/config.yml
     - .github/ISSUE_TEMPLATE/feature_request.yml
+    - .github/workflows/awstest.yml
+    - .github/workflows/awsfulltest.yml
     - assets/email_template.html
     - assets/email_template.txt
     - assets/multiqc_config.yml
@@ -35,7 +37,10 @@ lint:
     - params.max_cpus
     - params.max_memory
     - params.max_time
-    - config_defaults
+  nextflow_config:
+    - config_defaults:
+      - params.quast_ref
+      - params.prepped_schema
 
 template:
   prefix: phac-nml
