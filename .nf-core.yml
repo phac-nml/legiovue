@@ -1,16 +1,41 @@
 repository_type: pipeline
-nf_core_version: 3.0.2
+nf_core_version: "3.0.2"
 bump_version: null
 lint:
   files_exist:
-    - LegioVue-WGS-Workflow.png
-    - CITATIONS.md
+    - CODE_OF_CONDUCT.md
+    - .github/.dockstore.yml
+    - .github/CONTRIBUTING.md
+    - .github/ISSUE_TEMPLATE/bug_report.yml
+    - .github/ISSUE_TEMPLATE/config.yml
+    - .github/ISSUE_TEMPLATE/feature_request.yml
+    - assets/email_template.html
+    - assets/email_template.txt
+    - assets/multiqc_config.yml
+    - assets/sendmail_template.txt
+    - assets/nf-core-LegioVue_logo_light.png
+    - conf/igenomes.config
+    - conf/igenomes_ignored.config
+    - docs/images/nf-core-LegioVue_logo_light.png
+    - docs/images/nf-core-LegioVue_logo_dark.png
   files_unchanged:
+    - .github/PULL_REQUEST_TEMPLATE.md
+    - docs/README.md
     - LICENSE
     - .gitignore
   multiqc_config: false
   pipeline_name_conventions: false
   actions_awsfulltest: false
+  readme: false
+  nextflow_config:
+    - custom_config
+    - manifest.name
+    - manifest.homePage
+    - params.quast_ref
+    - params.prepped_schema
+    - params.max_cpus
+    - params.max_memory
+    - params.max_time
 
 template:
   prefix: phac-nml

@@ -19,6 +19,9 @@ process BRACKEN {
     tuple val(meta), path('*-braken-breakdown.tsv'), emit: breakdown
     path "versions.yml", emit: versions
 
+    when:
+    task.ext.when == null || task.ext.when
+
     script:
     """
     bracken \\

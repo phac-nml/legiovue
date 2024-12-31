@@ -14,6 +14,9 @@ process CREATE_ABUNDANCE_FILTER {
     tuple val(meta), path("${meta.id}.check.csv"), emit: abundance_check
     path "versions.yml", emit: versions
 
+    when:
+    task.ext.when == null || task.ext.when
+
     script:
     """
     filter_lpn_abundance.py \\
@@ -45,6 +48,9 @@ process CSVTK_COMBINE_STATS {
     output:
     tuple val(meta), path("${meta.id}.allele_stats.tsv"), emit: tsv
     path "versions.yml", emit: versions
+
+    when:
+    task.ext.when == null || task.ext.when
 
     script:
     """
@@ -79,6 +85,9 @@ process CSVTK_COMBINE{
     output:
     path "overall.qc.tsv", emit: tsv
     path "versions.yml", emit: versions
+
+    when:
+    task.ext.when == null || task.ext.when
 
     script:
     """

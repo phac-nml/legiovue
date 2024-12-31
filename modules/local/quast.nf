@@ -22,6 +22,9 @@ process QUAST {
     path "*_stats", emit: stats_folders
     path "versions.yml", emit: versions
 
+    when:
+    task.ext.when == null || task.ext.when
+
     script:
     """
     quast \\

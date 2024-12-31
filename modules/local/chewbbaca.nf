@@ -15,6 +15,9 @@ process CHEWBBACA_PREP_EXTERNAL_SCHEMA {
     path "prepped_schema", emit: schema
     path "versions.yml", emit: versions
 
+    when:
+    task.ext.when == null || task.ext.when
+
     script:
     """
     chewBBACA.py \\
@@ -48,6 +51,9 @@ process CHEWBBACA_ALLELE_CALL {
     path "allele_calls", emit: allele_calls
     path "allele_calls/results_statistics.tsv", emit: statistics
     path "versions.yml", emit: versions
+
+    when:
+    task.ext.when == null || task.ext.when
 
     script:
     """
@@ -87,6 +93,9 @@ process CHEWBBACA_EXTRACT_CGMLST {
     output:
     path "cgMLST", emit: cgmlst
     path "versions.yml", emit: versions
+
+    when:
+    task.ext.when == null || task.ext.when
 
     script:
     """

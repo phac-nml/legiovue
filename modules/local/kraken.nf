@@ -19,6 +19,9 @@ process KRAKEN2_CLASSIFY {
     tuple val(meta), path('*-kreport.tsv'), emit: report
     path "versions.yml", emit: versions
 
+    when:
+    task.ext.when == null || task.ext.when
+
     script:
     def gz_arg = reads[0].endsWith('.gz') ? "--gzip-compressed" : ""
     """

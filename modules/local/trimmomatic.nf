@@ -20,6 +20,9 @@ process TRIMMOMATIC {
     tuple val(meta), path("*.summary.txt"), emit: summary
     path "versions.yml", emit: versions
 
+    when:
+    task.ext.when == null || task.ext.when
+
     script:
     // I've included the current args here for now, may make a modules config later
     """

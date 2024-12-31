@@ -15,6 +15,9 @@ process PYSAMSTATS {
     tuple val(meta), path("${meta.id}.${type}.stats.tsv"), emit: tsv
     path "versions.yml", emit: versions
 
+    when:
+    task.ext.when == null || task.ext.when
+
     script:
     """
     pysamstats \\

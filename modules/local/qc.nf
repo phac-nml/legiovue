@@ -18,6 +18,9 @@ process COMBINE_SAMPLE_DATA {
     tuple val(meta), path("*.tsv"), emit: tsv
     path "versions.yml", emit: versions
 
+    when:
+    task.ext.when == null || task.ext.when
+
     script:
     def trimmomatic_arg         = trimmomatic_summary ? "-tr $trimmomatic_summary" : ""
     def quast_report_arg        = quast_report ? "-qa $quast_report" : ""

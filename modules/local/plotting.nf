@@ -18,6 +18,9 @@ process PLOT_PYSAMSTATS_TSV {
     tuple val(meta), path("${meta.id}_allele_plots.pdf"), emit: plot
     path "versions.yml", emit: versions
 
+    when:
+    task.ext.when == null || task.ext.when
+
     script:
     // Special handling of using executables based on a docker micromamba image
     // https://stackoverflow.com/a/78027234

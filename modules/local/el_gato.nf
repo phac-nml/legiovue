@@ -24,6 +24,9 @@ process EL_GATO_READS {
     tuple val(meta), path("${meta.id}_reads.json"), emit: json
     path "versions.yml", emit: versions
 
+    when:
+    task.ext.when == null || task.ext.when
+
     script:
     def reads_in = "--read1 ${reads[0]} --read2 ${reads[1]}"
     """
@@ -80,6 +83,9 @@ process EL_GATO_ASSEMBLY {
     tuple val(meta), path("${meta.id}_assembly.json"), emit: json
     path "versions.yml", emit: versions
 
+    when:
+    task.ext.when == null || task.ext.when
+
     script:
     """
     el_gato.py \\
@@ -119,6 +125,9 @@ process EL_GATO_REPORT {
     path "*.pdf", emit: pdf
     path "versions.yml", emit: versions
 
+    when:
+    task.ext.when == null || task.ext.when
+
     script:
     """
     elgato_report.py \\
@@ -149,6 +158,9 @@ process COMBINE_EL_GATO {
     output:
     path "el_gato_st.tsv", emit: report
     path "versions.yml", emit: versions
+
+    when:
+    task.ext.when == null || task.ext.when
 
     script:
     def reads_arg = reads_st ? "--reads_tsv $reads_st" : ""

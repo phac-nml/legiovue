@@ -16,6 +16,9 @@ process REPORTREE {
     output:
     path "versions.yml", emit: versions
 
+    when:
+    task.ext.when == null || task.ext.when
+
     script:
     def metadata_arg = metadata ? "-m $metadata" : ""
     """
