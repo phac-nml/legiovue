@@ -46,4 +46,23 @@ process TRIMMOMATIC {
         trimmomatic: \$(trimmomatic -version)
     END_VERSIONS
     """
+
+    stub:
+    """
+    # Due to read filtering step
+    read="@read1\nTTT\n+\nCCC"
+    echo -e \$read > ${meta.id}_paired_R1.fastq
+    echo -e \$read > ${meta.id}_paired_R2.fastq
+    gzip ${meta.id}_paired_R1.fastq
+    gzip ${meta.id}_paired_R2.fastq
+
+    touch ${meta.id}.summary.txt
+    touch ${meta.id}_unpaired_R1.fastq.gz
+    touch ${meta.id}_unpaired_R2.fastq.gz
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        trimmomatic: \$(trimmomatic -version)
+    END_VERSIONS
+    """
 }

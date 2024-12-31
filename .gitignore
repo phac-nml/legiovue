@@ -7,3 +7,4 @@ testing*
 *.pyc
 null/
 slurm*
+.nf-test.log

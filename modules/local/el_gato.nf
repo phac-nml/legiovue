@@ -56,6 +56,24 @@ process EL_GATO_READS {
         el_gato: \$(el_gato.py --version | sed 's/^el_gato version: //')
     END_VERSIONS
     """
+
+    stub:
+    """
+    # Due to splitCSV have to actually have a CSV in stub
+    echo "Sample	ST	flaA	pilE	asd	mip	mompS	proA	neuA_neuAH" > ${meta.id}_ST.tsv
+    echo "${meta.id}	MD-	-	-	-	-	-	-	-" >> ${meta.id}_ST.tsv
+
+    touch ${meta.id}.bam
+    touch ${meta.id}.bam.bai
+    touch ${meta.id}_possible_mlsts.txt
+    touch ${meta.id}_run.log
+    touch ${meta.id}_reads.json
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        el_gato: \$(el_gato.py --version | sed 's/^el_gato version: //')
+    END_VERSIONS
+    """
 }
 
 // TODO: Combine to one function at some point as
@@ -105,6 +123,18 @@ process EL_GATO_ASSEMBLY {
         el_gato: \$(el_gato.py --version | sed 's/^el_gato version: //')
     END_VERSIONS
     """
+
+    stub:
+    """
+    touch ${meta.id}_ST.tsv
+    touch ${meta.id}_run.log
+    touch ${meta.id}_assembly.json
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        el_gato: \$(el_gato.py --version | sed 's/^el_gato version: //')
+    END_VERSIONS
+    """
 }
 
 process EL_GATO_REPORT {
@@ -133,6 +163,16 @@ process EL_GATO_REPORT {
     elgato_report.py \\
         -i *.json \\
         -o el_gato_report.pdf
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        el_gato: \$(el_gato.py --version | sed 's/^el_gato version: //')
+    END_VERSIONS
+    """
+
+    stub:
+    """
+    touch el_gato_report.pdf
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -169,6 +209,16 @@ process COMBINE_EL_GATO {
     combine_el_gato.py \\
         $reads_arg \\
         $assembly_arg
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        combine_el_gato: 0.1.0
+    END_VERSIONS
+    """
+
+    stub:
+    """
+    touch el_gato_st.tsv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

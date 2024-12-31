@@ -54,7 +54,7 @@
                     "type": "integer",
                     "default": 150000,
                     "description": "Minimum number of paired reads to keep sample in pipeline",
-                    "minimum": 1
+                    "minimum": 0
                 }
             },
             "fa_icon": "fas fa-filter"

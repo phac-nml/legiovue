@@ -29,6 +29,18 @@ process CREATE_ABUNDANCE_FILTER {
         filter_lpn_abundance: 0.1.0
     END_VERSIONS
     """
+
+    stub:
+    """
+    # Due to splitCSV have to actually have a CSV in stub
+    echo "sample,pass" > ${meta.id}.check.csv
+    echo "${meta.id},YES" >> ${meta.id}.check.csv
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        filter_lpn_abundance: 0.1.0
+    END_VERSIONS
+    """
 }
 
 process CSVTK_COMBINE_STATS {
@@ -67,6 +79,16 @@ process CSVTK_COMBINE_STATS {
         csvtk: \$(echo \$( csvtk version | sed -e "s/csvtk v//g" ))
     END_VERSIONS
     """
+
+    stub:
+    """
+    touch ${meta.id}.allele_stats.tsv
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        csvtk: \$(echo \$( csvtk version | sed -e "s/csvtk v//g" ))
+    END_VERSIONS
+    """
 }
 
 process CSVTK_COMBINE{
@@ -96,6 +118,16 @@ process CSVTK_COMBINE{
         -tT \\
         $tsvs \\
     > overall.qc.tsv
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        csvtk: \$(echo \$( csvtk version | sed -e "s/csvtk v//g" ))
+    END_VERSIONS
+    """
+
+    stub:
+    """
+    touch overall.qc.tsv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

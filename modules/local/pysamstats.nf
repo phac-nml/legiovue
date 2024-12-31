@@ -30,4 +30,14 @@ process PYSAMSTATS {
         pysamstats: \$(pysamstats -h | tail -n 2 | grep -Eo ": \\S+" | cut -d" " -f2)
     END_VERSIONS
     """
+
+    stub:
+    """
+    touch ${meta.id}.${type}.stats.tsv
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        plot_genome_cov: 0.1.0
+    END_VERSIONS
+    """
 }

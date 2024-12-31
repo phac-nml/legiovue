@@ -40,4 +40,15 @@ process KRAKEN2_CLASSIFY {
         kraken2: \$(echo \$(kraken2 --version 2>&1) | sed 's/^.*Kraken version //; s/ .*\$//')
     END_VERSIONS
     """
+
+    stub:
+    """
+    touch ${meta.id}-classified.tsv
+    touch ${meta.id}-kreport.tsv
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        kraken2: \$(echo \$(kraken2 --version 2>&1) | sed 's/^.*Kraken version //; s/ .*\$//')
+    END_VERSIONS
+    """
 }

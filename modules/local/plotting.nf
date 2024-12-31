@@ -36,4 +36,14 @@ process PLOT_PYSAMSTATS_TSV {
         plot_genome_cov: 0.1.0
     END_VERSIONS
     """
+
+    stub:
+    """
+    touch ${meta.id}_allele_plots.pdf
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        plot_genome_cov: 0.1.0
+    END_VERSIONS
+    """
 }

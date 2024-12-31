@@ -55,4 +55,18 @@ process SPADES {
         spades: \$(spades.py --version 2>&1 | sed -n 's/^.*SPAdes genome assembler v//p')
     END_VERSION
     """
+
+    stub:
+    """
+    # Output naming
+    touch ${meta.id}.spades.log
+    touch ${meta.id}.scaffolds.fa
+    touch ${meta.id}.contigs.fa
+    touch ${meta.id}.warnings.log
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        spades: \$(spades.py --version 2>&1 | sed -n 's/^.*SPAdes genome assembler v//p')
+    END_VERSION
+    """
 }

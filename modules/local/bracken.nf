@@ -35,4 +35,15 @@ process BRACKEN {
         bracken: \$(echo \$(bracken -v) | cut -f2 -d'v')
     END_VERSIONS
     """
+
+    stub:
+    """
+    touch ${meta.id}-braken-breakdown.tsv
+    touch ${meta.id}-abundances.tsv
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        bracken: \$(echo \$(bracken -v) | cut -f2 -d'v')
+    END_VERSIONS
+    """
 }

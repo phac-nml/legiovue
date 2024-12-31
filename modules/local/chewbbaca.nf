@@ -31,6 +31,16 @@ process CHEWBBACA_PREP_EXTERNAL_SCHEMA {
         chewbbaca: \$(echo \$(chewBBACA.py --version 2>&1 | sed 's/^.*chewBBACA version: //g; s/Using.*\$//' ))
     END_VERSIONS
     """
+
+    stub:
+    """
+    mkdir prepped_schema
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        chewbbaca: \$(echo \$(chewBBACA.py --version 2>&1 | sed 's/^.*chewBBACA version: //g; s/Using.*\$//' ))
+    END_VERSIONS
+    """
 }
 
 process CHEWBBACA_ALLELE_CALL {
@@ -75,6 +85,17 @@ process CHEWBBACA_ALLELE_CALL {
         chewbbaca: \$(echo \$(chewBBACA.py --version 2>&1 | sed 's/^.*chewBBACA version: //g; s/Using.*\$//' ))
     END_VERSIONS
     """
+
+    stub:
+    """
+    mkdir allele_calls
+    touch allele_calls/results_statistics.tsv
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        chewbbaca: \$(echo \$(chewBBACA.py --version 2>&1 | sed 's/^.*chewBBACA version: //g; s/Using.*\$//' ))
+    END_VERSIONS
+    """
 }
 
 process CHEWBBACA_EXTRACT_CGMLST {
@@ -103,6 +124,16 @@ process CHEWBBACA_EXTRACT_CGMLST {
         ExtractCgMLST \\
         -i $allele_calls/results_alleles.tsv \\
         -o cgMLST
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        chewbbaca: \$(echo \$(chewBBACA.py --version 2>&1 | sed 's/^.*chewBBACA version: //g; s/Using.*\$//' ))
+    END_VERSIONS
+    """
+
+    stub:
+    """
+    mkdir cgMLST
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

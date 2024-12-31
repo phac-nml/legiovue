@@ -30,17 +30,7 @@ lint:
   actions_awsfulltest: False
   actions_awstest: False
   readme: False
-  nextflow_config:
-    - custom_config
-    - manifest.name
-    - manifest.homePage
-    - params.max_cpus
-    - params.max_memory
-    - params.max_time
-  nextflow_config:
-    - config_defaults:
-      - params.quast_ref
-      - params.prepped_schema
+  nextflow_config: False
 
 template:
   prefix: phac-nml

@@ -38,6 +38,19 @@ process QUAST {
         quast: \$(quast.py --version 2>&1 | sed 's/^.*QUAST v//; s/ .*\$//')
     END_VERSIONS
     """
+
+    stub:
+    """
+    touch transposed_report.tsv
+    touch report.html
+    touch report.pdf
+    mkdir quast_stats
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        quast: \$(quast.py --version 2>&1 | sed 's/^.*QUAST v//; s/ .*\$//')
+    END_VERSIONS
+    """
 }
 
 process SCORE_QUAST {
@@ -64,6 +77,16 @@ process SCORE_QUAST {
         --outfile scored_quast_report.csv
 
     # TODO Add in version to the script itself at some point
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        quast_analyzer: 0.1.0
+    END_VERSIONS
+    """
+
+    stub:
+    """
+    touch scored_quast_report.csv
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         quast_analyzer: 0.1.0

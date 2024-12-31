@@ -44,4 +44,14 @@ process COMBINE_SAMPLE_DATA {
         combine_qc_data: 0.1.0
     END_VERSIONS
     """
+
+    stub:
+    """
+    touch ${meta.id}.tsv
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        combine_qc_data: 0.1.0
+    END_VERSIONS
+    """
 }

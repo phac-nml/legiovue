@@ -1,3 +1,4 @@
+// TODO - Incorporate when we have a time to create a working container/setup
 process REPORTREE {
     label 'process_medium'
 
@@ -31,6 +32,14 @@ process REPORTREE {
         --matrix-4-grapetree \\
         --analysis grapetree
 
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        ReporTree: \$(reportree.py -v | head -n 1 | cut -d' ' -f2)
+    END_VERSIONS
+    """
+
+    stub:
+    """
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         ReporTree: \$(reportree.py -v | head -n 1 | cut -d' ' -f2)
