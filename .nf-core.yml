@@ -15,8 +15,6 @@ lint:
     - assets/email_template.txt
     - assets/multiqc_config.yml
     - assets/sendmail_template.txt
-    - assets/adaptivecard.json
-    - assets/slackreport.json
     - assets/nf-core-LegioVue_logo_light.png
     - conf/igenomes.config
     - conf/igenomes_ignored.config
