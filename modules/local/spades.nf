@@ -27,11 +27,24 @@ process SPADES {
     def reads_paired_in = "-1 ${reads_paired[0]} -2 ${reads_paired[1]}"
     def reads_unpaired_in = "--s1 ${reads_single[0]} --s2 ${reads_single[1]}"
     """
+    # Have to check if we have data in the unpaired reads
+    #  Doing it with bash for now as the relative nextflow file constructor path
+    #  wasn't playing nice with File class and gzip input stream
+    unpaired_1_in=""
+    unpaired_2_in=""
+    if [ "\$(zcat ${reads_single[0]} | wc -c)" -gt 0 ]; then
+        unpaired_1_in="--s1 ${reads_single[0]}"
+    fi
+    if [ "\$(zcat ${reads_single[1]} | wc -c)" -gt 0 ]; then
+        unpaired_2_in="--s2 ${reads_single[1]}"
+    fi
+
     # We found that using --careful works best for Legionella
     spades.py \\
         --threads $task.cpus \\
         $reads_paired_in \\
-        $reads_unpaired_in \\
+        \$unpaired_1_in \\
+        \$unpaired_2_in \\
         --careful \\
         -o ./
 
