@@ -1,15 +1,17 @@
 # legiovue
-LegioVue is a nextflow pipeline for whole-genome analysis of *Legionella pneumophila*. It performs *in silico* sequence typing, genome assembly, and core-genome analysis. It also provides detailed information about the quality of *L. pneumophila* genomes. The name is an homage to the Bellevue-Stratford hotel, site of the first known outbreak of Legionnaire's Disease.
+
+LegioVue is a nextflow pipeline for whole-genome analysis of _Legionella pneumophila_. It performs _in silico_ sequence typing, genome assembly, and core-genome analysis. It also provides detailed information about the quality of _L. pneumophila_ genomes. The name is an homage to the Bellevue-Stratford hotel, site of the first known outbreak of Legionnaire's Disease.
 
 This project serves as a repository for tools, notes, and informtation regarding the LegioVue pipeline. This project is a GRDI funded research project surrounding the **assessment and implementation of a whole genome sequencing scheme for rapid resolution of _Legionella pneumophila_ outbreaks within Canada to better protect vulnerable populations**. The goal is to generate and nationally deploy a standardized pipeline that will shift _L. pneumophila_ analysis from conventional sequence based typing to whole genome sequence-based typing and clustering, for rapid detection and response to Legionnaires' Disease outbreaks in Canada.
 
 ## Big Picture Overview
-**LegioVue** contains a combination of tools that are used to do *de novo* assembly, sequence typing, cgMLST, and quality control for all input samples with the end goal in having the available data to confirm cluster outbreaks. Currently, clustering is not included in the pipeline but its addition is to come soon. With this, there are additional available steps on how to use all of the outputs to do cluster analysis.
 
-![LegioVue-WGS-Workflow.png](LegioVue-WGS-Workflow.png)
----
+**LegioVue** contains a combination of tools that are used to do _de novo_ assembly, sequence typing, cgMLST, and quality control for all input samples with the end goal in having the available data to confirm cluster outbreaks. Currently, clustering is not included in the pipeline but its addition is to come soon. With this, there are additional available steps on how to use all of the outputs to do cluster analysis.
+
+## ![LegioVue-WGS-Workflow.png](LegioVue-WGS-Workflow.png)
 
 ## Index
+
 - [Installation](#installation)
 - [Resource Requirements](#resources-requirements)
 - [Quick Usage](#quick-usage)
@@ -21,24 +23,29 @@ This project serves as a repository for tools, notes, and informtation regarding
 - [Legal](#legal)
 
 ## Installation
+
 Installation requires both [nextflow](https://www.nextflow.io/) (minimum version tested `23.10.1`) and a dependency management system to run.
 
 Steps:
+
 1. Download and install nextflow
-    1. Download and install with [conda](https://docs.conda.io/en/latest/miniconda.html)
-        - Conda command: `conda create on nextflow -c conda-forge -c bioconda nextflow`
-    2. Install with the instructions at https://www.nextflow.io/
+
+   1. Download and install with [conda](https://docs.conda.io/en/latest/miniconda.html)
+      - Conda command: `conda create on nextflow -c conda-forge -c bioconda nextflow`
+   2. Install with the instructions at https://www.nextflow.io/
 
 2. Determine which dependency management system works best for you
-    - *Note*: Currently the plotting process is using a custom docker container
+
+   - _Note_: Currently the plotting process is using a custom docker container
 
 3. Run the pipeline with one of the following profiles to handle dependencies (or use your [own profile](https://nf-co.re/docs/usage/getting_started/configuration) if you have one for your institution! The NML one is included as an example):
-    - `conda`
-    - `mamba`
-    - `singularity`
-    - `docker`
+   - `conda`
+   - `mamba`
+   - `singularity`
+   - `docker`
 
 ## Resources Requirements
+
 By default, the `kraken2` and `SPAdes` steps have a minimum resource usage allocation set to `8 cpus` and `48GB memory` using the nf-core `process_high` label.
 
 This can be adjusted (along with the other labels) by creating and passing a [custom configuration file](https://nf-co.re/docs/usage/getting_started/configuration) with `-c <config>` or by adjusting the `--max_cpus` and `--max_memory` parameters. More info can be found in the [usage doc](./docs/usage.md)
@@ -46,11 +53,13 @@ This can be adjusted (along with the other labels) by creating and passing a [cu
 The default `kraken2` database links to the 8Gb standard database on the AWS Index server so the required memory can be lowered a decent bit (16Gb) with minimal impact if resources are a limiting factor.
 
 ## Quick Usage
+
 Detailed run and parameter instructions are found in the [usage doc here](./docs/usage.md).
 
 To just get started and run the pipeline, one of the following basic commands is all that is required to do so. The only difference between the two being in how the input fastq data is specified/found:
 
 Directory Input:
+
 ```bash
 nextflow run phac-nml/legiovue \
     -profile <PROFILE> \
@@ -59,13 +68,15 @@ nextflow run phac-nml/legiovue \
 ```
 
 Where:
+
 - `-profile <PROFILE>`: The nextflow profile to use.
-    - Specification of a dependency management system (docker, singularity, conda)
+  - Specification of a dependency management system (docker, singularity, conda)
 - `--fastq_dir </PATH/TO/PAIRED_FASTQS>`: Path to directory containing paired Illumina `_R1` and `_R2` fastq files
-    - Fastqs must be formatted as `<NAME>_{R1,R2}\*.fastq\*`
-    - At the moment everything before the first `_R1/_R2` is kept as the sample name
+  - Fastqs must be formatted as `<NAME>_{R1,R2}\*.fastq\*`
+  - At the moment everything before the first `_R1/_R2` is kept as the sample name
 
 Samplesheet CSV Input:
+
 ```bash
 nextflow run phac-nml/legiovue \
     -profile <PROFILE> \
@@ -74,19 +85,22 @@ nextflow run phac-nml/legiovue \
 ```
 
 Where:
+
 - `-profile <PROFILE>`: The nextflow profile to use.
-    - Specification of a dependency management system (docker, singularity, conda)
+  - Specification of a dependency management system (docker, singularity, conda)
 - `--input </PATH/TO/INPUT.csv>`: Path to a CSV file with the header line `sample,fastq_1,fastq_2`
-    - `sample` is the name of the sample
-    - `fastq_1,fastq_2` is the path to both the fastq reads
-        - Note that paired end sequencing is required at this time!
-    - [Example file](./tests/test_data/input.csv)
+  - `sample` is the name of the sample
+  - `fastq_1,fastq_2` is the path to both the fastq reads
+    - Note that paired end sequencing is required at this time!
+  - [Example file](./tests/test_data/input.csv)
 
 > [!NOTE]
 > The default `kraken2` standard database is hosted on AWS. In the event the connection is interrupted the pipeline will fail out. It is recommended to use/download a database from [the kraken2 database zone](https://benlangmead.github.io/aws-indexes/k2) and include `--kraken2 <PATH>` in the command above. The 8GB standard DB is the default.
 
 ## Quick Outputs
+
 All of the outputs can be found in [the output docs](./docs/output.md). All outputs are by default put in the `results` folder with some of the major outputs being as follows:
+
 - `spades/`: Contains the SPAdes assemblies (contigs as .fasta files) for each sample.
 - `el_gato/el_gato_st.tsv`: Summarized el_gato ST calls for all samples.
 - `chewbbaca/allele_calls/cgMLST/`: cgMLST profiles that can be used for downstream visualization.
@@ -144,26 +158,29 @@ Detailed instructions for clustering and visualization are provided [separately]
 LegioVue outputs a summary of quality metrics and warnings for each step of the workflow in the `overall.qc.tsv` file
 
 The final quality summary has two columns: `qc_status` and `qc_message` that can be used to quickly determine if a sample is good or may have an issue. The `qc_status` column will be any of the following statuses:
+
 - Pass: The sample passes all checks!
 - Warn: The sample was flagged for a specific warning
 - Fail: The sample has failed out of the pipeline and may not be included in the final cgMLST profile.
 
 The `qc_message` column contains the reason for the `qc_status` and includes:
 
-| Message | Associated Status | Flag Reason |
-| - | - | - |
-| low_lpn_abundance | WARN | Low (< 75%) *L. pneumophila* abundance is not expected with isolate sequencing and may indicate contamination. |
-| low_read_count | WARN | Low read count (< 300,000 reads default) has been shown to lead to poor, uninformative assemblies. |
-| low_n50 | WARN | Low N50 scores (< 100,000) have been shown to negatively affect clustering outputs by inflating observed allele differences. |
-| low_exact_allele_calls | WARN | Low chewBBACA exact allele calls (< 90%) indicate that there may be issues in the assembly, possibly affecting the cgMLST profile. |
-| low_qc_score | WARN | Low QUAST-Analyzer QC score (< 4) indicates that there may be issues in the assembly, possibly affecting the cgMLST profile. |
-| no_lpn_detected | FAIL | Very low (< 10% default) *L.pneumophila* abundance flags that the sample may not be *L.pneumophila* and sample is removed from the remainder of the pipeline |
-| failing_read_count | FAIL | Post-trimming read count below failing threshold (< 150,000 reads default) has been shown to lead to poor, uninformative assemblies and sample is removed. |
+| Message                | Associated Status | Flag Reason                                                                                                                                                  |
+| ---------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| low_lpn_abundance      | WARN              | Low (< 75%) _L. pneumophila_ abundance is not expected with isolate sequencing and may indicate contamination.                                               |
+| low_read_count         | WARN              | Low read count (< 300,000 reads default) has been shown to lead to poor, uninformative assemblies.                                                           |
+| low_n50                | WARN              | Low N50 scores (< 100,000) have been shown to negatively affect clustering outputs by inflating observed allele differences.                                 |
+| low_exact_allele_calls | WARN              | Low chewBBACA exact allele calls (< 90%) indicate that there may be issues in the assembly, possibly affecting the cgMLST profile.                           |
+| low_qc_score           | WARN              | Low QUAST-Analyzer QC score (< 4) indicates that there may be issues in the assembly, possibly affecting the cgMLST profile.                                 |
+| no_lpn_detected        | FAIL              | Very low (< 10% default) _L.pneumophila_ abundance flags that the sample may not be _L.pneumophila_ and sample is removed from the remainder of the pipeline |
+| failing_read_count     | FAIL              | Post-trimming read count below failing threshold (< 150,000 reads default) has been shown to lead to poor, uninformative assemblies and sample is removed.   |
 
 ## Limitations
-This pipeline is intended to be run on *Legionella pneumophila* paired illumina isolate sequencing data. In the future Nanopore long-read sequencing data will also be supported.
+
+This pipeline is intended to be run on _Legionella pneumophila_ paired illumina isolate sequencing data. In the future Nanopore long-read sequencing data will also be supported.
 
 ## Citations
+
 This pipeline uses code and infrastructure developed and maintained by the [nf-core](https://nf-co.re) community, reused here under the [MIT license](https://github.com/nf-core/tools/blob/master/LICENSE).
 
 > The nf-core framework for community-curated bioinformatics pipelines.
@@ -176,9 +193,11 @@ This pipeline uses code and infrastructure developed and maintained by the [nf-c
 Detailed citations for utilized tools are found in [CITATIONS.md](./CITATIONS.md)
 
 ## Contributing
+
 Contributions are welcome through creating PRs or Issues
 
 ## Legal
+
 Copyright 2024 Government of Canada
 
 Licensed under the MIT License (the "License"); you may not use this work except in compliance with the License. You may obtain a copy of the License at:

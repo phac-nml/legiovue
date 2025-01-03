@@ -157,9 +157,7 @@
                     "hidden": true
                 }
             },
-            "required": [
-                "outdir"
-            ]
+            "required": ["outdir"]
         }
     },
     "allOf": [
