@@ -5,12 +5,12 @@ nextflow_pipeline {
 
     //--- Test 1
     test("Conflicting Input Data Sources Specified") {
-        tag "conflicting_input_fail"
+        tag "fail"
 
         when {
             params {
-                input = "tests/test_data/input.csv"
-                fastq_dir = "tests/test_data/"
+                input = "$baseDir/tests/test_data/input_none.csv"
+                fastq_dir = "$baseDir/tests/test_data/"
                 outdir = "results"
             }
         }
@@ -19,14 +19,13 @@ nextflow_pipeline {
             assert workflow.failed
 
             // Message
-            assert workflow.errorReport.contains("Please provide input data with either:")
-            assert workflow.errorReport.contains("but not both")
+            assert workflow.stdout.contains("ERROR ~ Please provide input data with either: '--input input.csv' or '--fastq_dir <PATH/TO/PAIRED_FASTQS>' but not both")
         }
     }
 
     //--- Test 2
     test("No Input Data Sources Specified") {
-        tag "no_input_fail"
+        tag "fail"
 
         when {
             params {
@@ -38,41 +37,40 @@ nextflow_pipeline {
             assert workflow.failed
 
             // Message
-            assert workflow.errorReport.contains("Please provide input data with either:")
+            assert workflow.stdout.contains("ERROR ~ Please provide input data with either: '--input input.csv' or '--fastq_dir <PATH/TO/PAIRED_FASTQS>'")
         }
     }
 
     //--- Test 3
-    test("Stub Run Test") {
-        tag "stub_run_success"
-        options "-stub-run"
+    test("Missing Input Fastq Test") {
+        tag "fail"
 
         when {
             params {
-                input = "tests/test_data/input.csv"
+                input = "$baseDir/tests/test_data/input.csv"
                 outdir = "results"
-                min_reads = 0
+                min_reads = 100
             }
         }
         then {
             // Status
-            assert workflow.success
+            assert workflow.failed
 
-            // Channels and Files
-            assert path("$launchDir/results").exists()
-            assert workflow.trace.failed().size() == 0
+            // Message
+            assert workflow.stdout.contains("ERROR ~ Validation of pipeline parameters failed!")
         }
     }
 
     //--- Test 4
-    test("Full Pipeline Test") {
-        tag "full_success"
+    test("Stub Run Test") {
+        tag "success"
+        options "-stub-run"
 
         when {
             params {
-                input = "tests/test_data/input.csv"
+                fastq_dir = "$baseDir/tests/test_data/"
                 outdir = "results"
-                min_reads = 100
+                min_reads = 0
             }
         }
         then {

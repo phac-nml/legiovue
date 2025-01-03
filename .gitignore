@@ -8,3 +8,4 @@ testing*
 null/
 slurm*
 .nf-test.log
+.nf-test/

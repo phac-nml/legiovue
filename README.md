@@ -43,11 +43,14 @@ By default, the `kraken2` and `SPAdes` steps have a minimum resource usage alloc
 
 This can be adjusted (along with the other labels) by creating and passing a [custom configuration file](https://nf-co.re/docs/usage/getting_started/configuration) with `-c <config>` or by adjusting the `--max_cpus` and `--max_memory` parameters. More info can be found in the [usage doc](./docs/usage.md)
 
+The default `kraken2` database links to the 8Gb standard database on the AWS Index server so the required memory can be lowered a decent bit (16Gb) with minimal impact if resources are a limiting factor.
+
 ## Quick Usage
 Detailed run and parameter instructions are found in the [usage doc here](./docs/usage.md).
 
-To just get started and run the pipeline, the following basic command is all that is required:
+To just get started and run the pipeline, one of the following basic commands is all that is required to do so. The only difference between the two being in how the input fastq data is specified/found:
 
+Directory Input:
 ```bash
 nextflow run phac-nml/legiovue \
     -profile <PROFILE> \
@@ -62,8 +65,25 @@ Where:
     - Fastqs must be formatted as `<NAME>_{R1,R2}\*.fastq\*`
     - At the moment everything before the first `_R1/_R2` is kept as the sample name
 
+Samplesheet CSV Input:
+```bash
+nextflow run phac-nml/legiovue \
+    -profile <PROFILE> \
+    --input </PATH/TO/INPUT.csv> \
+    [Optional Args]
+```
+
+Where:
+- `-profile <PROFILE>`: The nextflow profile to use.
+    - Specification of a dependency management system (docker, singularity, conda)
+- `--input </PATH/TO/INPUT.csv>`: Path to a CSV file with the header line `sample,fastq_1,fastq_2`
+    - `sample` is the name of the sample
+    - `fastq_1,fastq_2` is the path to both the fastq reads
+        - Note that paired end sequencing is required at this time!
+    - [Example file](./tests/test_data/input.csv)
+
 > [!NOTE]
-> The default kraken2 standard database is hosted on AWS. In the event the connection is interrupted the pipeline will fail out. It is recommended to use/download a database from [the kraken2 database zone](https://benlangmead.github.io/aws-indexes/k2) and include `--kraken2 <PATH>` in the command above. The 8GB standard DB is the default.
+> The default `kraken2` standard database is hosted on AWS. In the event the connection is interrupted the pipeline will fail out. It is recommended to use/download a database from [the kraken2 database zone](https://benlangmead.github.io/aws-indexes/k2) and include `--kraken2 <PATH>` in the command above. The 8GB standard DB is the default.
 
 ## Quick Outputs
 All of the outputs can be found in [the output docs](./docs/output.md). All outputs are by default put in the `results` folder with some of the major outputs being as follows:

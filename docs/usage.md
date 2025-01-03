@@ -7,6 +7,7 @@ This pipeline is intended to be run on *Legionella pneumophila* paired illumina 
 - [Profiles](#profiles)
 - [Running the Pipeline](#running-the-pipeline)
     - [`--fastq_dir`](#fastq_dir)
+    - [`--input`](#input)
 - [All Parameters](#all-parameters)
     - [Required](#required)
     - [Optional](#optional)
@@ -30,11 +31,12 @@ Available:
 > [!NOTE]
 > `el_gato` and the plotting currently are using custom docker containers. The `el_gato` container will be returned to the proper one upon a new release of the tool
 
-For testing the pipeline functions correctly, you can use the `test` or `test_full` profile (TO-DO Create these)
+For testing the pipeline functions correctly, you can use the `test` or `test_full` profile
 
 ## Running the Pipeline
-To run the pipeline the following basic command is all that is required:
+To just get started and run the pipeline, one of the following basic commands is all that is required to do so. The only difference between the two being in how the input fastq data is specified/found:
 
+Directory Input:
 ```bash
 nextflow run phac-nml/legiovue \
     -profile <PROFILE> \
@@ -42,8 +44,16 @@ nextflow run phac-nml/legiovue \
     [Optional Args]
 ```
 
+Samplesheet CSV Input:
+```bash
+nextflow run phac-nml/legiovue \
+    -profile <PROFILE> \
+    --input </PATH/TO/INPUT.csv> \
+    [Optional Args]
+```
+
 ### `--fastq_dir`
-The only required argument is needed to get data into the pipeline. Fastqs must be formatted as `<NAME>_{R1,R2}\*.fastq\*` so that they can be paired based on the name. Note that at the moment everything before the first `_R1/_R2` is kept as the sample name.
+Get fastq sample data into the pipeline by specifying a directory where the files are found. Fastqs must be formatted as `<NAME>_{R1,R2}\*.fastq\*` so that they can be paired based on the name. Note that at the moment everything before the first `_R1/_R2` is kept as the sample name.
 
 Example directory with 3 samples:
 ```
@@ -56,6 +66,17 @@ Example directory with 3 samples:
 └── another-sample_S1_L001_R2_001.fastq.gz
 ```
 
+### `--input`
+Get fastq sample data into the pipeline by creating a samplesheet CSV file with the header line `sample,fastq_1,fastq_2`. The outputs are named based on the given sample name and the data is input based on the path specified under `fastq_1` and `fastq_2`. The fastq files can end with `.fq`, `.fq.gz`, `.fastq`, or `.fastq.gz` to be valid
+
+Example:
+| sample | fastq_1 | fastq_2 |
+| - | - | - |
+| sample1 | fastqs/sample1_R1.fastq.gz | fastqs/sample1_R1.fastq.gz |
+| sample2 | fastqs/sample2_R1.fastq.gz | fastqs/sample2_R2.fastq.gz |
+| other-sample | other_samples/other-sample_R1.fq.gz | other_samples/other-sample_R2.fq.gz |
+| more_sample_data | fastqs/more_sample_data_R1.fq | fastqs/more_sample_data_R2.fq |
+
 ## All Parameters
 Use `--help` to see all options formatted on the command line
 
@@ -63,9 +84,11 @@ Use `--version` to see version information
 All of the required and optional parameters are defined as follows:
 
 ### Required
+It is required to pick one of the following to get fastq data into the pipeline
 | Parameter | Description | Type | Default | Notes |
 | - | - | - | - | - |
 | --fastq_dir | Path to directory containing paired fastq files | Path | null | See [--fastq_dir](#fastq_dir) |
+| --input | Path to CSV file containing information on the paired fastq files | Path | null | See [--input](#input) |
 
 ### Optional
 | Parameter | Description | Type | Default | Notes |
@@ -75,6 +98,8 @@ All of the required and optional parameters are defined as follows:
 | --min_reads | Minimum reads required after trimmomatic to continue sample on | Int | 150,000 | Under 150,000 reads samples don't usually provide enough info for proper clustering / STs |
 | --kraken2_db | Path to standard `kraken2` database for detecting *L. pneumophila* reads | Path | s3://genome-idx/kraken/standard_08gb_20240904 | Default is AWS hosted database by developers. It is better to use your own if you have one |
 | --quast_ref | Path to reference sequence for some of the `quast` metrics | Path | data/C9_S.reference.fna | C9 was picked as a default reference but any good sequence will work |
+| skip_el_gato | Flag to skip running el_gato sequence typing | Bool | False |  |
+| skip_plotting | Flag to skip running the el_gato allele plotting | Bool | False |  |
 | --prepped_schema | Path to a prepped `chewbbaca` schema to save running the prep command | Path | data/SeqSphere_1521_schema | Provided with pipeline |
 | --schema_targets | Path to schema targets to prep for `chewbbaca` | Path | null |  |
 | --max_memory | Maximum memory allowed to be given to a job | Str | 128.GB |  |
