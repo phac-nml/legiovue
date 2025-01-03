@@ -71,6 +71,7 @@ nextflow_pipeline {
                 fastq_dir = "$baseDir/tests/test_data/"
                 outdir = "results"
                 min_reads = 0
+                kraken2_db = "./"
             }
         }
         then {
