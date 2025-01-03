@@ -30,7 +30,8 @@ jobs:
           - "23.10.1"
           - "latest-everything"
         test_name:
-          - "test"
+          - "test_input"
+          - "test_small_dir"
     steps:
       - name: Check out pipeline code
         uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4
@@ -47,6 +48,10 @@ jobs:
         run: |
           wget -qO- https://get.nf-test.com | bash
           sudo mv nf-test /usr/local/bin/
+      
+      - name: Run nf-test
+        run: |
+          nf-test test
 
       - name: "Run pipeline with test data ${{ matrix.NXF_VER }} | ${{ matrix.test_name }} | docker"
         run: |
