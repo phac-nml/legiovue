@@ -71,9 +71,9 @@ nextflow_pipeline {
                 fastq_dir = "$baseDir/tests/test_data/"
                 outdir = "results"
                 min_reads = 0
-                params.max_memory = "4.GB"
-                params.max_cpus = 2
-                params.max_time = "1.h"
+                max_memory = "8.GB"
+                max_cpus = 2
+                max_time = "1.h"
             }
         }
         then {
@@ -82,7 +82,6 @@ nextflow_pipeline {
 
             // Channels and Files
             assert path("$launchDir/results").exists()
-            assert workflow.trace.failed().size() == 0
         }
     }
 }

@@ -51,7 +51,7 @@ jobs:
 
       - name: Run nf-test
         run: |
-          nf-test test
+          nf-test test --verbose
 
       - name: "Run pipeline with test data ${{ matrix.NXF_VER }} | ${{ matrix.test_name }} | docker"
         run: |
