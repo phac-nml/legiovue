@@ -62,7 +62,6 @@ nextflow_pipeline {
     }
 
     //--- Test 4
-    // Kraken dir just set to nothing as its not needed for stub run
     test("Stub Run Test") {
         tag "success"
         options "-stub-run"
@@ -72,7 +71,9 @@ nextflow_pipeline {
                 fastq_dir = "$baseDir/tests/test_data/"
                 outdir = "results"
                 min_reads = 0
-                kraken2_db = "./"
+                params.max_memory = "4.GB"
+                params.max_cpus = 2
+                params.max_time = "1.h"
             }
         }
         then {
