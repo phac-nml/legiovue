@@ -278,7 +278,7 @@ def main() -> None:
     outdict['qc_message'] = ';'.join(warn_qual_criteria)
 
     df = pd.DataFrame([outdict])
-    df.to_csv(f'{sample}.qc.tsv', sep='\t', index=False)
+    df.to_csv(f'{sample}.qc.csv', sep=',', index=False)
 
 
 if __name__ == "__main__":

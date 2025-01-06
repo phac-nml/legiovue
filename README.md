@@ -104,7 +104,7 @@ All of the outputs can be found in [the output docs](./docs/output.md). All outp
 - `spades/`: Contains the SPAdes assemblies (contigs as .fasta files) for each sample.
 - `el_gato/el_gato_st.tsv`: Summarized el_gato ST calls for all samples.
 - `chewbbaca/allele_calls/cgMLST/`: cgMLST profiles that can be used for downstream visualization.
-- `overall.qc.tsv`: Final quality summary report for each sample throughout the different pipeline steps. Important quality flags can be found in this file.
+- `overall.qc.csv`: Final quality summary report for each sample throughout the different pipeline steps. Important quality flags can be found in this file.
 
 ## Pipeline Components and Settings
 

@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### `Changed`
 
+- Final quality metrics output is a CSV now to work with IRIDA next
 - Logic for input data
 - Logic for skipping specific modules
   - Allowed to skip el_gato ST

@@ -236,7 +236,7 @@ Scored quast report based on adapted thresholds from [Gorzynski et al.](<10.1016
 
 <summary>Output files</summary>
 
-- `overall.qc.tsv`: Final collated overall summary report
+- `overall.qc.csv`: Final collated overall summary report
 </details>
 
 The final collated summary report that is created using the outputs from the other pipeline steps and checks some final quality criteria.

@@ -62,6 +62,7 @@ nextflow_pipeline {
     }
 
     //--- Test 4
+    // Kraken dir just set to nothing as its not needed for stub run
     test("Stub Run Test") {
         tag "success"
         options "-stub-run"

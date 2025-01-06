@@ -94,7 +94,7 @@ process CSVTK_COMBINE_STATS {
 process CSVTK_COMBINE{
     label 'process_single'
 
-    publishDir "${params.outdir}", pattern: "*.tsv", mode: 'copy'
+    publishDir "${params.outdir}", pattern: "*.csv", mode: 'copy'
 
     conda "bioconda::csvtk=0.30.0"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -102,10 +102,10 @@ process CSVTK_COMBINE{
         'biocontainers/csvtk:0.30.0--h9ee0642_0' }"
 
     input:
-    path tsvs
+    path csvs
 
     output:
-    path "overall.qc.tsv", emit: tsv
+    path "overall.qc.csv", emit: csv
     path "versions.yml", emit: versions
 
     when:
@@ -115,9 +115,8 @@ process CSVTK_COMBINE{
     """
     csvtk \\
         concat \\
-        -tT \\
-        $tsvs \\
-    > overall.qc.tsv
+        $csvs \\
+    > overall.qc.csv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -127,7 +126,7 @@ process CSVTK_COMBINE{
 
     stub:
     """
-    touch overall.qc.tsv
+    touch overall.qc.csv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

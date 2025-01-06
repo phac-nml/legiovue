@@ -15,7 +15,7 @@ process COMBINE_SAMPLE_DATA {
     path(chewbbaca_stats)
 
     output:
-    tuple val(meta), path("*.tsv"), emit: tsv
+    tuple val(meta), path("*.csv"), emit: csv
     path "versions.yml", emit: versions
 
     when:
@@ -41,17 +41,17 @@ process COMBINE_SAMPLE_DATA {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        combine_qc_data: 0.1.0
+        combine_qc_data: 0.2.0
     END_VERSIONS
     """
 
     stub:
     """
-    touch ${meta.id}.tsv
+    touch ${meta.id}.csv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        combine_qc_data: 0.1.0
+        combine_qc_data: 0.2.0
     END_VERSIONS
     """
 }

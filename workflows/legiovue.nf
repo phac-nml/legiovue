@@ -231,7 +231,7 @@ workflow LEGIOVUE {
     )
 
     CSVTK_COMBINE(
-        COMBINE_SAMPLE_DATA.out.tsv
+        COMBINE_SAMPLE_DATA.out.csv
             .collect{ it[1] }
     )
 
