@@ -4,7 +4,7 @@
 ##  Legionella ST allele to help investigations on
 ##  missing or non-called STs
 ## ------------------------------------------------ ##
-library(argparse)
+library(optparse)
 library(data.table)
 library(ggplot2)
 library(patchwork)
@@ -70,12 +70,17 @@ create_plots <- function(gene, df) {
 ## Main Script ##
 ## ----------- ##
 # Args
-parser <- ArgumentParser()
-parser$add_argument("-i", "--input_tsv",
-                    help="Path to pysamstats TSV file with mapQ and baseQ annotated")
-parser$add_argument("-o", "--outfile", default="el_gato_allele_plots.pdf",
-                    help="Output plot filename")
-args <- parser$parse_args()
+option_list <- list(
+    make_option(
+        c("-i", "--input_tsv"),
+        help="Path to pysamstats TSV file with mapQ and baseQ annotated"
+    ),
+    make_option(
+        c("-o", "--outfile"), default="el_gato_allele_plots.pdf",
+        help="Output plot filename")
+    )
+opt_parser <- OptionParser(option_list = option_list)
+args <- parse_args(opt_parser)
 
 # Split based on chrom
 df <- read.table(args$input_tsv, sep = '\t', header = TRUE)

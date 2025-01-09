@@ -1,15 +1,17 @@
 process PLOT_PYSAMSTATS_TSV {
     tag "$meta.id"
     label 'process_low'
-    // Apptainer v1.3.4-1.el9 (not sure if other versions) issue that I have to resolve
-    //  As its just affects a plot output better to ignore the error for now
+    // As its just a plot output better to ignore errors for now
     label 'error_ignore'
 
     publishDir "${params.outdir}/el_gato/plots", pattern: "*_allele_plots.pdf", mode: 'copy'
 
     conda "$projectDir/envs/plotting-env.yml"
     // Custom built for this...
-    container "docker://darianhole/legio-plotting:0.1.0"
+    // container "docker://docker.io/darianhole/legio-plotting:0.1.0"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/mulled-v2-b2ec1fea5791d428eebb8c8ea7409c350d31dada:a447f6b7a6afde38352b24c30ae9cd6e39df95c4-1' :
+        'biocontainers/mulled-v2-b2ec1fea5791d428eebb8c8ea7409c350d31dada:a447f6b7a6afde38352b24c30ae9cd6e39df95c4-1' }"
 
     input:
     tuple val(meta), path(tsv)
@@ -22,12 +24,8 @@ process PLOT_PYSAMSTATS_TSV {
     task.ext.when == null || task.ext.when
 
     script:
-    // Special handling of using executables based on a docker micromamba image
-    // https://stackoverflow.com/a/78027234
-    // https://micromamba-docker.readthedocs.io/en/latest/faq.html#how-can-i-use-a-mambaorg-micromamba-based-image-with-apptainer
-    def run_cmd = workflow.containerEngine == 'singularity' || workflow.containerEngine == 'apptainer' ? '/usr/local/bin/_entrypoint.sh plot_genome_cov.R' : 'plot_genome_cov.R'
     """
-    $run_cmd \\
+    plot_genome_cov.R \\
         --input_tsv $tsv \\
         --outfile ${meta.id}_allele_plots.pdf
 

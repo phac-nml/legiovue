@@ -25,7 +25,6 @@ process SPADES {
 
     script:
     def reads_paired_in = "-1 ${reads_paired[0]} -2 ${reads_paired[1]}"
-    def reads_unpaired_in = "--s1 ${reads_single[0]} --s2 ${reads_single[1]}"
     """
     # Have to check if we have data in the unpaired reads
     #  Doing it with bash for now as the relative nextflow file constructor path
