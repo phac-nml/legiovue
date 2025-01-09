@@ -29,7 +29,7 @@ process KRAKEN2_CLASSIFY {
         --threads $task.cpus \\
         --output ${meta.id}-classified.tsv \\
         --report ${meta.id}-kreport.tsv \\
-        --memory-mapping
+        --memory-mapping \\
         --db $db \\
         $reads
 
