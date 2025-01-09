@@ -123,6 +123,7 @@ workflow LEGIOVUE {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
     // 6. El_Gato - Second round with assemblies for failing samples only
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
+    ch_el_gato_report = Channel.value([])
     if ( ! params.skip_el_gato ){
         EL_GATO_READS(
             ch_filtered_paired_fastqs.pass
@@ -153,6 +154,7 @@ workflow LEGIOVUE {
                 .collectFile(name: 'assembly_st.tsv', keepHeader: true)
                 .ifEmpty([])
         )
+        ch_el_gato_report = COMBINE_EL_GATO.out.report.collect().ifEmpty([])
 
         // PDF Report
         //  Have to rejoin the el_gato reads output as its hard to remake a csv
@@ -216,7 +218,6 @@ workflow LEGIOVUE {
     // Create some value channels using `.collect()`
     ch_quast_report     = QUAST.out.report.collect().ifEmpty([])
     ch_quast_score      = SCORE_QUAST.out.report.collect().ifEmpty([])
-    ch_el_gato_report   = COMBINE_EL_GATO.out.report.collect().ifEmpty([])
     ch_quast_report     = QUAST.out.report.collect().ifEmpty([])
     ch_allele_stats     = CHEWBBACA_ALLELE_CALL.out.statistics.collect().ifEmpty([])
 

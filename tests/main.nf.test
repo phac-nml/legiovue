@@ -82,6 +82,7 @@ nextflow_pipeline {
 
             // Channels and Files
             assert path("$launchDir/results").exists()
+            assert workflow.trace.failed().size() == 0
         }
     }
 }
