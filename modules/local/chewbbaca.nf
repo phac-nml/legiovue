@@ -47,6 +47,7 @@ process CHEWBBACA_ALLELE_CALL {
     label 'process_medium'
 
     publishDir "${params.outdir}/chewbbaca", pattern: "allele_calls", mode: 'copy'
+    publishDir "${params.outdir}/chewbbaca", pattern: "allele_calls/results_statistics.tsv", mode: 'copy'
 
     conda "bioconda::chewbbaca=3.3.5"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -102,6 +103,8 @@ process CHEWBBACA_EXTRACT_CGMLST {
     label 'process_low'
 
     publishDir "${params.outdir}/chewbbaca/$allele_calls", pattern: "cgMLST", mode: 'copy'
+    publishDir "${params.outdir}/chewbbaca/$allele_calls", pattern: "cgMLST/cgMLST100.tsv", mode: 'copy'
+    publishDir "${params.outdir}/chewbbaca/$allele_calls", pattern: "cgMLST/cgMLST99.tsv", mode: 'copy'
 
     conda "bioconda::chewbbaca=3.3.5"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -113,6 +116,8 @@ process CHEWBBACA_EXTRACT_CGMLST {
 
     output:
     path "cgMLST", emit: cgmlst
+    path "cgMLST/cgMLST100.tsv", emit: cgmlst100
+    path "cgMLST/cgMLST99.tsv", emit: cgmlst99
     path "versions.yml", emit: versions
 
     when:
