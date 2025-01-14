@@ -65,6 +65,9 @@ process SCORE_QUAST {
     path "scored_quast_report.csv", emit: report
     path "versions.yml", emit: versions
 
+    when:
+    task.ext.when == null || task.ext.when
+
     script:
     """
     quast_analyzer.py \\

@@ -46,17 +46,26 @@ process TRIMMOMATIC {
 
     stub:
     """
-    # Due to read filtering step
-    read="@read1\nTTT\n+\nCCC"
+    # Due to read filtering need a read to continue pipeline
+    #  Note no using newlines as it breaks the versions
+    read="@read1
+    TTT
+    +
+    CCC
+    "
+
+    # Create read files
     echo -e \$read > ${meta.id}_paired_R1.fastq
     echo -e \$read > ${meta.id}_paired_R2.fastq
     gzip ${meta.id}_paired_R1.fastq
     gzip ${meta.id}_paired_R2.fastq
 
+    # Summary files and unpaired reads
     touch ${meta.id}.summary.txt
     touch ${meta.id}_unpaired_R1.fastq.gz
     touch ${meta.id}_unpaired_R2.fastq.gz
 
+    # Versions
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         trimmomatic: \$(trimmomatic -version)
