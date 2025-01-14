@@ -47,8 +47,6 @@ process CSVTK_COMBINE_STATS {
     tag "$meta.id"
     label 'process_single'
 
-    publishDir "${params.outdir}/el_gato/allele_stats", pattern: "*.tsv", mode: 'copy'
-
     conda "bioconda::csvtk=0.30.0"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/csvtk:0.30.0--h9ee0642_0':
@@ -93,8 +91,6 @@ process CSVTK_COMBINE_STATS {
 
 process CSVTK_COMBINE{
     label 'process_single'
-
-    publishDir "${params.outdir}", pattern: "*.csv", mode: 'copy'
 
     conda "bioconda::csvtk=0.30.0"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?

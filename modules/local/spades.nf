@@ -2,9 +2,6 @@ process SPADES {
     tag "$meta.id"
     label 'process_high'
 
-    publishDir "${params.outdir}/spades", pattern: "*.fa", mode: 'copy'
-    publishDir "${params.outdir}/spades", pattern: "*.log", mode: 'copy'
-
     conda "bioconda::spades=4.0.0"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/spades:4.0.0--h5fb382e_1' :

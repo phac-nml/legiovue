@@ -1,8 +1,6 @@
 process CHEWBBACA_PREP_EXTERNAL_SCHEMA {
     label 'process_low'
 
-    publishDir "${params.outdir}/chewbbaca", pattern: "prepped_schema", mode: 'copy'
-
     conda "bioconda::chewbbaca=3.3.5"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/chewbbaca:3.3.5--pyhdfd78af_0':
@@ -46,9 +44,6 @@ process CHEWBBACA_PREP_EXTERNAL_SCHEMA {
 process CHEWBBACA_ALLELE_CALL {
     label 'process_medium'
 
-    publishDir "${params.outdir}/chewbbaca", pattern: "allele_calls", mode: 'copy'
-    publishDir "${params.outdir}/chewbbaca", pattern: "allele_calls/results_statistics.tsv", mode: 'copy'
-
     conda "bioconda::chewbbaca=3.3.5"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/chewbbaca:3.3.5--pyhdfd78af_0':
@@ -59,8 +54,14 @@ process CHEWBBACA_ALLELE_CALL {
     path schema
 
     output:
-    path "allele_calls", emit: allele_calls
+    path "allele_calls/results_alleles.tsv", emit: results_alleles
     path "allele_calls/results_statistics.tsv", emit: statistics
+    path "allele_calls/cds_coordinates.tsv", emit: cds_coords
+    path "allele_calls/loci_summary_stats.tsv", emit: loci_summary
+    path "allele_calls/paralogous_counts.tsv", emit: paralogous_counts
+    path "allele_calls/paralogous_loci.tsv", emit: paralogous_loci
+    path "allele_calls/results_contigsInfo.tsv", emit: contig_info
+    path "allele_calls/*.txt", emit: allele_call_txt
     path "versions.yml", emit: versions
 
     when:
@@ -91,6 +92,13 @@ process CHEWBBACA_ALLELE_CALL {
     """
     mkdir allele_calls
     touch allele_calls/results_statistics.tsv
+    touch allele_calls/results_alleles.tsv
+    touch allele_calls/cds_coordinates.tsv
+    touch allele_calls/loci_summary_stats.tsv
+    touch allele_calls/paralogous_counts.tsv
+    touch allele_calls/paralogous_loci.tsv
+    touch allele_calls/results_contigsInfo.tsv
+    touch allele_calls/invalid_cds.txt
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -102,22 +110,16 @@ process CHEWBBACA_ALLELE_CALL {
 process CHEWBBACA_EXTRACT_CGMLST {
     label 'process_low'
 
-    publishDir "${params.outdir}/chewbbaca/$allele_calls", pattern: "cgMLST", mode: 'copy'
-    publishDir "${params.outdir}/chewbbaca/$allele_calls", pattern: "cgMLST/cgMLST100.tsv", mode: 'copy'
-    publishDir "${params.outdir}/chewbbaca/$allele_calls", pattern: "cgMLST/cgMLST99.tsv", mode: 'copy'
-
     conda "bioconda::chewbbaca=3.3.5"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/chewbbaca:3.3.5--pyhdfd78af_0':
         'biocontainers/chewbbaca:3.3.5--pyhdfd78af_0' }"
 
     input:
-    path allele_calls
+    path results_alleles
 
     output:
-    path "cgMLST", emit: cgmlst
-    path "cgMLST/cgMLST100.tsv", emit: cgmlst100
-    path "cgMLST/cgMLST99.tsv", emit: cgmlst99
+    path "cgMLST/*", emit: cgmlst
     path "versions.yml", emit: versions
 
     when:
@@ -127,7 +129,7 @@ process CHEWBBACA_EXTRACT_CGMLST {
     """
     chewBBACA.py \\
         ExtractCgMLST \\
-        -i $allele_calls/results_alleles.tsv \\
+        -i $results_alleles \\
         -o cgMLST
 
     cat <<-END_VERSIONS > versions.yml
@@ -139,6 +141,8 @@ process CHEWBBACA_EXTRACT_CGMLST {
     stub:
     """
     mkdir cgMLST
+    touch cgMLST/cgMLST99.tsv
+    touch cgMLST/cgMLST100.tsv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

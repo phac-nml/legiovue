@@ -2,9 +2,6 @@ process BRACKEN {
     tag "$meta.id"
     label 'process_low'
 
-    publishDir "${params.outdir}/kraken_bracken", pattern: "*-abundances.tsv", mode: 'copy'
-    publishDir "${params.outdir}/kraken_bracken", pattern: "*-braken-breakdown.tsv", mode: 'copy'
-
     conda "bioconda::bracken=2.9"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/bracken:2.9--py38h2494328_0':

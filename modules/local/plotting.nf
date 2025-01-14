@@ -4,8 +4,6 @@ process PLOT_PYSAMSTATS_TSV {
     // As its just a plot output better to ignore errors for now
     label 'error_ignore'
 
-    publishDir "${params.outdir}/el_gato/plots", pattern: "*_allele_plots.pdf", mode: 'copy'
-
     conda "$projectDir/envs/plotting-env.yml"
     // Custom built for this...
     // container "docker://docker.io/darianhole/legio-plotting:0.1.0"

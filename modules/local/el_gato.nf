@@ -2,12 +2,6 @@ process EL_GATO_READS {
     tag "$meta.id"
     label 'process_medium'
 
-    publishDir "${params.outdir}/el_gato/reads", pattern: "*.tsv", mode: 'copy'
-    publishDir "${params.outdir}/el_gato/reads", pattern: "*.bam*", mode: 'copy'
-    publishDir "${params.outdir}/el_gato/reads", pattern: "*.log", mode: 'copy'
-    publishDir "${params.outdir}/el_gato/reads", pattern: "*.json", mode: 'copy'
-    publishDir "${params.outdir}/el_gato/reads", pattern: "*_possible_mlsts.txt", mode: 'copy'
-
     conda "bioconda::el_gato=1.20.2"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/el_gato:1.20.2--py311h7e72e81_0' :
@@ -83,10 +77,6 @@ process EL_GATO_ASSEMBLY {
     label 'process_low'
     label 'error_ignore' // Non-legion samples explode here otherwise
 
-    publishDir "${params.outdir}/el_gato/assembly", pattern: "*.tsv", mode: 'copy'
-    publishDir "${params.outdir}/el_gato/assembly", pattern: "*.log", mode: 'copy'
-    publishDir "${params.outdir}/el_gato/assembly", pattern: "*.json", mode: 'copy'
-
     conda "bioconda::el_gato=1.20.2"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/el_gato:1.20.2--py311h7e72e81_0' :
@@ -140,8 +130,6 @@ process EL_GATO_ASSEMBLY {
 process EL_GATO_REPORT {
     label 'process_low'
 
-    publishDir "${params.outdir}/el_gato", pattern: "*.pdf", mode: 'copy'
-
     conda "bioconda::el_gato=1.20.2"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/el_gato:1.20.2--py311h7e72e81_0' :
@@ -183,8 +171,6 @@ process EL_GATO_REPORT {
 
 process COMBINE_EL_GATO {
     label 'process_low'
-
-    publishDir "${params.outdir}/el_gato", pattern: "el_gato_st.tsv", mode: 'copy'
 
     conda "conda-forge::pandas=2.2.1"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?

@@ -204,7 +204,7 @@ workflow LEGIOVUE {
         ch_prepped_schema
     )
     CHEWBBACA_EXTRACT_CGMLST(
-        CHEWBBACA_ALLELE_CALL.out.allele_calls
+        CHEWBBACA_ALLELE_CALL.out.results_alleles
     )
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
