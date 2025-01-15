@@ -31,7 +31,7 @@ Steps:
 1. Download and install nextflow
 
    1. Download and install with [conda](https://docs.conda.io/en/latest/miniconda.html)
-      - Conda command: `conda create on nextflow -c conda-forge -c bioconda nextflow`
+      - Conda command: `conda create -n nextflow -c conda-forge -c bioconda nextflow`
    2. Install with the instructions at https://www.nextflow.io/
 
 2. Determine which dependency management system works best for you
@@ -95,7 +95,7 @@ Where:
   - [Example file](./tests/test_data/input.csv)
 
 > [!NOTE]
-> The default `kraken2` standard database is hosted on AWS. In the event the connection is interrupted the pipeline will fail out. It is recommended to use/download a database from [the kraken2 database zone](https://benlangmead.github.io/aws-indexes/k2) and include `--kraken2 <PATH>` in the command above. The 8GB standard DB is the default.
+> The default `kraken2` standard database is hosted on AWS. In the event the connection is interrupted the pipeline will fail out. It is recommended to use/download a database from [the kraken2 database zone](https://benlangmead.github.io/aws-indexes/k2) and include `--kraken2_db <PATH>` in the command above. The 8GB standard DB is the default.
 
 ## Quick Outputs
 
