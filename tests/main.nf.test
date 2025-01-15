@@ -79,10 +79,32 @@ nextflow_pipeline {
         then {
             // Status
             assert workflow.success
-
-            // Channels and Files
-            assert path("$launchDir/results").exists()
             assert workflow.trace.failed().size() == 0
+
+            // Channels and Files Exist
+            //  Stub run so they are all blank so just make sure all output steps exist
+            assert path("$launchDir/results").exists()
+            assert path("$launchDir/results/overall.qc.csv").exists()
+
+            assert path("$launchDir/results/chewbbaca/allele_calls").exists()
+            assert path("$launchDir/results/chewbbaca/allele_calls/cgMLST").exists()
+
+            assert path("$launchDir/results/el_gato/el_gato_st.tsv").exists()
+            assert path("$launchDir/results/el_gato/el_gato_report.pdf").exists()
+            assert path("$launchDir/results/el_gato/allele_stats").exists()
+            assert path("$launchDir/results/el_gato/assembly").exists()
+            assert path("$launchDir/results/el_gato/plots").exists()
+            assert path("$launchDir/results/el_gato/reads").exists()
+
+            assert path("$launchDir/results/pipeline_info").exists()
+            assert path("$launchDir/results/pipeline_info/software_versions.yml").exists()
+            assert path("$launchDir/results/pipeline_info/manifest.json").exists()
+
+            assert path("$launchDir/results/fastqc").exists()
+            assert path("$launchDir/results/kraken_bracken").exists()
+            assert path("$launchDir/results/quast").exists()
+            assert path("$launchDir/results/spades").exists()
+            assert path("$launchDir/results/trimmomatic").exists()
         }
     }
 }
