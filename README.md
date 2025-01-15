@@ -173,7 +173,7 @@ The `qc_message` column contains the reason for the `qc_status` and includes:
 | low_exact_allele_calls | WARN              | Low chewBBACA exact allele calls (< 90%) indicate that there may be issues in the assembly, possibly affecting the cgMLST profile.                           |
 | low_qc_score           | WARN              | Low QUAST-Analyzer QC score (< 4) indicates that there may be issues in the assembly, possibly affecting the cgMLST profile.                                 |
 | no_lpn_detected        | FAIL              | Very low (< 10% default) _L.pneumophila_ abundance flags that the sample may not be _L.pneumophila_ and sample is removed from the remainder of the pipeline |
-| failing_read_count     | FAIL              | Post-trimming read count below failing threshold (< 60,000 reads default) has been shown to lead to poor, uninformative assemblies and sample is removed.   |
+| failing_read_count     | FAIL              | Post-trimming read count below failing threshold (< 60,000 reads default) has been shown to lead to poor, uninformative assemblies and sample is removed.    |
 
 ## Limitations
 
