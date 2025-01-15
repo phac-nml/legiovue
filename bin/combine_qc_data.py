@@ -69,7 +69,7 @@ def parse_args() -> argparse.ArgumentParser:
         '--min_reads',
         type=int,
         required=False,
-        default=150000,
+        default=60000,
         help="Minimum number of reads required to be passed through the pipeline"
     )
     parser.add_argument(
@@ -183,7 +183,7 @@ def main() -> None:
     if outdict['num_paired_trimmed_reads'] < args.min_reads and not failed:
         failed = True
         failed_reason = ['failing_read_count']
-    elif outdict['num_paired_trimmed_reads'] < 300000:
+    elif outdict['num_paired_trimmed_reads'] < 150000:
         warn_qual_criteria.append('low_read_count')
 
     # Quast

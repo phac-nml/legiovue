@@ -3,7 +3,7 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v0.2.0 - [2025-01-03]
+## v0.2.0 - [2025-01-15]
 
 ### `Added`
 
@@ -13,8 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - samplesheetToList
 - `params.input <CSV>` to allow input samplesheets
 - `iridanext` plugin
-  - The associated data will come out in 0.3.0
-- Most of the required nf-core files
+- `nf-prov` plugin
+- Required nf-core files
 - CI tests and linting
 
 ### `Changed`
@@ -24,6 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Logic for skipping specific modules
   - Allowed to skip el_gato ST
   - Allowed to skip el_gato allele plotting
+- All process publishDir now in the `modules.conf` file
+- Container for allele plotting
+- Adjusted default warn and fail parameters for quality module based on testing
+  - `min_reads` to 60,000 from 150,000
 
 ### `Updated`
 

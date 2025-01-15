@@ -155,7 +155,7 @@ Detailed instructions for clustering and visualization are provided [separately]
 
 **Quality Summary**
 
-LegioVue outputs a summary of quality metrics and warnings for each step of the workflow in the `overall.qc.tsv` file
+LegioVue outputs a summary of quality metrics and warnings for each step of the workflow in the `overall.qc.csv` file
 
 The final quality summary has two columns: `qc_status` and `qc_message` that can be used to quickly determine if a sample is good or may have an issue. The `qc_status` column will be any of the following statuses:
 
@@ -168,12 +168,12 @@ The `qc_message` column contains the reason for the `qc_status` and includes:
 | Message                | Associated Status | Flag Reason                                                                                                                                                  |
 | ---------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | low_lpn_abundance      | WARN              | Low (< 75%) _L. pneumophila_ abundance is not expected with isolate sequencing and may indicate contamination.                                               |
-| low_read_count         | WARN              | Low read count (< 300,000 reads default) has been shown to lead to poor, uninformative assemblies.                                                           |
+| low_read_count         | WARN              | Low read count (< 150,000 reads default) has been shown to lead to poor, uninformative assemblies.                                                           |
 | low_n50                | WARN              | Low N50 scores (< 100,000) have been shown to negatively affect clustering outputs by inflating observed allele differences.                                 |
 | low_exact_allele_calls | WARN              | Low chewBBACA exact allele calls (< 90%) indicate that there may be issues in the assembly, possibly affecting the cgMLST profile.                           |
 | low_qc_score           | WARN              | Low QUAST-Analyzer QC score (< 4) indicates that there may be issues in the assembly, possibly affecting the cgMLST profile.                                 |
 | no_lpn_detected        | FAIL              | Very low (< 10% default) _L.pneumophila_ abundance flags that the sample may not be _L.pneumophila_ and sample is removed from the remainder of the pipeline |
-| failing_read_count     | FAIL              | Post-trimming read count below failing threshold (< 150,000 reads default) has been shown to lead to poor, uninformative assemblies and sample is removed.   |
+| failing_read_count     | FAIL              | Post-trimming read count below failing threshold (< 60,000 reads default) has been shown to lead to poor, uninformative assemblies and sample is removed.   |
 
 ## Limitations
 
