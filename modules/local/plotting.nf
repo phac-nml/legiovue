@@ -1,12 +1,8 @@
-process PLOT_PYSAMSTATS_TSV {
+process PLOT_EL_GATO_ALLELES {
     tag "$meta.id"
     label 'process_low'
-    // As its just a plot output better to ignore errors for now
-    label 'error_ignore'
 
     conda "$projectDir/envs/plotting-env.yml"
-    // Custom built for this...
-    // container "docker://docker.io/darianhole/legio-plotting:0.1.0"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/mulled-v2-b2ec1fea5791d428eebb8c8ea7409c350d31dada:a447f6b7a6afde38352b24c30ae9cd6e39df95c4-1' :
         'biocontainers/mulled-v2-b2ec1fea5791d428eebb8c8ea7409c350d31dada:a447f6b7a6afde38352b24c30ae9cd6e39df95c4-1' }"

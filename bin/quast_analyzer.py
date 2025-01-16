@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Analyze quast transposed results TSV file
+Analyze QUAST transposed results TSV file
 according to provided specifications
 """
 import argparse
@@ -37,7 +37,7 @@ def init_parser() -> argparse.ArgumentParser:
     Returns:
         argparse.ArgumentParser: Parser
     """
-    parser = argparse.ArgumentParser(prog='quast_analyzer', description='Analyze quast results and output the comparison.')
+    parser = argparse.ArgumentParser(prog='quast_analyzer', description='Analyze QUAST results and output the comparison.')
     # Input/Output Options
     parser.add_argument(
         'input_file',
@@ -65,13 +65,25 @@ def init_parser() -> argparse.ArgumentParser:
         '--max_contigs',
         type=int,
         default=100,
-        help='Threshold for the number of contigs > 500bp assembled by SPAdes'
+        help='Threshold for the number of contigs > 500bp assembled by SPAdes to get scoring points'
     )
     parser.add_argument(
         '--min_align_percent',
         type=int,
         default=75,
-        help='Thresold for minimum quast genome fraction percentage'
+        help='Thresold for minimum QUAST genome fraction percentage to get scoring points'
+    )
+    parser.add_argument(
+        '--min_n50_score',
+        type=int,
+        default=80000,
+        help='Thresold for minimum QUAST N50 value to obtain scoring points'
+    )
+    parser.add_argument(
+        '--max_n50_score',
+        type=int,
+        default=220000,
+        help='Thresold for maximum QUAST N50 score to get max scoring points'
     )
 
     # Version #
@@ -111,13 +123,11 @@ def parse_sample_line(sample_line: str, headers: list) -> dict:
     return dict(zip(headers, fields))
 
 
-def calculate_score(metric: int, bottom=80000, top=220000):
-    """Calculate variable score based on a bottom and top range determined from testing
+def calculate_n50_score(metric: int, bottom: int, top: int) -> float:
+    """Calculate N50 variable score based on a bottom and top range determined from testing
 
     Args:
         metric (int): Metric to score
-        bottom (int, optional): Bottom of the score range. Defaults to 100000.
-        top (int, optional): Top of the score range. Defaults to 300000.
 
     Returns:
         float: 2-digit calculated score between 0-1
@@ -131,7 +141,10 @@ def calculate_score(metric: int, bottom=80000, top=220000):
     return round((metric - bottom) / (top - bottom), 2)
 
 
-def analyze_sample(sample: dict, max_contigs: int, min_align_percent: int) -> dict:
+def analyze_sample(
+    sample: dict, max_contigs: int, min_align_percent: int,
+    min_n50_score: int, max_n50_score: int
+) -> dict:
     """Extract and values from the sample dictionary
 
     Args:
@@ -166,7 +179,7 @@ def analyze_sample(sample: dict, max_contigs: int, min_align_percent: int) -> di
         num_contigs_score = 1
 
     # Evaluate "N50"
-    n50_score = calculate_score(n50)
+    n50_score = calculate_n50_score(n50, min_n50_score, max_n50_score)
     score += n50_score
 
     # Evaluate "Duplication ratio"
@@ -261,7 +274,10 @@ def main() -> None:
             sample_data = parse_sample_line(line.strip(), headers)
 
             # Analyze the sample and append the result
-            result = analyze_sample(sample_data, args.max_contigs, args.min_align_percent)
+            result = analyze_sample(
+                sample_data, args.max_contigs, args.min_align_percent,
+                args.min_n50_score, args.max_n50_score
+            )
             if result:
                 results_list.append(result)
 

@@ -12,6 +12,7 @@ nextflow_pipeline {
                 input = "$baseDir/tests/test_data/input_none.csv"
                 fastq_dir = "$baseDir/tests/test_data/"
                 outdir = "results"
+                kraken2_db = "s3://genome-idx/kraken/standard_08gb_20240904"
             }
         }
         then {
@@ -30,6 +31,7 @@ nextflow_pipeline {
         when {
             params {
                 outdir = "results"
+                kraken2_db = "s3://genome-idx/kraken/standard_08gb_20240904"
             }
         }
         then {
@@ -47,8 +49,9 @@ nextflow_pipeline {
 
         when {
             params {
-                input = "$baseDir/tests/test_data/input.csv"
+                input = "$baseDir/tests/test_data/input_none.csv"
                 outdir = "results"
+                kraken2_db = "s3://genome-idx/kraken/standard_08gb_20240904"
                 min_reads = 100
             }
         }
@@ -64,11 +67,11 @@ nextflow_pipeline {
     //--- Test 4
     test("Stub Run Test") {
         tag "success"
-        options "-stub-run"
 
         when {
             params {
-                fastq_dir = "$baseDir/tests/test_data/"
+                fastq_dir = "${projectDir}/tests/test_data/"
+                kraken2_db = "s3://genome-idx/kraken/standard_08gb_20240904"
                 outdir = "results"
                 min_reads = 0
                 max_memory = "8.GB"

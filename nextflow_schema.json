@@ -1,6 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://raw.githubusercontent.com/phac-nml/LegioVue/master/nextflow_schema.json",
+    "$id": "https://raw.githubusercontent.com/phac-nml/legiovue/main/nextflow_schema.json",
     "title": "phac-nml/LegioVue pipeline parameters",
     "description": "Legionella pneumophila WGS analysis",
     "type": "object",
@@ -26,7 +26,8 @@
                     "type": "string",
                     "fa_icon": "fas fa-folder-open",
                     "description": "Path to directory containing paired (_R1/_R2) gzipped fastq files",
-                    "format": "directory-path"
+                    "format": "directory-path",
+                    "hidden": true
                 }
             }
         },
@@ -38,21 +39,22 @@
             "properties": {
                 "kraken2_db": {
                     "type": "string",
-                    "default": "s3://genome-idx/kraken/standard_08gb_20240904",
+                    "exists": true,
+                    "format": "directory-path",
                     "fa_icon": "fas fa-server",
-                    "description": "Kraken2 database to use for abundance checks"
+                    "description": "Path to kraken2 database to use for abundance checks"
                 },
                 "min_abundance_percent": {
                     "type": "number",
                     "default": 10,
                     "description": "Minimum L.pn abundance to keep sample in pipeline",
                     "fa_icon": "fas fa-percentage",
-                    "minimum": 1,
-                    "maximum": 99
+                    "minimum": 0,
+                    "maximum": 100
                 },
                 "min_reads": {
                     "type": "integer",
-                    "default": 150000,
+                    "default": 60000,
                     "description": "Minimum number of paired reads to keep sample in pipeline",
                     "minimum": 0
                 }
@@ -60,14 +62,14 @@
             "fa_icon": "fas fa-filter"
         },
         "skipping_options": {
-            "title": "Skipping options",
+            "title": "Step skipping options",
             "type": "object",
-            "description": "Processes that can be skipped through parameters",
+            "description": "Processes that can be skipped through specifying the following parameters",
             "default": "",
             "properties": {
                 "skip_el_gato": {
                     "type": "boolean",
-                    "description": "Skip running all el_gato Sequence Typing aspects",
+                    "description": "Skip running all el_gato sequence typing aspects",
                     "fa_icon": "fas fa-forward"
                 },
                 "skip_plotting": {
@@ -78,10 +80,10 @@
             },
             "fa_icon": "fas fa-forward"
         },
-        "quast_options": {
-            "title": "Quast options",
+        "quast_and_quality_options": {
+            "title": "QUAST and Quality options",
             "type": "object",
-            "description": "Options for quast",
+            "description": "Options for adjusting running QUAST",
             "default": "",
             "properties": {
                 "quast_ref": {
@@ -89,25 +91,61 @@
                     "default": "data/C9_S.reference.fna",
                     "format": "file-path",
                     "fa_icon": "fas fa-file-alt",
-                    "description": "Path to reference fasta file to base quast metrics off of"
+                    "description": "Path to reference fasta file to base QUAST alignment metrics off of",
+                    "hidden": true
+                },
+                "max_contigs": {
+                    "type": "integer",
+                    "default": 100,
+                    "description": "Threshold for the number of contigs > 500bp assembled by SPAdes to get scoring points",
+                    "minimum": 0
+                },
+                "min_align_percent": {
+                    "type": "number",
+                    "default": 75,
+                    "description": "Thresold for minimum QUAST genome fraction percentage to get scoring points",
+                    "fa_icon": "fas fa-percentage",
+                    "minimum": 0,
+                    "maximum": 100
+                },
+                "min_reads_warn": {
+                    "type": "integer",
+                    "default": 150000,
+                    "description": "Threshold for minimum number of reads that will be given a QC warning",
+                    "minimum": 0
+                },
+                "min_n50_score": {
+                    "type": "integer",
+                    "default": 80000,
+                    "description": "Thresold for minimum QUAST N50 value to obtain scoring points",
+                    "minimum": 0
+                },
+                "max_n50_score": {
+                    "type": "integer",
+                    "default": 220000,
+                    "description": "Thresold for maximum QUAST N50 score to get max scoring points",
+                    "minimum": 0
                 }
             }
         },
         "chewbbaca_options": {
-            "title": "Chewbbaca options",
+            "title": "ChewBBACA options",
             "type": "object",
-            "description": "Options to specify the chewbbaca schema to use",
+            "description": "Specifies the input for the chewBBACA schema to utilize for cgMLST",
             "default": "",
             "properties": {
                 "schema_targets": {
                     "type": "string",
-                    "description": "Schema targets"
+                    "description": "ChewBBACA schema targets directory",
+                    "format": "directory-path",
+                    "hidden": true
                 },
                 "prepped_schema": {
                     "type": "string",
                     "default": "data/SeqSphere_1521_schema",
-                    "description": "Chewbbaca prepped schema",
-                    "format": "directory-path"
+                    "description": "ChewBBACA prepped schema directory",
+                    "format": "directory-path",
+                    "hidden": true
                 }
             },
             "fa_icon": "fab fa-cc-diners-club"
@@ -139,19 +177,22 @@
                     "type": "string",
                     "default": "128.GB",
                     "fa_icon": "fas fa-database",
-                    "description": "Maximum memory to allow for a process to assign"
+                    "description": "Maximum memory to allow for a process to assign",
+                    "hidden": true
                 },
                 "max_cpus": {
                     "type": "integer",
                     "default": 16,
                     "fa_icon": "fas fa-microchip",
-                    "description": "Maximum CPUs to allow for a process to assign"
+                    "description": "Maximum CPUs to allow for a process to assign",
+                    "hidden": true
                 },
                 "max_time": {
                     "type": "string",
                     "default": "240.h",
                     "fa_icon": "fas fa-clock",
-                    "description": "Maximum time to allow for a process to assign"
+                    "description": "Maximum time to allow for a process to assign",
+                    "hidden": true
                 },
                 "help": {
                     "type": "boolean",
@@ -180,7 +221,7 @@
             "$ref": "#/$defs/skipping_options"
         },
         {
-            "$ref": "#/$defs/quast_options"
+            "$ref": "#/$defs/quast_and_quality_options"
         },
         {
             "$ref": "#/$defs/chewbbaca_options"

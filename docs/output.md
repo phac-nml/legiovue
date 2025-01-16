@@ -26,7 +26,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes d
 - [cgMLST and Clustering](#cgmlst-and-clustering)
   - [chewBBACA](#chewbbaca) - cgMLST results
 - [Final Quality Control](#final-quality-control)
-  - [QUAST Scoring Script](#quast-scoring-script) - Simple assembly score of quast output based on established criteria
+  - [QUAST Scoring Script](#quast-scoring-script) - Simple assembly score of QUAST output based on established criteria
   - [Final QC Checks](#final-qc-checks) - Summary of pipeline QC metrics
 
 Additionally [Pipeline information](#pipeline-information) which includes report metrics generated during the workflow execution can also be found
@@ -230,7 +230,7 @@ Finally summary scoring and metrics
 - `scored_quast_report.csv`: Scored quast report based on determined thresholds
 </details>
 
-Scored quast report based on adapted thresholds from [Gorzynski et al.](<10.1016/S2666-5247(22)00231-2>) to determine if the sample has any metrics that significantly deviate from the expected results
+Scored QUAST report based on adapted thresholds from [Gorzynski et al.](<10.1016/S2666-5247(22)00231-2>) to determine if the sample has any metrics that significantly deviate from the expected results
 
 #### Final QC Checks
 
@@ -249,14 +249,14 @@ The `qc_status` column will be any of the following statuses:
 
 The `qc_message` column contains the reason for the `qc_status` and includes:
 
-| Message                | Associated Status | Flag Reason                                                                                                                                    |
-| ---------------------- | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| low_lpn_abundance      | WARN              | Low (< 75% abundance) _L.pneumophila_ abundance is not expected with isolate sequencing and may signify a problem sample                       |
-| low_read_count         | WARN              | Low read count (< 300,000 reads default) has been shown to lead to poor, uninformative assemblies and sample is kicked out                     |
-| low_n50                | WARN              | Low N50 (< 100,000) scores have been shown to very negatively affect clustering outputs                                                        |
-| low_exact_allele_calls | WARN              | Low chewBBACA exact allele calls (< 90% called) show that there may be issues in the assembly                                                  |
-| low_qc_score           | WARN              | Low QUAST-Analyzer QC score (< 4) shows that there may be issues in the assembly                                                               |
-| no_lpn_detected        | FAIL              | Very little (< 10% default) _L.pneumophila_ abundance flags that the sample may not be _L.pneumophila_ and sample is kicked from pipeline      |
-| failing_read_count     | FAIL              | Read count below failing threshold (< 150,000 reads default) has been shown to lead to poor, uninformative assemblies and sample is kicked out |
+| Message                | Associated Status | Flag Reason                                                                                                                                   |
+| ---------------------- | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| low_lpn_abundance      | WARN              | Low (< 75% abundance) _L.pneumophila_ abundance is not expected with isolate sequencing and may signify a problem sample                      |
+| low_read_count         | WARN              | Low read count (< 150,000 reads default) has been shown to lead to poor, uninformative assemblies and sample is kicked out                    |
+| low_n50                | WARN              | Low N50 (< 80,000) scores have been shown to very negatively affect clustering outputs                                                        |
+| low_exact_allele_calls | WARN              | Low chewBBACA exact allele calls (< 90% called) show that there may be issues in the assembly                                                 |
+| low_qc_score           | WARN              | Low QUAST-Analyzer QC score (< 4) shows that there may be issues in the assembly                                                              |
+| no_lpn_detected        | FAIL              | Very little (< 10% default) _L.pneumophila_ abundance flags that the sample may not be _L.pneumophila_ and sample is kicked from pipeline     |
+| failing_read_count     | FAIL              | Read count below failing threshold (< 60,000 reads default) has been shown to lead to poor, uninformative assemblies and sample is kicked out |
 
 ---

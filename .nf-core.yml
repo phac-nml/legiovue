@@ -9,6 +9,8 @@ lint:
     - .github/ISSUE_TEMPLATE/bug_report.yml
     - .github/ISSUE_TEMPLATE/config.yml
     - .github/ISSUE_TEMPLATE/feature_request.yml
+    - .github/workflows/branch.yml
+    - .github/workflows/linting.yml
     - .github/workflows/awstest.yml
     - .github/workflows/awsfulltest.yml
     - assets/email_template.html

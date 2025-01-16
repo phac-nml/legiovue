@@ -21,7 +21,7 @@ include { CHEWBBACA_EXTRACT_CGMLST          } from '../modules/local/chewbbaca.n
 include { PYSAMSTATS as PYSAMSTATS_MAPQ     } from '../modules/local/pysamstats.nf'
 include { PYSAMSTATS as PYSAMSTATS_BASEQ    } from '../modules/local/pysamstats.nf'
 include { CSVTK_COMBINE_STATS               } from '../modules/local/utils.nf'
-include { PLOT_PYSAMSTATS_TSV               } from '../modules/local/plotting.nf'
+include { PLOT_EL_GATO_ALLELES              } from '../modules/local/plotting.nf'
 include { COMBINE_SAMPLE_DATA               } from '../modules/local/qc.nf'
 include { CSVTK_COMBINE                     } from '../modules/local/utils.nf'
 include { CUSTOM_DUMPSOFTWAREVERSIONS       } from '../modules/nf-core/custom/dumpsoftwareversions/main'
@@ -208,10 +208,10 @@ workflow LEGIOVUE {
             )
             ch_versions = ch_versions.mix(CSVTK_COMBINE_STATS.out.versions)
 
-            PLOT_PYSAMSTATS_TSV(
+            PLOT_EL_GATO_ALLELES(
                 CSVTK_COMBINE_STATS.out.tsv
             )
-            ch_versions = ch_versions.mix(PLOT_PYSAMSTATS_TSV.out.versions)
+            ch_versions = ch_versions.mix(PLOT_EL_GATO_ALLELES.out.versions)
         }
     }
 
@@ -269,20 +269,7 @@ workflow LEGIOVUE {
     ch_versions = ch_versions.mix(CSVTK_COMBINE.out.versions)
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
-    // 9. Clustering (TO-DO when environments available)
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
-    // chewbacca -> reportree -> manual vis (right now)
-    // As reportree isn't easy to get installed in pipeline
-    //  Its current container is missing PS which nextflow needs
-
-    // ReporTree container and conda env are not going to play nice
-    // REPORTREE(
-    //     CHEWBBACA_EXTRACT_CGMLST.out.cgmlst,
-    //     ch_metadata
-    // )
-
-    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
-    // 10. Version Output
+    // 9. Version Output
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')

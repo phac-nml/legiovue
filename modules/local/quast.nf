@@ -71,6 +71,10 @@ process SCORE_QUAST {
     script:
     """
     quast_analyzer.py \\
+        --max_contigs ${params.max_contigs} \\
+        --min_align_percent ${params.min_align_percent} \\
+        --min_n50_score ${params.min_n50_score} \\
+        --max_n50_score ${params.max_n50_score} \\
         $transposed_report \\
         --outfile scored_quast_report.csv
 

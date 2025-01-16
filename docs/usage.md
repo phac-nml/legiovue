@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This pipeline is intended to be run on _Legionella pneumophila_ paired illumina isolate sequencing data. It generates _de novo_ assemblies using [`SPAdes`](https://github.com/ablab/spades), ST types using [`el_gato`](https://github.com/appliedbinf/el_gato), cgMLST calls with [`chewbbaca`](https://chewbbaca.readthedocs.io/en/latest/index.html), and a summary QC report. The outputs of the pipeline can be used for other downstream applications. All parameters have been determined based on outbreak dataset testing.
+This pipeline is intended to be run on _Legionella pneumophila_ paired illumina isolate sequencing data. It generates _de novo_ assemblies using [`SPAdes`](https://github.com/ablab/spades), sequence types (ST) using [`el_gato`](https://github.com/appliedbinf/el_gato), cgMLST calls with [`chewBBACA`](https://chewbbaca.readthedocs.io/en/latest/index.html), and a summary QC report. The outputs of the pipeline can be used for other downstream applications. All parameters have been determined based on outbreak dataset testing.
 
 ## Index
 
@@ -32,13 +32,11 @@ Available:
 - `singularity`: Utilize singularity for dependencies and environment management
 - `docker`: Utilize docker to for dependencies and environment management
 
-> [!NOTE] > `el_gato` and the plotting currently are using custom docker containers. The `el_gato` container will be returned to the proper one upon a new release of the tool
-
 For testing the pipeline functions correctly, you can use the `test` or `test_full` profile
 
 ## Running the Pipeline
 
-To just get started and run the pipeline, one of the following basic commands is all that is required to do so. The only difference between the two being in how the input fastq data is specified/found:
+To get started, one of the following commands may be used to run the pipeline:
 
 Directory Input:
 
@@ -60,7 +58,7 @@ nextflow run phac-nml/legiovue \
 
 ### `--fastq_dir`
 
-Get fastq sample data into the pipeline by specifying a directory where the files are found. Fastqs must be formatted as `<NAME>_{R1,R2}\*.fastq\*` so that they can be paired based on the name. Note that at the moment everything before the first `_R1/_R2` is kept as the sample name.
+Specify a directory to where paired FASTQ-formatted files are found. FASTQs must be formatted as `<NAME>_{R1,R2}\*.fastq\*` so that they can be paired up correctly based on the file name. Note that at the moment everything before the first `_R1/_R2` is kept as the sample name.
 
 Example directory with 3 samples:
 
@@ -76,7 +74,9 @@ Example directory with 3 samples:
 
 ### `--input`
 
-Get fastq sample data into the pipeline by creating a samplesheet CSV file with the header line `sample,fastq_1,fastq_2`. The outputs are named based on the given sample name and the data is input based on the path specified under `fastq_1` and `fastq_2`. The fastq files can end with `.fq`, `.fq.gz`, `.fastq`, or `.fastq.gz` to be valid
+Specify a CSV samplesheet containing information about each sample including the sample name and the FASTQ-formatted reads associated with the sample.
+
+The outputs are named based on the given sample name and the FASTQ data is input based on the path specified under `fastq_1` and `fastq_2`. The input FASTQ files can end with `.fq`, `.fq.gz`, `.fastq`, or `.fastq.gz` to be valid inputs.
 
 Example:
 | sample | fastq_1 | fastq_2 |
@@ -103,21 +103,26 @@ It is required to pick one of the following to get fastq data into the pipeline
 
 ### Optional
 
-| Parameter               | Description                                                                     | Type  | Default                                       | Notes                                                                                      |
-| ----------------------- | ------------------------------------------------------------------------------- | ----- | --------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| --outdir                | Directory name to output results to                                             | Str   | 'results'                                     |                                                                                            |
-| --min_abundance_percent | Minimum _L. pneumophila_ abundance required after bracken to continue sample on | Float | 10.0                                          | Very permissive for now                                                                    |
-| --min_reads             | Minimum reads required after trimmomatic to continue sample on                  | Int   | 60,000                                        | Under 150,000 reads samples don't usually provide enough info for proper clustering / STs  |
-| --kraken2_db            | Path to standard `kraken2` database for detecting _L. pneumophila_ reads        | Path  | s3://genome-idx/kraken/standard_08gb_20240904 | Default is AWS hosted database by developers. It is better to use your own if you have one |
-| --quast_ref             | Path to reference sequence for some of the `quast` metrics                      | Path  | data/C9_S.reference.fna                       | C9 was picked as a default reference but any good sequence will work                       |
-| skip_el_gato            | Flag to skip running el_gato sequence typing                                    | Bool  | False                                         |                                                                                            |
-| skip_plotting           | Flag to skip running the el_gato allele plotting                                | Bool  | False                                         |                                                                                            |
-| --prepped_schema        | Path to a prepped `chewbbaca` schema to save running the prep command           | Path  | data/SeqSphere_1521_schema                    | Provided with pipeline                                                                     |
-| --schema_targets        | Path to schema targets to prep for `chewbbaca`                                  | Path  | null                                          |                                                                                            |
-| --publish_dir_mode      | Specifies how intermediate files should be saved to the output directory        | Str   | copy                                          |                                                                                            |
-| --max_memory            | Maximum memory allowed to be given to a job                                     | Str   | 128.GB                                        |                                                                                            |
-| --max_cpus              | Maximum cpus allowed to be given to a job                                       | Int   | 16                                            |                                                                                            |
-| --max_time              | Maximum time allowed to be given to a job                                       | Str   | 240.h'                                        |                                                                                            |
+| Parameter               | Description                                                                           | Type   | Default                    | Notes                                                                                                                  |
+| ----------------------- | ------------------------------------------------------------------------------------- | ------ | -------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| --outdir                | Directory name to output results to                                                   | Str    | 'results'                  |                                                                                                                        |
+| --min_abundance_percent | Minimum _L. pneumophila_ abundance required after bracken to continue sample on       | Float  | 10.0                       | Very permissive for now                                                                                                |
+| --min_reads             | Minimum reads required after trimmomatic to continue sample on                        | Int    | 60,000                     | Under 150,000 reads samples don't usually provide enough info for proper clustering / STs                              |
+| --kraken2_db            | Path to standard `kraken2` database for detecting _L. pneumophila_ reads              | Path   |                            | You will need to get your own database. The 8GB database from s3://genome-idx/kraken/standard_08gb_20240904 works well |
+| --quast_ref             | Path to reference sequence for some of the `QUAST` metrics                            | Path   | data/C9_S.reference.fna    | C9 was picked as a default reference but any good sequence will work                                                   |
+| --max_contigs           | Threshold for the number of contigs > 500bp assembled by SPAdes to get scoring points | 100    | Int                        |                                                                                                                        |
+| --min_align_percent     | Thresold for minimum QUAST genome fraction percentage to get scoring points           | 75     | Float                      |                                                                                                                        |
+| --min_reads_warn        | Threshold for minimum number of reads that will be given a QC warning                 | 150000 | Int                        |                                                                                                                        |
+| --min_n50_score         | Thresold for minimum QUAST N50 value to obtain scoring points                         | 80000  | Int                        |                                                                                                                        |
+| --max_n50_score         | Thresold for maximum QUAST N50 score to get max scoring points                        | 220000 | Int                        |                                                                                                                        |
+| skip_el_gato            | Flag to skip running el_gato sequence typing                                          | Bool   | False                      |                                                                                                                        |
+| skip_plotting           | Flag to skip running the el_gato allele plotting                                      | Bool   | False                      |                                                                                                                        |
+| --prepped_schema        | Path to a prepped `chewBBACA` schema to save running the prep command                 | Path   | data/SeqSphere_1521_schema | Provided with pipeline                                                                                                 |
+| --schema_targets        | Path to schema targets to prep for `chewBBACA`                                        | Path   | null                       |                                                                                                                        |
+| --publish_dir_mode      | Specifies how intermediate files should be saved to the output directory              | Str    | copy                       |                                                                                                                        |
+| --max_memory            | Maximum memory allowed to be given to a job                                           | Str    | 128.GB                     |                                                                                                                        |
+| --max_cpus              | Maximum cpus allowed to be given to a job                                             | Int    | 16                         |                                                                                                                        |
+| --max_time              | Maximum time allowed to be given to a job                                             | Str    | 240.h'                     |                                                                                                                        |
 
 ## Core Nextflow Arguments
 

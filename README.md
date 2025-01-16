@@ -1,12 +1,12 @@
-# legiovue
+# LegioVue
 
 LegioVue is a nextflow pipeline for whole-genome analysis of _Legionella pneumophila_. It performs _in silico_ sequence typing, genome assembly, and core-genome analysis. It also provides detailed information about the quality of _L. pneumophila_ genomes. The name is an homage to the Bellevue-Stratford hotel, site of the first known outbreak of Legionnaire's Disease.
 
-This project serves as a repository for tools, notes, and informtation regarding the LegioVue pipeline. This project is a GRDI funded research project surrounding the **assessment and implementation of a whole genome sequencing scheme for rapid resolution of _Legionella pneumophila_ outbreaks within Canada to better protect vulnerable populations**. The goal is to generate and nationally deploy a standardized pipeline that will shift _L. pneumophila_ analysis from conventional sequence based typing to whole genome sequence-based typing and clustering, for rapid detection and response to Legionnaires' Disease outbreaks in Canada.
+This project serves as a repository for the LegioVue analysis pipeline along with validation notes, and information on it. This project is a GRDI-funded research project surrounding the **assessment and implementation of a whole genome sequencing scheme for rapid resolution of _Legionella pneumophila_ outbreaks within Canada to better protect vulnerable populations**. The goal is to generate and nationally deploy a standardized pipeline that will shift _L. pneumophila_ analysis from conventional sequence based typing to whole genome sequence-based typing and clustering, for rapid detection and response to Legionnaires' Disease outbreaks in Canada.
 
 ## Big Picture Overview
 
-**LegioVue** contains a combination of tools that are used to do _de novo_ assembly, sequence typing, cgMLST, and quality control for all input samples with the end goal in having the available data to confirm cluster outbreaks. Currently, clustering is not included in the pipeline but its addition is to come soon. With this, there are additional available steps on how to use all of the outputs to do cluster analysis.
+**LegioVue** contains a combination of tools that are used to do _de novo_ assembly, sequence typing, cgMLST, and quality control for all input samples with the end goal in having the available data to confirm cluster outbreaks. Currently, clustering is not included in the pipeline but its addition is to come soon. However, we include additional instructions on how to perform cluster analysis on generated outputs.
 
 ## ![LegioVue-WGS-Workflow.png](LegioVue-WGS-Workflow.png)
 
@@ -50,7 +50,7 @@ By default, the `kraken2` and `SPAdes` steps have a minimum resource usage alloc
 
 This can be adjusted (along with the other labels) by creating and passing a [custom configuration file](https://nf-co.re/docs/usage/getting_started/configuration) with `-c <config>` or by adjusting the `--max_cpus` and `--max_memory` parameters. More info can be found in the [usage doc](./docs/usage.md)
 
-The default `kraken2` database links to the 8Gb standard database on the AWS Index server so the required memory can be lowered a decent bit (16Gb) with minimal impact if resources are a limiting factor.
+The recommended `kraken2` database is the 8Gb standard database that can be found on the [AWS Index server](s3://genome-idx/kraken/standard_08gb_20240904) or the [the kraken2 database zone](https://benlangmead.github.io/aws-indexes/k2) so the required memory can be lowered a decent bit (16Gb) with minimal impact if resources are a limiting factor.
 
 ## Quick Usage
 
@@ -64,6 +64,7 @@ Directory Input:
 nextflow run phac-nml/legiovue \
     -profile <PROFILE> \
     --fastq_dir </PATH/TO/PAIRED_FASTQS> \
+    --kraken2_db </PATH/TO/KRAKEN2_DB> \
     [Optional Args]
 ```
 
@@ -74,6 +75,7 @@ Where:
 - `--fastq_dir </PATH/TO/PAIRED_FASTQS>`: Path to directory containing paired Illumina `_R1` and `_R2` fastq files
   - Fastqs must be formatted as `<NAME>_{R1,R2}\*.fastq\*`
   - At the moment everything before the first `_R1/_R2` is kept as the sample name
+- `--kraken2_db </PATH/TO/KRAKEN2_DB>`: Path to a kraken2 database
 
 Samplesheet CSV Input:
 
@@ -81,6 +83,7 @@ Samplesheet CSV Input:
 nextflow run phac-nml/legiovue \
     -profile <PROFILE> \
     --input </PATH/TO/INPUT.csv> \
+    --kraken2_db </PATH/TO/KRAKEN2_DB> \
     [Optional Args]
 ```
 
@@ -93,9 +96,10 @@ Where:
   - `fastq_1,fastq_2` is the path to both the fastq reads
     - Note that paired end sequencing is required at this time!
   - [Example file](./tests/test_data/input.csv)
+- `--kraken2_db </PATH/TO/KRAKEN2_DB>`: Path to a kraken2 database
 
 > [!NOTE]
-> The default `kraken2` standard database is hosted on AWS. In the event the connection is interrupted the pipeline will fail out. It is recommended to use/download a database from [the kraken2 database zone](https://benlangmead.github.io/aws-indexes/k2) and include `--kraken2_db <PATH>` in the command above. The 8GB standard DB is the default.
+> The recommended 8GB `kraken2` standard database can be found on the [AWS Index server](s3://genome-idx/kraken/standard_08gb_20240904) or the [the kraken2 database zone](https://benlangmead.github.io/aws-indexes/k2). Download this before running the pipeline!
 
 ## Quick Outputs
 
