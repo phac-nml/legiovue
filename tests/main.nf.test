@@ -9,8 +9,8 @@ nextflow_pipeline {
 
         when {
             params {
-                input = "$baseDir/tests/test_data/input_none.csv"
-                fastq_dir = "$baseDir/tests/test_data/"
+                input = "${projectDir}/assets/samplesheet.csv"
+                fastq_dir = "${baseDir}/tests/test_data/"
                 outdir = "results"
                 kraken2_db = "s3://genome-idx/kraken/standard_08gb_20240904"
             }
@@ -65,7 +65,7 @@ nextflow_pipeline {
     }
 
     //--- Test 4
-    test("Stub Run Test") {
+    test("Data Run Test") {
         tag "success"
 
         when {
@@ -73,7 +73,7 @@ nextflow_pipeline {
                 fastq_dir = "${projectDir}/tests/test_data/"
                 kraken2_db = "s3://genome-idx/kraken/standard_08gb_20240904"
                 outdir = "results"
-                min_reads = 0
+                min_reads = 100
                 max_memory = "8.GB"
                 max_cpus = 2
                 max_time = "1.h"
@@ -82,7 +82,8 @@ nextflow_pipeline {
         then {
             // Status
             assert workflow.success
-            assert workflow.trace.failed().size() == 0
+            // One fail which is from el_gato assemblies on low data
+            assert workflow.trace.failed().size() == 1
 
             // Channels and Files Exist
             //  Stub run so they are all blank so just make sure all output steps exist
@@ -95,7 +96,6 @@ nextflow_pipeline {
             assert path("$launchDir/results/el_gato/el_gato_st.tsv").exists()
             assert path("$launchDir/results/el_gato/el_gato_report.pdf").exists()
             assert path("$launchDir/results/el_gato/allele_stats").exists()
-            assert path("$launchDir/results/el_gato/assembly").exists()
             assert path("$launchDir/results/el_gato/plots").exists()
             assert path("$launchDir/results/el_gato/reads").exists()
 

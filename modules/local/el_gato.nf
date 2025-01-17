@@ -70,12 +70,12 @@ process EL_GATO_READS {
     """
 }
 
-// TODO: Combine to one function at some point as
-//  maintaining 2 is a pain
 process EL_GATO_ASSEMBLY {
     tag "$meta.id"
     label 'process_low'
-    label 'error_ignore' // Non-legion samples explode here otherwise
+    // Non-legionella or really low cov assemblies explode here otherwise
+    //  Due to an issue in el_gato with samples that can't find any loci
+    label 'error_ignore'
 
     conda "bioconda::el_gato=1.20.2"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
