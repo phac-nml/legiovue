@@ -43,7 +43,7 @@ process CREATE_ABUNDANCE_FILTER {
     """
 }
 
-process CSVTK_COMBINE_STATS {
+process CSVTK_JOIN_ALLELE_STATS {
     tag "$meta.id"
     label 'process_single'
 
@@ -89,7 +89,7 @@ process CSVTK_COMBINE_STATS {
     """
 }
 
-process CSVTK_COMBINE{
+process CSVTK_CONCAT_QC_DATA {
     label 'process_single'
 
     conda "bioconda::csvtk=0.30.0"

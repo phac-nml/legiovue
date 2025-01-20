@@ -59,6 +59,7 @@
                     "minimum": 0
                 }
             },
+            "required": ["kraken2_db"],
             "fa_icon": "fas fa-filter"
         },
         "skipping_options": {

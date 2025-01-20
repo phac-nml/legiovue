@@ -2,11 +2,11 @@
 
 LegioVue is a nextflow pipeline for whole-genome analysis of _Legionella pneumophila_. It performs _in silico_ sequence typing, genome assembly, and core-genome analysis. It also provides detailed information about the quality of _L. pneumophila_ genomes. The name is an homage to the Bellevue-Stratford hotel, site of the first known outbreak of Legionnaire's Disease.
 
-This project serves as a repository for the LegioVue analysis pipeline along with validation notes, and information on it. This project is a GRDI-funded research project surrounding the **assessment and implementation of a whole genome sequencing scheme for rapid resolution of _Legionella pneumophila_ outbreaks within Canada to better protect vulnerable populations**. The goal is to generate and nationally deploy a standardized pipeline that will shift _L. pneumophila_ analysis from conventional sequence based typing to whole genome sequence-based typing and clustering, for rapid detection and response to Legionnaires' Disease outbreaks in Canada.
+This project serves as a repository for the LegioVue analysis pipeline along with validation notes and information on follow-up data analysis steps like clustering. This project is a GRDI-funded research project surrounding the **assessment and implementation of a whole genome sequencing scheme for rapid resolution of _Legionella pneumophila_ outbreaks within Canada to better protect vulnerable populations**. The goal is to generate and nationally deploy a standardized pipeline that will shift _L. pneumophila_ analysis from conventional sequence based typing to whole genome sequence-based typing and clustering, for rapid detection and response to Legionnaires' Disease outbreaks in Canada.
 
 ## Big Picture Overview
 
-**LegioVue** contains a combination of tools that are used to do _de novo_ assembly, sequence typing, cgMLST, and quality control for all input samples with the end goal in having the available data to confirm cluster outbreaks. Currently, clustering is not included in the pipeline but its addition is to come soon. However, we include additional instructions on how to perform cluster analysis on generated outputs.
+**LegioVue** contains a combination of tools that are used to do _de novo_ assembly, sequence typing, cgMLST, and quality control for all input samples with the end goal in having analyzed and formatted data to confirm cluster outbreaks. Currently, clustering is not included in the pipeline but its addition is to come soon. However, we include [additional instructions](./docs/clustering.md) on how to perform cluster analysis on generated outputs.
 
 ## ![LegioVue-WGS-Workflow.png](LegioVue-WGS-Workflow.png)
 

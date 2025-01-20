@@ -20,10 +20,10 @@ include { CHEWBBACA_ALLELE_CALL             } from '../modules/local/chewbbaca.n
 include { CHEWBBACA_EXTRACT_CGMLST          } from '../modules/local/chewbbaca.nf'
 include { PYSAMSTATS as PYSAMSTATS_MAPQ     } from '../modules/local/pysamstats.nf'
 include { PYSAMSTATS as PYSAMSTATS_BASEQ    } from '../modules/local/pysamstats.nf'
-include { CSVTK_COMBINE_STATS               } from '../modules/local/utils.nf'
+include { CSVTK_JOIN_ALLELE_STATS               } from '../modules/local/utils.nf'
 include { PLOT_EL_GATO_ALLELES              } from '../modules/local/plotting.nf'
 include { COMBINE_SAMPLE_DATA               } from '../modules/local/qc.nf'
-include { CSVTK_COMBINE                     } from '../modules/local/utils.nf'
+include { CSVTK_CONCAT_QC_DATA                     } from '../modules/local/utils.nf'
 include { CUSTOM_DUMPSOFTWAREVERSIONS       } from '../modules/nf-core/custom/dumpsoftwareversions/main'
 
 /*
@@ -202,14 +202,14 @@ workflow LEGIOVUE {
             )
             ch_versions = ch_versions.mix(PYSAMSTATS_BASEQ.out.versions)
 
-            CSVTK_COMBINE_STATS(
+            CSVTK_JOIN_ALLELE_STATS(
                 PYSAMSTATS_MAPQ.out.tsv
                     .join(PYSAMSTATS_BASEQ.out.tsv, by:[0])
             )
-            ch_versions = ch_versions.mix(CSVTK_COMBINE_STATS.out.versions)
+            ch_versions = ch_versions.mix(CSVTK_JOIN_ALLELE_STATS.out.versions)
 
             PLOT_EL_GATO_ALLELES(
-                CSVTK_COMBINE_STATS.out.tsv
+                CSVTK_JOIN_ALLELE_STATS.out.tsv
             )
             ch_versions = ch_versions.mix(PLOT_EL_GATO_ALLELES.out.versions)
         }
@@ -262,11 +262,11 @@ workflow LEGIOVUE {
     )
     ch_versions = ch_versions.mix(COMBINE_SAMPLE_DATA.out.versions)
 
-    CSVTK_COMBINE(
+    CSVTK_CONCAT_QC_DATA(
         COMBINE_SAMPLE_DATA.out.csv
             .collect{ it[1] }
     )
-    ch_versions = ch_versions.mix(CSVTK_COMBINE.out.versions)
+    ch_versions = ch_versions.mix(CSVTK_CONCAT_QC_DATA.out.versions)
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
     // 9. Version Output
