@@ -93,7 +93,7 @@ nextflow_pipeline {
             def lines = []
             assert path("$launchDir/results").exists()
 
-            // Final QC File 
+            // Final QC File
             assert path("$launchDir/results/overall.qc.csv").exists()
 
             lines = path("$launchDir/results/overall.qc.csv").text
@@ -164,7 +164,7 @@ nextflow_pipeline {
 
             // QUAST scored report (final step for quast)
             assert path("$launchDir/results/quast/scored_quast_report.csv").exists()
-            
+
             lines = path("$launchDir/results/quast/scored_quast_report.csv").text
             assert lines.contains("sample,num_contigs,N50,duplication_ratio,percent_alignment,assembly_length,GC_content,final_score,score_rating")
             assert lines.contains("in1.contigs,1,0.0,1,0,0,0,2.0,unideal")
