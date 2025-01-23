@@ -14,24 +14,26 @@ nextflow.enable.dsl = 2
     Input Checks and Help/Version
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-// Help and Version
-include { printHelp } from './modules/local/help.nf'
-if ( params.help ){
-    printHelp()
-    exit 0
-}
+// Version print
 if ( params.version ){
-    log.info("LegioVue v${workflow.manifest.version}")
+    log.info "${workflow.manifest.name} v${workflow.manifest.version}"
     exit 0
 }
 
-// Quick data checks
-if ( params.profile ){
-    log.error("Profile should have a single dash: -profile")
+// NF-Schema parts
+include { validateParameters; paramsSummaryLog } from 'plugin/nf-schema'
+// Validate input parameters
+validateParameters()
+
+// Print summary of supplied parameters
+log.info paramsSummaryLog(workflow)
+
+// Check that we have one proper input
+if ( ! params.fastq_dir && ! params.input ){
+    log.error "Please provide input data with either: '--input input.csv' or '--fastq_dir <PATH/TO/PAIRED_FASTQS>'"
     exit 1
-}
-if ( ! params.fastq_dir ){
-    log.error("Missing required argument '--fastq_dir <PATH/TO/FASTQS>'")
+} else if ( params.fastq_dir && params.input ) {
+    log.error "Please provide input data with either: '--input input.csv' or '--fastq_dir <PATH/TO/PAIRED_FASTQS>' but not both"
     exit 1
 }
 

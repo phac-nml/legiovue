@@ -1,1 +1,38 @@
 repository_type: pipeline
+nf_core_version: "3.0.2"
+bump_version: null
+lint:
+  files_exist:
+    - CODE_OF_CONDUCT.md
+    - .github/.dockstore.yml
+    - .github/CONTRIBUTING.md
+    - .github/ISSUE_TEMPLATE/bug_report.yml
+    - .github/ISSUE_TEMPLATE/config.yml
+    - .github/ISSUE_TEMPLATE/feature_request.yml
+    - .github/workflows/awstest.yml
+    - .github/workflows/awsfulltest.yml
+    - assets/email_template.html
+    - assets/email_template.txt
+    - assets/multiqc_config.yml
+    - assets/sendmail_template.txt
+    - assets/nf-core-LegioVue_logo_light.png
+    - conf/igenomes.config
+    - conf/igenomes_ignored.config
+    - docs/images/nf-core-LegioVue_logo_light.png
+    - docs/images/nf-core-LegioVue_logo_dark.png
+  files_unchanged:
+    - .github/PULL_REQUEST_TEMPLATE.md
+    - .github/workflows/branch.yml
+    - .github/workflows/linting.yml
+    - docs/README.md
+    - LICENSE
+    - .gitignore
+  multiqc_config: False
+  pipeline_name_conventions: False
+  actions_awsfulltest: False
+  actions_awstest: False
+  readme: False
+  nextflow_config: False
+
+template:
+  prefix: phac-nml

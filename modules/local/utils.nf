@@ -14,6 +14,9 @@ process CREATE_ABUNDANCE_FILTER {
     tuple val(meta), path("${meta.id}.check.csv"), emit: abundance_check
     path "versions.yml", emit: versions
 
+    when:
+    task.ext.when == null || task.ext.when
+
     script:
     """
     filter_lpn_abundance.py \\
@@ -26,13 +29,23 @@ process CREATE_ABUNDANCE_FILTER {
         filter_lpn_abundance: 0.1.0
     END_VERSIONS
     """
+
+    stub:
+    """
+    # Due to splitCSV have to actually have a CSV in stub
+    echo "sample,pass" > ${meta.id}.check.csv
+    echo "${meta.id},YES" >> ${meta.id}.check.csv
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        filter_lpn_abundance: 0.1.0
+    END_VERSIONS
+    """
 }
 
-process CSVTK_COMBINE_STATS {
+process CSVTK_JOIN_ALLELE_STATS {
     tag "$meta.id"
     label 'process_single'
-
-    publishDir "${params.outdir}/el_gato/allele_stats", pattern: "*.tsv", mode: 'copy'
 
     conda "bioconda::csvtk=0.30.0"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -45,6 +58,9 @@ process CSVTK_COMBINE_STATS {
     output:
     tuple val(meta), path("${meta.id}.allele_stats.tsv"), emit: tsv
     path "versions.yml", emit: versions
+
+    when:
+    task.ext.when == null || task.ext.when
 
     script:
     """
@@ -61,12 +77,20 @@ process CSVTK_COMBINE_STATS {
         csvtk: \$(echo \$( csvtk version | sed -e "s/csvtk v//g" ))
     END_VERSIONS
     """
+
+    stub:
+    """
+    touch ${meta.id}.allele_stats.tsv
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        csvtk: \$(echo \$( csvtk version | sed -e "s/csvtk v//g" ))
+    END_VERSIONS
+    """
 }
 
-process CSVTK_COMBINE{
+process CSVTK_CONCAT_QC_DATA {
     label 'process_single'
-
-    publishDir "${params.outdir}", pattern: "*.tsv", mode: 'copy'
 
     conda "bioconda::csvtk=0.30.0"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -74,19 +98,31 @@ process CSVTK_COMBINE{
         'biocontainers/csvtk:0.30.0--h9ee0642_0' }"
 
     input:
-    path tsvs
+    path csvs
 
     output:
-    path "overall.qc.tsv", emit: tsv
+    path "overall.qc.csv", emit: csv
     path "versions.yml", emit: versions
+
+    when:
+    task.ext.when == null || task.ext.when
 
     script:
     """
     csvtk \\
         concat \\
-        -tT \\
-        $tsvs \\
-    > overall.qc.tsv
+        $csvs \\
+    > overall.qc.csv
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        csvtk: \$(echo \$( csvtk version | sed -e "s/csvtk v//g" ))
+    END_VERSIONS
+    """
+
+    stub:
+    """
+    touch overall.qc.csv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

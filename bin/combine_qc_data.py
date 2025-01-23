@@ -42,7 +42,7 @@ def parse_args() -> argparse.ArgumentParser:
         '--quast_tsv',
         type=Path,
         required=False,
-        help="Quast summary TSV output"
+        help="QUAST summary TSV output"
     )
     parser.add_argument(
         '-st',
@@ -63,14 +63,21 @@ def parse_args() -> argparse.ArgumentParser:
         '--final_score_csv',
         type=Path,
         required=False,
-        help="Quast final score CSV output"
+        help="QUAST final score CSV output"
     )
     parser.add_argument(
-        '--min_reads',
+        '--min_reads_fail',
+        type=int,
+        required=False,
+        default=60000,
+        help="Threshold for minimum number of reads required to allow sample to be passed through the pipeline"
+    )
+    parser.add_argument(
+        '--min_reads_warn',
         type=int,
         required=False,
         default=150000,
-        help="Minimum number of reads required to be passed through the pipeline"
+        help="Threshold for minimum number of reads that will be given a QC warning"
     )
     parser.add_argument(
         '--min_abundance_percent',
@@ -145,7 +152,7 @@ def main() -> None:
     """Entry point"""
     parser = parse_args()
     args = parser.parse_args()
-    
+
     # Parse each given file to add to our outdict
     sample = str(args.sample)
     outdict = {'sample': sample}
@@ -180,13 +187,13 @@ def main() -> None:
 
     # Don't overwrite the failed reason as if it fails at abundance that should
     #  be reported
-    if outdict['num_paired_trimmed_reads'] < args.min_reads and not failed:
+    if outdict['num_paired_trimmed_reads'] < args.min_reads_fail and not failed:
         failed = True
         failed_reason = ['failing_read_count']
-    elif outdict['num_paired_trimmed_reads'] < 300000:
+    elif outdict['num_paired_trimmed_reads'] < args.min_reads_warn:
         warn_qual_criteria.append('low_read_count')
 
-    # Quast
+    # QUAST
     outdict['n50'] = 0
     outdict['num_contigs'] = 0
     outdict['pct_gc'] = 0
@@ -278,7 +285,7 @@ def main() -> None:
     outdict['qc_message'] = ';'.join(warn_qual_criteria)
 
     df = pd.DataFrame([outdict])
-    df.to_csv(f'{sample}.qc.tsv', sep='\t', index=False)
+    df.to_csv(f'{sample}.qc.csv', sep=',', index=False)
 
 
 if __name__ == "__main__":
