@@ -5,3 +5,7 @@ results/
 testing/
 testing*
 *.pyc
+null/
+slurm*
+.nf-test.log
+.nf-test/

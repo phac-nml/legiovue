@@ -2,9 +2,6 @@ process TRIMMOMATIC {
     tag "$meta.id"
     label 'process_medium'
 
-    publishDir "${params.outdir}/trimmomatic", pattern: "*.fastq.gz", mode: 'copy'
-    publishDir "${params.outdir}/trimmomatic", pattern: "*.summary.txt", mode: 'copy'
-
     conda "bioconda::trimmomatic=0.39"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/trimmomatic:0.39--hdfd78af_2':
@@ -19,6 +16,9 @@ process TRIMMOMATIC {
     tuple val(meta), path("*unpaired_R*.fastq.gz"), emit: unpaired_reads
     tuple val(meta), path("*.summary.txt"), emit: summary
     path "versions.yml", emit: versions
+
+    when:
+    task.ext.when == null || task.ext.when
 
     script:
     // I've included the current args here for now, may make a modules config later
@@ -38,6 +38,34 @@ process TRIMMOMATIC {
         SLIDINGWINDOW:4:20 \\
         MINLEN:100
 
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        trimmomatic: \$(trimmomatic -version)
+    END_VERSIONS
+    """
+
+    stub:
+    """
+    # Due to read filtering need a read to continue pipeline
+    #  Note no using newlines as it breaks the versions
+    read="@read1
+    TTT
+    +
+    CCC
+    "
+
+    # Create read files
+    echo -e \$read > ${meta.id}_paired_R1.fastq
+    echo -e \$read > ${meta.id}_paired_R2.fastq
+    gzip ${meta.id}_paired_R1.fastq
+    gzip ${meta.id}_paired_R2.fastq
+
+    # Summary files and unpaired reads
+    touch ${meta.id}.summary.txt
+    touch ${meta.id}_unpaired_R1.fastq.gz
+    touch ${meta.id}_unpaired_R2.fastq.gz
+
+    # Versions
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         trimmomatic: \$(trimmomatic -version)

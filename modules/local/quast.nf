@@ -1,11 +1,6 @@
 process QUAST {
     label 'process_medium'
 
-    publishDir "${params.outdir}/quast", pattern: "transposed_report.tsv", mode: 'copy'
-    publishDir "${params.outdir}/quast", pattern: "report.html", mode: 'copy'
-    publishDir "${params.outdir}/quast", pattern: "report.pdf", mode: 'copy'
-    publishDir "${params.outdir}/quast", pattern: "*_stats", mode: 'copy'
-
     conda "bioconda::quast=5.2.0"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/quast:5.2.0--py39pl5321h2add14b_1' :
@@ -22,6 +17,9 @@ process QUAST {
     path "*_stats", emit: stats_folders
     path "versions.yml", emit: versions
 
+    when:
+    task.ext.when == null || task.ext.when
+
     script:
     """
     quast \\
@@ -29,6 +27,19 @@ process QUAST {
         -o ./ \\
         -r $reference \\
         *.contigs.fa
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        quast: \$(quast.py --version 2>&1 | sed 's/^.*QUAST v//; s/ .*\$//')
+    END_VERSIONS
+    """
+
+    stub:
+    """
+    touch transposed_report.tsv
+    touch report.html
+    touch report.pdf
+    mkdir quast_stats
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -54,13 +65,30 @@ process SCORE_QUAST {
     path "scored_quast_report.csv", emit: report
     path "versions.yml", emit: versions
 
+    when:
+    task.ext.when == null || task.ext.when
+
     script:
     """
     quast_analyzer.py \\
+        --max_contigs ${params.max_contigs} \\
+        --min_align_percent ${params.min_align_percent} \\
+        --min_n50_score ${params.min_n50_score} \\
+        --max_n50_score ${params.max_n50_score} \\
         $transposed_report \\
         --outfile scored_quast_report.csv
 
     # TODO Add in version to the script itself at some point
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        quast_analyzer: 0.1.0
+    END_VERSIONS
+    """
+
+    stub:
+    """
+    touch scored_quast_report.csv
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         quast_analyzer: 0.1.0

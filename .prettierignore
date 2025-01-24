@@ -1,0 +1,12 @@
+.nextflow*
+work/
+data/
+results/
+.DS_Store
+testing/
+testing*
+*.pyc
+bin/
+adaptivecard.json
+slackreport.json
+tests/

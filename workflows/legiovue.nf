@@ -20,10 +20,11 @@ include { CHEWBBACA_ALLELE_CALL             } from '../modules/local/chewbbaca.n
 include { CHEWBBACA_EXTRACT_CGMLST          } from '../modules/local/chewbbaca.nf'
 include { PYSAMSTATS as PYSAMSTATS_MAPQ     } from '../modules/local/pysamstats.nf'
 include { PYSAMSTATS as PYSAMSTATS_BASEQ    } from '../modules/local/pysamstats.nf'
-include { CSVTK_COMBINE_STATS               } from '../modules/local/utils.nf'
-include { PLOT_PYSAMSTATS_TSV               } from '../modules/local/plotting.nf'
+include { CSVTK_JOIN_ALLELE_STATS           } from '../modules/local/utils.nf'
+include { PLOT_EL_GATO_ALLELES              } from '../modules/local/plotting.nf'
 include { COMBINE_SAMPLE_DATA               } from '../modules/local/qc.nf'
-include { CSVTK_COMBINE                     } from '../modules/local/utils.nf'
+include { CSVTK_CONCAT_QC_DATA              } from '../modules/local/utils.nf'
+include { CUSTOM_DUMPSOFTWAREVERSIONS       } from '../modules/nf-core/custom/dumpsoftwareversions/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -46,6 +47,9 @@ workflow LEGIOVUE {
     ch_paired_fastqs       // channel: [ val(meta), [ file(fastq_1), file(fastq_2) ] ]
 
     main:
+    // 0. Make version channel
+    ch_versions = Channel.empty()
+
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
     // 1. Kraken and Bracken Check with maybe(?) Host Removal (TODO)
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
@@ -54,10 +58,13 @@ workflow LEGIOVUE {
         ch_paired_fastqs,
         ch_kraken2_db
     )
+    ch_versions = ch_versions.mix(KRAKEN2_CLASSIFY.out.versions)
+
     BRACKEN(
         KRAKEN2_CLASSIFY.out.report,
         ch_kraken2_db
     )
+    ch_versions = ch_versions.mix(BRACKEN.out.versions)
 
     // Remove NON L.pn samples to allow good clustering
     //  This is a temp python/process solution until we
@@ -66,6 +73,8 @@ workflow LEGIOVUE {
     CREATE_ABUNDANCE_FILTER(
         BRACKEN.out.abundance
     )
+    ch_versions = ch_versions.mix(CREATE_ABUNDANCE_FILTER.out.versions)
+
     CREATE_ABUNDANCE_FILTER.out.abundance_check
         .splitCsv(header:true, sep:',')
         .branch{ meta, row ->
@@ -85,6 +94,7 @@ workflow LEGIOVUE {
         ch_abundance_filter.pass
             .join(ch_paired_fastqs, by: [0])
     )
+    ch_versions = ch_versions.mix(TRIMMOMATIC.out.versions)
 
     // Filter by min count
     TRIMMOMATIC.out.trimmed_reads
@@ -99,6 +109,7 @@ workflow LEGIOVUE {
     FASTQC(
         ch_filtered_paired_fastqs.pass
     )
+    ch_versions = ch_versions.mix(FASTQC.out.versions)
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
     // 4. SPAdes
@@ -107,6 +118,7 @@ workflow LEGIOVUE {
         ch_filtered_paired_fastqs.pass
             .join(TRIMMOMATIC.out.unpaired_reads, by: [0])
     )
+    ch_versions = ch_versions.mix(SPADES.out.versions)
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
     // 5. Quast
@@ -116,17 +128,22 @@ workflow LEGIOVUE {
             .collect{ it[1] },
         ch_quast_ref
     )
+    ch_versions = ch_versions.mix(QUAST.out.versions)
+
     SCORE_QUAST(
         QUAST.out.report
     )
+    ch_versions = ch_versions.mix(SCORE_QUAST.out.versions)
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
     // 6. El_Gato - Second round with assemblies for failing samples only
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
+    ch_el_gato_report = Channel.value([])
     if ( ! params.skip_el_gato ){
         EL_GATO_READS(
             ch_filtered_paired_fastqs.pass
         )
+        ch_versions = ch_versions.mix(EL_GATO_READS.out.versions)
 
         // El_gato consensus is only for samples where the reads output an
         //  inconclusive ST as it has been found to potentially call one
@@ -142,6 +159,7 @@ workflow LEGIOVUE {
                 .map{ it -> it[0] }
                 .join(SPADES.out.contigs, by:[0])
         )
+        ch_versions = ch_versions.mix(EL_GATO_ASSEMBLY.out.versions)
 
         // Combine and add in the approach used
         COMBINE_EL_GATO(
@@ -153,6 +171,8 @@ workflow LEGIOVUE {
                 .collectFile(name: 'assembly_st.tsv', keepHeader: true)
                 .ifEmpty([])
         )
+        ch_versions = ch_versions.mix(COMBINE_EL_GATO.out.versions)
+        ch_el_gato_report = COMBINE_EL_GATO.out.report.collect().ifEmpty([])
 
         // PDF Report
         //  Have to rejoin the el_gato reads output as its hard to remake a csv
@@ -164,25 +184,35 @@ workflow LEGIOVUE {
                 .collect{ it[1] }
                 .ifEmpty([])
         )
+        ch_versions = ch_versions.mix(EL_GATO_REPORT.out.versions)
 
         // Alleles Stats with pysamstats and plots
         //  Visualize the called alleles to help
         //  investigate potential issue calls
-        PYSAMSTATS_MAPQ(
-            EL_GATO_READS.out.bam_bai,
-            "mapq"
-        )
-        PYSAMSTATS_BASEQ(
-            EL_GATO_READS.out.bam_bai,
-            "baseq"
-        )
-        CSVTK_COMBINE_STATS(
-            PYSAMSTATS_MAPQ.out.tsv
-                .join(PYSAMSTATS_BASEQ.out.tsv, by:[0])
-        )
-        PLOT_PYSAMSTATS_TSV(
-            CSVTK_COMBINE_STATS.out.tsv
-        )
+        if ( ! params.skip_plotting ){
+            PYSAMSTATS_MAPQ(
+                EL_GATO_READS.out.bam_bai,
+                "mapq"
+            )
+            ch_versions = ch_versions.mix(PYSAMSTATS_MAPQ.out.versions)
+
+            PYSAMSTATS_BASEQ(
+                EL_GATO_READS.out.bam_bai,
+                "baseq"
+            )
+            ch_versions = ch_versions.mix(PYSAMSTATS_BASEQ.out.versions)
+
+            CSVTK_JOIN_ALLELE_STATS(
+                PYSAMSTATS_MAPQ.out.tsv
+                    .join(PYSAMSTATS_BASEQ.out.tsv, by:[0])
+            )
+            ch_versions = ch_versions.mix(CSVTK_JOIN_ALLELE_STATS.out.versions)
+
+            PLOT_EL_GATO_ALLELES(
+                CSVTK_JOIN_ALLELE_STATS.out.tsv
+            )
+            ch_versions = ch_versions.mix(PLOT_EL_GATO_ALLELES.out.versions)
+        }
     }
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
@@ -193,15 +223,19 @@ workflow LEGIOVUE {
             ch_schema_targets
         )
         ch_prepped_schema = CHEWBBACA_PREP_EXTERNAL_SCHEMA.out.schema
+        ch_versions = ch_versions.mix(CHEWBBACA_PREP_EXTERNAL_SCHEMA.out.versions)
     }
     CHEWBBACA_ALLELE_CALL(
         SPADES.out.contigs
             .collect{ it[1] },
         ch_prepped_schema
     )
+    ch_versions = ch_versions.mix(CHEWBBACA_ALLELE_CALL.out.versions)
+
     CHEWBBACA_EXTRACT_CGMLST(
-        CHEWBBACA_ALLELE_CALL.out.allele_calls
+        CHEWBBACA_ALLELE_CALL.out.results_alleles
     )
+    ch_versions = ch_versions.mix(CHEWBBACA_EXTRACT_CGMLST.out.versions)
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
     // 8. QC + Summaries
@@ -214,7 +248,6 @@ workflow LEGIOVUE {
     // Create some value channels using `.collect()`
     ch_quast_report     = QUAST.out.report.collect().ifEmpty([])
     ch_quast_score      = SCORE_QUAST.out.report.collect().ifEmpty([])
-    ch_el_gato_report   = COMBINE_EL_GATO.out.report.collect().ifEmpty([])
     ch_quast_report     = QUAST.out.report.collect().ifEmpty([])
     ch_allele_stats     = CHEWBBACA_ALLELE_CALL.out.statistics.collect().ifEmpty([])
 
@@ -227,22 +260,18 @@ workflow LEGIOVUE {
         ch_el_gato_report,
         ch_allele_stats
     )
+    ch_versions = ch_versions.mix(COMBINE_SAMPLE_DATA.out.versions)
 
-    CSVTK_COMBINE(
-        COMBINE_SAMPLE_DATA.out.tsv
+    CSVTK_CONCAT_QC_DATA(
+        COMBINE_SAMPLE_DATA.out.csv
             .collect{ it[1] }
     )
+    ch_versions = ch_versions.mix(CSVTK_CONCAT_QC_DATA.out.versions)
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
-    // 9. Clustering (TO-DO)
+    // 9. Version Output
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
-    // chewbacca -> reportree -> manual vis (right now)
-    // As reportree isn't easy to get installed in pipeline
-    //  Its current container is missing PS which nextflow needs
-
-    // ReporTree container and conda env are not going to play nice
-    // REPORTREE(
-    //     CHEWBBACA_EXTRACT_CGMLST.out.cgmlst,
-    //     ch_metadata
-    // )
+    CUSTOM_DUMPSOFTWAREVERSIONS (
+        ch_versions.unique().collectFile(name: 'collated_versions.yml')
+    )
 }
