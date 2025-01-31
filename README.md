@@ -1,4 +1,4 @@
-# LegioVue
+#  <img src="LegioVue_logo.png" alt="LegioVue Logo" width="60%" />
 
 LegioVue is a nextflow pipeline for whole-genome analysis of _Legionella pneumophila_. It performs _in silico_ sequence typing, genome assembly, and core-genome analysis. It also provides detailed information about the quality of _L. pneumophila_ genomes. The name is an homage to the Bellevue-Stratford hotel, site of the first known outbreak of Legionnaire's Disease.
 
