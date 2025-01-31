@@ -1,4 +1,5 @@
 # LegioVue
+## ![LegioVue_Logo.png](LegioVue_Logo.png)
 
 LegioVue is a nextflow pipeline for whole-genome analysis of _Legionella pneumophila_. It performs _in silico_ sequence typing, genome assembly, and core-genome analysis. It also provides detailed information about the quality of _L. pneumophila_ genomes. The name is an homage to the Bellevue-Stratford hotel, site of the first known outbreak of Legionnaire's Disease.
 
@@ -8,7 +9,7 @@ This project serves as a repository for the LegioVue analysis pipeline along wit
 
 **LegioVue** contains a combination of tools that are used to do _de novo_ assembly, sequence typing, cgMLST, and quality control for all input samples with the end goal in having analyzed and formatted data to confirm cluster outbreaks. Currently, clustering is not included in the pipeline but its addition is to come soon. However, we include [additional instructions](./docs/clustering.md) on how to perform cluster analysis on generated outputs.
 
-## ![LegioVue-WGS-Workflow.png](LegioVue-WGS-Workflow.png)
+## ![LegioVue-Workflow.png](LegioVue-Workflow.png)
 
 ## Index
 
