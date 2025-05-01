@@ -25,6 +25,7 @@ include { PLOT_EL_GATO_ALLELES              } from '../modules/local/plotting.nf
 include { COMBINE_SAMPLE_DATA               } from '../modules/local/qc.nf'
 include { CSVTK_CONCAT_QC_DATA              } from '../modules/local/utils.nf'
 include { CUSTOM_DUMPSOFTWAREVERSIONS       } from '../modules/nf-core/custom/dumpsoftwareversions/main'
+include { MULTIQC                           } from '../modules/local/multiqc.nf'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -33,6 +34,7 @@ include { CUSTOM_DUMPSOFTWAREVERSIONS       } from '../modules/nf-core/custom/du
 */
 ch_kraken2_db       = file(params.kraken2_db, checkIfExists: true)
 ch_quast_ref        = file(params.quast_ref, checkIfExists: true)
+ch_multiqc_config   = file(params.multiqc_config, checkIfExists:true)
 ch_prepped_schema   = file(params.prepped_schema, type: 'dir', checkIfExists: true)
 ch_schema_targets   = params.schema_targets ? file(params.schema_targets, type: 'dir', checkIfExists: true) : []
 // ch_metadata         = params.metadata ? file(params.metadata, checkIfExists: true) : []
@@ -269,7 +271,29 @@ workflow LEGIOVUE {
     ch_versions = ch_versions.mix(CSVTK_CONCAT_QC_DATA.out.versions)
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
-    // 9. Version Output
+    // 9. MultiQC
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
+    MULTIQC(
+        ch_multiqc_config,
+        FASTQC.out.zip
+            .collect{ it[1] },
+        SCORE_QUAST.out.report
+            .ifEmpty([]),
+        COMBINE_EL_GATO.out.report
+            .ifEmpty([]),
+        BRACKEN.out.breakdown
+            .collect{ it[1] },
+        TRIMMOMATIC.out.stderr
+            .collect{ it[1] },
+        CHEWBBACA_ALLELE_CALL.out.statistics
+            .ifEmpty([]),
+        CSVTK_CONCAT_QC_DATA.out.csv
+            .ifEmpty([])
+    )
+    ch_versions = ch_versions.mix(MULTIQC.out.versions)
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
+    // 10. Version Output
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
     CUSTOM_DUMPSOFTWAREVERSIONS (
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
