@@ -216,12 +216,18 @@ def analyze_sample(
 
     return {
         "sample": sample_name,
-        "num_contigs": num_contigs_score,
-        "N50": n50_score,
-        "duplication_ratio": dup_ratio_score,
-        "percent_alignment": alignment_score,
-        "assembly_length": assembly_length_score,
-        "GC_content": gc_content_score,
+        "num_contigs" : num_contigs,
+        "num_contigs_score": num_contigs_score,
+        "N50" : n50,
+        "N50_score": n50_score,
+        "duplication_ratio" : dup_ratio,
+        "duplication_ratio_score": dup_ratio_score,
+        "percent_alignment" : align_perc,
+        "percent_alignment_score": alignment_score,
+        "assembly_length" : assembly_length,
+        "assembly_length_score": assembly_length_score,
+        "GC_content_percent" : gc_content,
+        "GC_content_score": gc_content_score,
         "final_score": score,
         "score_rating": score_rating
     }

@@ -111,6 +111,7 @@ All of the outputs can be found in [the output docs](./docs/output.md). All outp
 - `el_gato/el_gato_st.tsv`: Summarized el_gato ST calls for all samples.
 - `chewbbaca/allele_calls/cgMLST/`: cgMLST profiles that can be used for downstream visualization.
 - `overall.qc.csv`: Final quality summary report for each sample throughout the different pipeline steps. Important quality flags can be found in this file.
+- `Legiovue-Run-Report_multiqc_report.html`: MultiQC report including quality metrics from most of the tools used within the pipeline.
 
 ## Pipeline Components and Settings
 
@@ -180,6 +181,10 @@ The `qc_message` column contains the reason for the `qc_status` and includes:
 | low_qc_score           | WARN              | Low QUAST-Analyzer QC score (< 4) indicates that there may be issues in the assembly, possibly affecting the cgMLST profile.                                 |
 | no_lpn_detected        | FAIL              | Very low (< 10% default) _L.pneumophila_ abundance flags that the sample may not be _L.pneumophila_ and sample is removed from the remainder of the pipeline |
 | failing_read_count     | FAIL              | Post-trimming read count below failing threshold (< 60,000 reads default) has been shown to lead to poor, uninformative assemblies and sample is removed.    |
+
+**`MultiQC`**
+
+[MultiQC](https://seqera.io/multiqc/) is used to culminate the quality metrics from the tools mentioned earlier into an easily accessible html report with visual components. It includes results from [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/), [Kraken2](https://github.com/DerrickWood/kraken2), [QUAST](https://github.com/ablab/quast), [el_gato](https://github.com/appliedbinf/el_gato), [Trimmomatic](https://github.com/usadellab/Trimmomatic), and [chewBBACA](https://github.com/B-UMMI/chewBBACA).
 
 ## Limitations
 
