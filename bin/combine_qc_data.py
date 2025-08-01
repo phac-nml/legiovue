@@ -233,7 +233,7 @@ def main() -> None:
 
     if outdict['assembly_qc_score'] < 4:
         warn_qual_criteria.append('low_qc_score')
-        
+
     # ST
     outdict['st'] = 'NA'
     outdict['st_approach'] = 'NA'

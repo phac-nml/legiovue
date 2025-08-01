@@ -6,9 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.3.0]
 
 ### `Added`
+
 - MultiQC module to output an html report
 
 ### `Changed`
+
 - Addition of Quast values to the `scored_quast_report.csv` file
 - Changed the `final_qc_score` column's name and order within the `overall.qc.csv` file to make it clearer visually that the QC score does not take into account allele calling and cgMLST stats
 

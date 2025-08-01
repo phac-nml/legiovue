@@ -15,6 +15,7 @@ process MULTIQC {
     path trimmomatic_stderrs
     path chewbbacca_allele_stats
     path overall_qc
+    path versions_yml
 
     output:
     path "*multiqc_report.html", emit: report
@@ -32,6 +33,7 @@ process MULTIQC {
         ${trimmomatic_stderrs} \\
         ${chewbbacca_allele_stats} \\
         ${overall_qc} \\
+        ${versions_yml} \\
         multiqc_work_dir/
 
     multiqc \\

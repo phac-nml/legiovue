@@ -28,7 +28,7 @@ module_order:
 
 report_section_order:
   software_versions:
-    order: -1000
+    order: -1001
 
 # Custom data here
 custom_data:
@@ -99,7 +99,7 @@ custom_data:
       chewbbaca_pct_exc:
         title: "% Chewbbaca Exc"
         description: "Percentage of EXaCt match (100% DNA identity) with previously identified alleles"
-        min: 0 
+        min: 0
         max: 100
       qc_message:
         title: "QC Message"
@@ -257,15 +257,15 @@ custom_data:
         title: "Final Score Rating"
         description: "Sample rating based on the final score"
         cond_formatting_rules:
-          fail : 
-            - {"s_eq": "poor" }
-            - {"s_eq": "unideal" }
-          warn : 
-            - {"s_eq": "moderate" }
-            - {"s_eq": "passing" }
-          pass : 
-            - {"s_eq": "good" }
-            - {"s_eq": "excellent" }
+          fail:
+            - { "s_eq": "poor" }
+            - { "s_eq": "unideal" }
+          warn:
+            - { "s_eq": "moderate" }
+            - { "s_eq": "passing" }
+          pass:
+            - { "s_eq": "good" }
+            - { "s_eq": "excellent" }
       num_contigs:
         title: "# Contigs"
         description: "Total number of contiguous sequences in the genome assembly"

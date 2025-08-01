@@ -5,8 +5,7 @@ process TRIMMOMATIC {
     conda "bioconda::trimmomatic=0.39"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/trimmomatic:0.39--hdfd78af_2':
-        'biocontainers/trimmomatic:0.39--hdfd78af_2'
-    }"
+        'biocontainers/trimmomatic:0.39--hdfd78af_2'}"
 
     input:
     tuple val(meta), path(reads)
@@ -24,7 +23,7 @@ process TRIMMOMATIC {
     script:
     // I've included the current args here for now, may make a modules config later
     """
-     trimmomatic \\
+    trimmomatic \\
         PE \\
         $reads \\
         -threads $task.cpus \\
