@@ -1,9 +1,9 @@
 repository_type: pipeline
-nf_core_version: "3.0.2"
-bump_version: null
+
+nf_core_version: 3.2.1
+
 lint:
   files_exist:
-    - CODE_OF_CONDUCT.md
     - .github/.dockstore.yml
     - .github/CONTRIBUTING.md
     - .github/ISSUE_TEMPLATE/bug_report.yml
@@ -20,19 +20,52 @@ lint:
     - conf/igenomes_ignored.config
     - docs/images/nf-core-LegioVue_logo_light.png
     - docs/images/nf-core-LegioVue_logo_dark.png
+    - CODE_OF_CONDUCT.md
+    - ro-crate-metadata.json
   files_unchanged:
     - .github/PULL_REQUEST_TEMPLATE.md
     - .github/workflows/branch.yml
+    - .github/workflows/linting_comment.yml
     - .github/workflows/linting.yml
+    - .prettierignore
     - docs/README.md
     - LICENSE
-    - .gitignore
-  multiqc_config: False
-  pipeline_name_conventions: False
-  actions_awsfulltest: False
-  actions_awstest: False
-  readme: False
-  nextflow_config: False
+  nextflow_config:
+    - process.cpus
+    - process.memory
+    - process.time
+    - custom_config
+    - params.custom_config_version
+    - params.custom_config_base
+    - params.max_cpus
+    - params.max_memory
+    - params.max_time
+    - manifest.name
+    - manifest.homePage
+    - validation.help.beforeText
+    - validation.help.afterText
+    - validation.summary.beforeText
+    - validation.summary.afterText
+  multiqc_config: false
+  readme:
+    - nextflow_badge
 
 template:
-  prefix: phac-nml
+  org: phac-nml
+  name: legiovue
+  description: Legionella pneumophila WGS analysis
+  author: Darian Hole, Molly Pratt, Jennifer Tanner
+  version: 0.3.0
+  force: true
+  skip_features:
+    - github
+    - igenomes
+    - github_badges
+    - nf_core_configs
+    - email
+    - adaptivecard
+    - slackreport
+    - seqera_platform
+    - rocrate
+    - vscode
+  is_nfcore: false

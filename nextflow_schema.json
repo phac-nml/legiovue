@@ -89,7 +89,6 @@
             "properties": {
                 "quast_ref": {
                     "type": "string",
-                    "default": "data/C9_S.reference.fna",
                     "format": "file-path",
                     "fa_icon": "fas fa-file-alt",
                     "description": "Path to reference fasta file to base QUAST alignment metrics off of",
@@ -143,7 +142,6 @@
                 },
                 "prepped_schema": {
                     "type": "string",
-                    "default": "data/SeqSphere_1521_schema",
                     "description": "ChewBBACA prepped schema directory",
                     "format": "directory-path",
                     "hidden": true
@@ -164,6 +162,12 @@
                     "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
                     "fa_icon": "fas fa-folder-open",
                     "default": "results"
+                },
+                "multiqc_config": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "MultiQC config file to create final custom report",
+                    "hidden": true
                 },
                 "publish_dir_mode": {
                     "type": "string",
