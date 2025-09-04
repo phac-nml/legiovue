@@ -20,6 +20,13 @@ Updates focusing on getting LegioVue setup to run in IRIDA-Next along with fixin
 - Naming convention in pipeline itself (all lowercase)
 - Tests updated
 
+### `Fixes`
+
+- [#10](https://github.com/phac-nml/legiovue/issues/10)
+- [#12](https://github.com/phac-nml/legiovue/issues/12)
+- [#19](https://github.com/phac-nml/legiovue/issues/19)
+- [#20](https://github.com/phac-nml/legiovue/issues/20)
+
 ## [0.2.0] - 2025-01-24
 
 ### `Added`

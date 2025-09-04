@@ -50,6 +50,7 @@ jobs:
           sudo mv nf-test /usr/local/bin/
 
       - name: Run nf-test
+        continue-on-error: ${{ matrix.NXF_VER == 'latest-everything' }}
         run: |
           nf-test test --verbose
 

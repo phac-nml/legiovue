@@ -44,6 +44,7 @@ Directory Input:
 nextflow run phac-nml/legiovue \
     -profile <PROFILE> \
     --fastq_dir </PATH/TO/PAIRED_FASTQS> \
+    --kraken2_db </PATH/TO/KRAKEN2_DATABASE> \
     [Optional Args]
 ```
 
@@ -53,6 +54,7 @@ Samplesheet CSV Input:
 nextflow run phac-nml/legiovue \
     -profile <PROFILE> \
     --input </PATH/TO/INPUT.csv> \
+    --kraken2_db </PATH/TO/KRAKEN2_DATABASE> \
     [Optional Args]
 ```
 
