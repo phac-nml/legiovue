@@ -26,7 +26,7 @@ This project serves as a repository for the LegioVue analysis pipeline along wit
 
 ## Installation
 
-Installation requires both [nextflow](https://www.nextflow.io/) (minimum version tested `23.10.1`) and a dependency management system to run.
+Installation requires both [nextflow](https://www.nextflow.io/) (minimum version tested `24.04.1`) and a dependency management system to run.
 
 Steps:
 
