@@ -1,5 +1,5 @@
 # Top of the page info
-title: "Legiovue Run Report"
+title: "LegioVue Run Report"
 subtitle: "Legionella pneumophila run QC statistics and plots"
 report_comment: >
   This report contains bacterial sequencing metrics for all samples ran in the pipeline.

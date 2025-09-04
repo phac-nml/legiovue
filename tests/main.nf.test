@@ -1,6 +1,6 @@
 nextflow_pipeline {
 
-    name "Full Pipeline NF-Tests for LegioVUE"
+    name "Full Pipeline NF-Tests for LegioVue"
     script "main.nf"
 
     //--- Test 1

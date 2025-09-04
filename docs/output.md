@@ -267,8 +267,8 @@ The `qc_message` column contains the reason for the `qc_status` and includes:
 <details markdown="1">
 <summary>Output files</summary>
 
-- `Legiovue-Run-Report_multiqc_report.html`: Final report summarizing quality metrics
+- `LegioVue-Run-Report_multiqc_report.html`: Final report summarizing quality metrics
 
 </details>
 
-The Legiovue Run Report HTML file is the final summary of all the samples run by the pipeline generated using RMarkdown. The report includes tables and visualization from most of the tools mentioned here.
+The LegioVue Run Report HTML file is the final summary of all the samples run by the pipeline generated using RMarkdown. The report includes tables and visualization from most of the tools mentioned here.

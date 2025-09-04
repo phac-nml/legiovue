@@ -15,11 +15,11 @@ lint:
     - assets/email_template.txt
     - assets/multiqc_config.yml
     - assets/sendmail_template.txt
-    - assets/nf-core-LegioVue_logo_light.png
+    - assets/nf-core-legiovue_logo_light.png
     - conf/igenomes.config
     - conf/igenomes_ignored.config
-    - docs/images/nf-core-LegioVue_logo_light.png
-    - docs/images/nf-core-LegioVue_logo_dark.png
+    - docs/images/nf-core-legiovue_logo_light.png
+    - docs/images/nf-core-legiovue_logo_dark.png
     - CODE_OF_CONDUCT.md
     - ro-crate-metadata.json
   files_unchanged:
@@ -37,9 +37,6 @@ lint:
     - custom_config
     - params.custom_config_version
     - params.custom_config_base
-    - params.max_cpus
-    - params.max_memory
-    - params.max_time
     - manifest.name
     - manifest.homePage
     - validation.help.beforeText

@@ -27,7 +27,7 @@ jobs:
     strategy:
       matrix:
         NXF_VER:
-          - "23.10.1"
+          - "24.04.1"
           - "latest-everything"
         test_name:
           - "test_full"
