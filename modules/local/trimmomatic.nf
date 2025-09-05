@@ -5,8 +5,7 @@ process TRIMMOMATIC {
     conda "bioconda::trimmomatic=0.39"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/trimmomatic:0.39--hdfd78af_2':
-        'biocontainers/trimmomatic:0.39--hdfd78af_2'
-    }"
+        'biocontainers/trimmomatic:0.39--hdfd78af_2'}"
 
     input:
     tuple val(meta), path(reads)
@@ -15,6 +14,7 @@ process TRIMMOMATIC {
     tuple val(meta), path("*_paired_R*.fastq.gz"), emit: trimmed_reads
     tuple val(meta), path("*unpaired_R*.fastq.gz"), emit: unpaired_reads
     tuple val(meta), path("*.summary.txt"), emit: summary
+    tuple val(meta), path("*.stderr.log"), emit: stderr
     path "versions.yml", emit: versions
 
     when:
@@ -36,7 +36,8 @@ process TRIMMOMATIC {
         LEADING:3 \\
         TRAILING:3 \\
         SLIDINGWINDOW:4:20 \\
-        MINLEN:100
+        MINLEN:100 \\
+        2> ${meta.id}.stderr.log
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

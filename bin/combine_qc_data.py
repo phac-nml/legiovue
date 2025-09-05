@@ -219,6 +219,21 @@ def main() -> None:
     if outdict['n50'] < 100000:
         warn_qual_criteria.append('low_n50')
 
+    # Score CSV
+    outdict['assembly_qc_score'] = 0
+    if args.final_score_csv:
+        outdict = grab_df_data(
+            args.final_score_csv,
+            ',',
+            f'{sample}.contigs',
+            'sample',
+            {'final_score': 'assembly_qc_score'},
+            outdict
+        )
+
+    if outdict['assembly_qc_score'] < 4:
+        warn_qual_criteria.append('low_qc_score')
+
     # ST
     outdict['st'] = 'NA'
     outdict['st_approach'] = 'NA'
@@ -257,21 +272,6 @@ def main() -> None:
 
     if outdict['chewbbaca_pct_exc'] < 90:
         warn_qual_criteria.append('low_exact_allele_calls')
-
-    # Score CSV
-    outdict['final_qc_score'] = 0
-    if args.final_score_csv:
-        outdict = grab_df_data(
-            args.final_score_csv,
-            ',',
-            f'{sample}.contigs',
-            'sample',
-            {'final_score': 'final_qc_score'},
-            outdict
-        )
-
-    if outdict['final_qc_score'] < 4:
-        warn_qual_criteria.append('low_qc_score')
 
     # QC Checks and Final Data Cols
     qc_status = "PASS"

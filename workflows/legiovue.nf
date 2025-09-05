@@ -25,17 +25,7 @@ include { PLOT_EL_GATO_ALLELES              } from '../modules/local/plotting.nf
 include { COMBINE_SAMPLE_DATA               } from '../modules/local/qc.nf'
 include { CSVTK_CONCAT_QC_DATA              } from '../modules/local/utils.nf'
 include { CUSTOM_DUMPSOFTWAREVERSIONS       } from '../modules/nf-core/custom/dumpsoftwareversions/main'
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    INITIALIZE CHANNELS FROM PARAMS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-ch_kraken2_db       = file(params.kraken2_db, checkIfExists: true)
-ch_quast_ref        = file(params.quast_ref, checkIfExists: true)
-ch_prepped_schema   = file(params.prepped_schema, type: 'dir', checkIfExists: true)
-ch_schema_targets   = params.schema_targets ? file(params.schema_targets, type: 'dir', checkIfExists: true) : []
-// ch_metadata         = params.metadata ? file(params.metadata, checkIfExists: true) : []
+include { MULTIQC                           } from '../modules/local/multiqc.nf'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -47,7 +37,17 @@ workflow LEGIOVUE {
     ch_paired_fastqs       // channel: [ val(meta), [ file(fastq_1), file(fastq_2) ] ]
 
     main:
-    // 0. Make version channel
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
+    // 0. Initialize channels from params and make version channel
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
+    ch_kraken2_db       = file(params.kraken2_db, checkIfExists: true)
+    ch_quast_ref        = file(params.quast_ref, checkIfExists: true)
+    ch_multiqc_config   = file(params.multiqc_config, checkIfExists:true)
+    ch_prepped_schema   = file(params.prepped_schema, type: 'dir', checkIfExists: true)
+    ch_schema_targets   = params.schema_targets ? file(params.schema_targets, type: 'dir', checkIfExists: true) : []
+    // ch_metadata         = params.metadata ? file(params.metadata, checkIfExists: true) : []
+
+    // Empty version channel
     ch_versions = Channel.empty()
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
@@ -271,7 +271,30 @@ workflow LEGIOVUE {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
     // 9. Version Output
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
-    CUSTOM_DUMPSOFTWAREVERSIONS (
+    CUSTOM_DUMPSOFTWAREVERSIONS(
         ch_versions.unique().collectFile(name: 'collated_versions.yml')
     )
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
+    // 10. MultiQC Summary HTML
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
+    MULTIQC(
+        ch_multiqc_config,
+        FASTQC.out.zip
+            .collect{ it[1] },
+        SCORE_QUAST.out.report
+            .ifEmpty([]),
+        ch_el_gato_report
+            .ifEmpty([]),
+        BRACKEN.out.breakdown
+            .collect{ it[1] },
+        TRIMMOMATIC.out.stderr
+            .collect{ it[1] },
+        CHEWBBACA_ALLELE_CALL.out.statistics
+            .ifEmpty([]),
+        CSVTK_CONCAT_QC_DATA.out.csv
+            .ifEmpty([]),
+        CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml
+    )
+    ch_versions = ch_versions.mix(MULTIQC.out.versions)
 }

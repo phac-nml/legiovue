@@ -1,6 +1,6 @@
 nextflow_pipeline {
 
-    name "Full Pipeline NF-Tests for LegioVUE"
+    name "Full Pipeline NF-Tests for LegioVue"
     script "main.nf"
 
     //--- Test 1
@@ -74,9 +74,6 @@ nextflow_pipeline {
                 kraken2_db = "s3://genome-idx/kraken/standard_08gb_20240904"
                 outdir = "results"
                 min_reads = 100
-                max_memory = "8.GB"
-                max_cpus = 2
-                max_time = "1.h"
             }
         }
         then {
@@ -97,9 +94,9 @@ nextflow_pipeline {
             assert path("$launchDir/results/overall.qc.csv").exists()
 
             lines = path("$launchDir/results/overall.qc.csv").text
-            assert lines.contains("sample,lpn_abundance,num_paired_trimmed_reads,pct_paired_reads_passing_qc,n50,num_contigs,pct_gc,assembly_len,largest_contig,st,st_approach,chewbbaca_exc,chewbbaca_inf,chewbbaca_pct_exc,final_qc_score,qc_status,qc_message")
-            assert lines.contains("in1,100.0,4662,93.24,716,19,43.59,95953,1810,MD-,reads,0,0,0.0,2.0,WARN,low_read_count;low_n50;low_exact_allele_calls;low_qc_score")
-            assert lines.contains("in2,100.0,12,100.0,0,0,0,0,0,NA,NA,0,0,0.0,0,FAIL,failing_read_count")
+            assert lines.contains("sample,lpn_abundance,num_paired_trimmed_reads,pct_paired_reads_passing_qc,n50,num_contigs,pct_gc,assembly_len,largest_contig,assembly_qc_score,st,st_approach,chewbbaca_exc,chewbbaca_inf,chewbbaca_pct_exc,qc_status,qc_message")
+            assert lines.contains("in1,100.0,4662,93.24,716,19,43.59,95953,1810,2.0,MD-,reads,0,0,0.0,WARN,low_read_count;low_n50;low_qc_score;low_exact_allele_calls")
+            assert lines.contains("in2,100.0,12,100.0,0,0,0,0,0,0,NA,NA,0,0,0.0,FAIL,failing_read_count")
 
             // ChewBBACA Allele Call data
             assert path("$launchDir/results/chewbbaca/allele_calls/results_statistics.tsv").exists()
@@ -143,7 +140,7 @@ nextflow_pipeline {
             assert iridanext_metadata.in1.num_paired_trimmed_reads == "4662"
             assert iridanext_metadata.in1.st_approach == "reads"
             assert iridanext_metadata.in1.qc_status == "WARN"
-            assert iridanext_metadata.in1.qc_message == "low_read_count;low_n50;low_exact_allele_calls;low_qc_score"
+            assert iridanext_metadata.in1.qc_message == "low_read_count;low_n50;low_qc_score;low_exact_allele_calls"
 
             // Bracken final output (depends on kraken output)
             assert path("$launchDir/results/kraken_bracken/in1-abundances.tsv").exists()
@@ -166,8 +163,8 @@ nextflow_pipeline {
             assert path("$launchDir/results/quast/scored_quast_report.csv").exists()
 
             lines = path("$launchDir/results/quast/scored_quast_report.csv").text
-            assert lines.contains("sample,num_contigs,N50,duplication_ratio,percent_alignment,assembly_length,GC_content,final_score,score_rating")
-            assert lines.contains("in1.contigs,1,0.0,1,0,0,0,2.0,unideal")
+            assert lines.contains("sample,num_contigs,num_contigs_score,N50,N50_score,duplication_ratio,duplication_ratio_score,percent_alignment,percent_alignment_score,assembly_length,assembly_length_score,GC_content_percent,GC_content_score,final_score,score_rating")
+            assert lines.contains("in1.contigs,19,1,716,0.0,1.0,1,0.051,0,95953,0,43.59,0,2.0,unideal")
 
             // Just checking that outdirs exist
             assert path("$launchDir/results/fastqc").exists()
