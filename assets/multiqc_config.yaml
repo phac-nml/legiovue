@@ -1,8 +1,12 @@
 # Top of the page info
 title: "LegioVue Run Report"
-subtitle: "Legionella pneumophila run QC statistics and plots"
+subtitle: "<i>Legionella pneumophila</i> run QC, statistics, and plots"
 report_comment: >
-  This report contains bacterial sequencing metrics for all samples ran in the pipeline.
+  This report contains sequencing metrics and QC for the de novo assembly of all samples
+  with QC metrics based on other <i>Legionella pneumophila</i> sequenced samples.
+
+  Sequence typing based on <a href="https://github.com/CDCgov/el_gato" target="_blank">el_gato</a> and cgMLST calls based on the <a href="https://www.cgmlst.org/ncs/schema/Lpneumophila1410/locus/" target="_blank">Ridom SeqSphere schema</a>
+  are also included for downstream use and reporting.
 
 # Other things
 data_format: "yaml"
@@ -36,7 +40,7 @@ custom_data:
   overall_quality_metrics:
     section_name: "Overall Quality Metrics"
     description: >
-      This table shows the overall quality control metrics for all samples in the run
+      The following table shows the overall quality control metrics for all samples in the pipeline
     plot_type: "table"
     pconfig:
       id: "overall_quality_metrics"
@@ -50,40 +54,50 @@ custom_data:
         scale: False
       qc_status:
         title: "QC Status"
-        description: "Overall quality control outcome based on the predefined metrics and thresholds"
+        description: "Overall quality control outcome based on the predefined metrics and thresholds for L.pn"
       lpn_abundance:
-        title: "% LPN Abundance"
-        description: "Overall abundance of L.pneumophila within the sample"
+        title: "% L.pn Abundance"
+        description: "Abundance of L. pneumophila reads within the sample"
         min: 0
         max: 100
+        scale: RdYlGn
       num_paired_trimmed_reads:
         title: "# Paired Trimmed Reads"
-        description: "Number of Paired Trimmed Reads"
+        description: "Total number of paired trimmed reads kept after read filtering and trimming"
+        min: 0
+        scale: Blues
       pct_paired_reads_passing_qc:
         title: "% Paired Reads Passing QC"
-        description: "Percentage of read pairs retained after quality control and trimming"
+        description: "Percentage of read pairs retained after read filtering and trimming"
         min: 0
         max: 100
+        scale: YlGn
       n50:
         title: "N50"
-        description: "Length of the shortest contig at which 50& of the total assembly length is covered"
+        description: "The contig length such that at least half of the nucleotides in the assembly belong to contigs of this length or greater"
+        min: 0
+        scale: Blues
       num_contigs:
         title: "# Contigs"
-        description: "Total number of contiguous sequences in the genome assembly"
+        description: "The number of assembled contigs in the de novo assembly"
+        scale: Greens-rev
       pct_gc:
         title: "% GC"
         description: "Percentage of guanine and cytosine bases in the assembled genome"
         min: 0
         max: 100
+        scale: False
       assembly_len:
         title: "Assembly Length"
         description: "Total length of all contigs in the assembled genome"
+        scale: Blues
       largest_contig:
         title: "Largest Contig"
         description: "Length of the longest contig in the assembly"
+        scale: YlGn
       st:
         title: "Sequence Type"
-        description: "Sequence type based on Legionella pneumophila loci"
+        description: "Sequence type based on Legionella pneumophila database with el_gato"
         scale: False
       st_approach:
         title: "Sequence Typing Approach"
@@ -92,15 +106,16 @@ custom_data:
         title: "Chewbbaca Exc"
         description: "EXaCt match (100% DNA identity) with previously identified alleles"
         min: 0
-        max: 100
       chewbbaca_inf:
         title: "Chewbbaca Inf"
         description: "INFerred new alleles that had no exact match in the schema but are highly similar to loci in the schema"
+        min: 0
       chewbbaca_pct_exc:
         title: "% Chewbbaca Exc"
         description: "Percentage of EXaCt match (100% DNA identity) with previously identified alleles"
         min: 0
         max: 100
+        scale: YlGn
       qc_message:
         title: "QC Message"
         description: "Quality control message for failing/warning samples"
@@ -269,7 +284,7 @@ custom_data:
       num_contigs:
         title: "# Contigs"
         description: "Total number of contiguous sequences in the genome assembly"
-        scale: "Greens"
+        scale: "Greens-rev"
       num_contigs_score:
         title: "Score (# Contigs)"
         description: "Assigned score for '# Contigs'"
@@ -323,7 +338,6 @@ custom_data:
       GC_content_percent:
         title: "% GC Content"
         description: "Percentage of guanine and cytosine bases in the assembled genome"
-        scale: "Greens"
         min: 0
         max: 100
       GC_content_score:
@@ -332,6 +346,13 @@ custom_data:
         scale: "Purples"
         min: 0
         max: 1
+
+# Extensions to clean from names
+extra_fn_clean_exts:
+  - type: remove
+    pattern: .contigs
+  - type: remove
+    pattern: -bracken-breakdown
 
 # Search Pathes
 sp:

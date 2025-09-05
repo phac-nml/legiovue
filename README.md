@@ -50,7 +50,7 @@ Steps:
 
 By default, the `kraken2` and `SPAdes` steps have a minimum resource usage allocation set to `8 cpus` and `48GB memory` using the nf-core `process_high` label.
 
-This can be adjusted (along with the other labels) by creating and passing a [custom configuration file](https://nf-co.re/docs/usage/getting_started/configuration) with `-c <config>` or by adjusting the `--max_cpus` and `--max_memory` parameters. More info can be found in the [usage doc](./docs/usage.md)
+This can be adjusted (along with the other labels) by creating and passing a [custom configuration file](https://nf-co.re/docs/usage/getting_started/configuration) with `-c <config>` using the [`resourceLimits`](https://www.nextflow.io/docs/latest/reference/process.html#resourcelimits) definitions. More info can be found in the [usage doc](./docs/usage.md)
 
 The recommended `kraken2` database is the 8Gb standard database that can be found on the [AWS Index server](s3://genome-idx/kraken/standard_08gb_20240904) or the [the kraken2 database zone](https://benlangmead.github.io/aws-indexes/k2) so the required memory can be lowered a decent bit (16Gb) with minimal impact if resources are a limiting factor.
 
@@ -67,6 +67,7 @@ nextflow run phac-nml/legiovue \
     -profile <PROFILE> \
     --fastq_dir </PATH/TO/PAIRED_FASTQS> \
     --kraken2_db </PATH/TO/KRAKEN2_DB> \
+    --outdir <OUTDIR> \
     [Optional Args]
 ```
 
@@ -86,6 +87,7 @@ nextflow run phac-nml/legiovue \
     -profile <PROFILE> \
     --input </PATH/TO/INPUT.csv> \
     --kraken2_db </PATH/TO/KRAKEN2_DB> \
+    --outdir <OUTDIR> \
     [Optional Args]
 ```
 

@@ -74,9 +74,6 @@ nextflow_pipeline {
                 kraken2_db = "s3://genome-idx/kraken/standard_08gb_20240904"
                 outdir = "results"
                 min_reads = 100
-                max_memory = "8.GB"
-                max_cpus = 2
-                max_time = "1.h"
             }
         }
         then {
