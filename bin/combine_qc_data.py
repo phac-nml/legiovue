@@ -86,6 +86,13 @@ def parse_args() -> argparse.ArgumentParser:
         default=10.0,
         help="Minimum legionella pneumophila abundance from bracken output"
     )
+    parser.add_argument(
+        '-id',
+        '--irida_id',
+        type=str,
+        required=False,
+        help="The irida sample name if being used"
+    )
     return parser
 
 
@@ -283,6 +290,9 @@ def main() -> None:
 
     outdict['qc_status'] = qc_status
     outdict['qc_message'] = ';'.join(warn_qual_criteria)
+
+    if args.irida_id:
+        outdict['irida_id'] = str(args.irida_id)
 
     df = pd.DataFrame([outdict])
     df.to_csv(f'{sample}.qc.csv', sep=',', index=False)

@@ -11,6 +11,11 @@
                 "type": "string",
                 "pattern": "^\\S+$",
                 "errorMessage": "Sample name must be provided and cannot contain spaces",
+                "meta": ["irida_id"],
+                "unique": true
+            },
+            "sample_name": {
+                "errorMessage": "Optional value used to override sample when used in tools like IRIDA-Next",
                 "meta": ["id"]
             },
             "fastq_1": {
