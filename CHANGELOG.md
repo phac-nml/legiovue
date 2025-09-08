@@ -20,6 +20,8 @@ Updates focusing on getting LegioVue setup to run in IRIDA-Next along with fixin
 - Organization of the `nextflow_schema.json` file by moving results and adjusting input/output options [#23](https://github.com/phac-nml/legiovue/pull/23)
 - Naming convention in pipeline itself (all lowercase) [#23](https://github.com/phac-nml/legiovue/pull/23)
 - Tests updated [#23](https://github.com/phac-nml/legiovue/pull/23) [#25](https://github.com/phac-nml/legiovue/pull/25)
+- Test kraken2 database from the amazon link to custom tiny Legionella pneumophila only one [#25](https://github.com/phac-nml/legiovue/pull/25)
+  - This should only be used for running CI tests, not production data unless you do not care about the classification stats!
 
 ### `Fixes`
 

@@ -36,3 +36,11 @@ indent_style = unset
 [*.test]
 indent_style = unset
 end_of_line = unset
+
+# ignore k2 database
+[/tests/test_data/lgk2_db/**]
+charset = unset
+end_of_line = unset
+insert_final_newline = unset
+trim_trailing_whitespace = unset
+indent_style = unset
