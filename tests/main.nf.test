@@ -12,7 +12,7 @@ nextflow_pipeline {
                 input = "${projectDir}/assets/samplesheet.csv"
                 fastq_dir = "${baseDir}/tests/test_data/"
                 outdir = "results"
-                kraken2_db = "s3://genome-idx/kraken/standard_08gb_20240904"
+                kraken2_db = "${projectDir}/tests/test_data/lgk2_db"
             }
         }
         then {
@@ -31,7 +31,7 @@ nextflow_pipeline {
         when {
             params {
                 outdir = "results"
-                kraken2_db = "s3://genome-idx/kraken/standard_08gb_20240904"
+                kraken2_db = "${projectDir}/tests/test_data/lgk2_db"
             }
         }
         then {
@@ -51,7 +51,7 @@ nextflow_pipeline {
             params {
                 input = "$baseDir/tests/test_data/input_none.csv"
                 outdir = "results"
-                kraken2_db = "s3://genome-idx/kraken/standard_08gb_20240904"
+                kraken2_db = "${projectDir}/tests/test_data/lgk2_db"
                 min_reads = 100
             }
         }
@@ -65,13 +65,13 @@ nextflow_pipeline {
     }
 
     //--- Test 4
-    test("Data Run Test") {
+    test("Data Run Fastq Dir Test") {
         tag "success"
 
         when {
             params {
                 fastq_dir = "${projectDir}/tests/test_data/"
-                kraken2_db = "s3://genome-idx/kraken/standard_08gb_20240904"
+                kraken2_db = "${projectDir}/tests/test_data/lgk2_db"
                 outdir = "results"
                 min_reads = 100
             }
@@ -147,7 +147,7 @@ nextflow_pipeline {
 
             lines = path("$launchDir/results/kraken_bracken/in1-abundances.tsv").text
             assert lines.contains("name\ttaxonomy_id\ttaxonomy_lvl\tkraken_assigned_reads\tadded_reads\tnew_est_reads\tfraction_total_reads")
-            assert lines.contains("Legionella pneumophila\t446\tS\t1443\t407\t1850\t1.00000")
+            assert lines.contains("Legionella pneumophila\t446\tS\t3409\t0\t3409\t1.00000")
 
             // Trimmomatic
             assert path("$launchDir/results/trimmomatic/in1_paired_R1.fastq.gz").exists()
@@ -165,6 +165,119 @@ nextflow_pipeline {
             lines = path("$launchDir/results/quast/scored_quast_report.csv").text
             assert lines.contains("sample,num_contigs,num_contigs_score,N50,N50_score,duplication_ratio,duplication_ratio_score,percent_alignment,percent_alignment_score,assembly_length,assembly_length_score,GC_content_percent,GC_content_score,final_score,score_rating")
             assert lines.contains("in1.contigs,19,1,716,0.0,1.0,1,0.051,0,95953,0,43.59,0,2.0,unideal")
+
+            // Just checking that outdirs exist
+            assert path("$launchDir/results/fastqc").exists()
+            assert path("$launchDir/results/spades").exists()
+
+            // Pipeline info and tracking
+            assert path("$launchDir/results/pipeline_info").exists()
+            assert path("$launchDir/results/pipeline_info/software_versions.yml").exists()
+            assert path("$launchDir/results/pipeline_info/manifest.json").exists()
+        }
+    }
+
+    //--- Test 5
+    test("Data Run Samplesheet Test with IRIDA ID") {
+        tag "success"
+
+        when {
+            params {
+                input = "${projectDir}/assets/samplesheet.csv"
+                kraken2_db = "${projectDir}/tests/test_data/lgk2_db"
+                outdir = "results"
+                min_reads = 100
+            }
+        }
+        then {
+            //
+            // Status
+            //
+            assert workflow.success
+            // One fail which is from el_gato assemblies on low data
+            assert workflow.trace.failed().size() == 1
+
+            //
+            // Channels and Files Exist
+            //
+            def lines = []
+            assert path("$launchDir/results").exists()
+
+            // Final QC File
+            assert path("$launchDir/results/overall.qc.csv").exists()
+
+            lines = path("$launchDir/results/overall.qc.csv").text
+            assert lines.contains("sample,lpn_abundance,num_paired_trimmed_reads,pct_paired_reads_passing_qc,n50,num_contigs,pct_gc,assembly_len,largest_contig,assembly_qc_score,st,st_approach,chewbbaca_exc,chewbbaca_inf,chewbbaca_pct_exc,qc_status,qc_message,irida_id")
+            assert lines.contains("sample1,100.0,4662,93.24,716,19,43.59,95953,1810,2.0,MD-,reads,0,0,0.0,WARN,low_read_count;low_n50;low_qc_score;low_exact_allele_calls,add_sample1")
+            assert lines.contains("sample2,100.0,12,100.0,0,0,0,0,0,0,NA,NA,0,0,0.0,FAIL,failing_read_count,add_sample2")
+
+            // ChewBBACA Allele Call data
+            assert path("$launchDir/results/chewbbaca/allele_calls/results_statistics.tsv").exists()
+
+            lines = path("$launchDir/results/chewbbaca/allele_calls/results_statistics.tsv").text
+            assert lines.contains("FILE\tEXC\tINF\tPLOT3\tPLOT5\tLOTSC\tNIPH\tNIPHEM\tALM\tASM\tPAMA\tLNF\tInvalid CDSs\tClassified_CDSs\tTotal_CDSs")
+            assert lines.contains("sample1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t1521\t0\t0\t40")
+
+            assert path("$launchDir/results/chewbbaca/allele_calls/cgMLST/missing_loci_stats.tsv").exists()
+
+            lines = path("$launchDir/results/chewbbaca/allele_calls/cgMLST/missing_loci_stats.tsv").text
+            assert lines.contains("FILE\tmissing\tpercentage")
+            assert lines.contains("sample1\t1521\t1.0")
+
+            // el_gato final allele data
+            assert path("$launchDir/results/el_gato/el_gato_st.tsv").exists()
+
+            lines = path("$launchDir/results/el_gato/el_gato_st.tsv").text
+            assert lines.contains("Sample\tST\tflaA\tpilE\tasd\tmip\tmompS\tproA\tneuA_neuAH\tapproach")
+            assert lines.contains("sample1\tMD-\t-\t-\t-\t-\t-\t-\t-\treads")
+
+            // el_gato expected subdirectories and files
+            assert path("$launchDir/results/el_gato/el_gato_report.pdf").exists()
+            assert path("$launchDir/results/el_gato/allele_stats").exists()
+            assert path("$launchDir/results/el_gato/plots").exists()
+            assert path("$launchDir/results/el_gato/reads").exists()
+
+            // IRIDA Next output
+            def iridanext_json = path("$launchDir/results/iridanext.output.json").json
+            def iridanext_global = iridanext_json.files.global
+            def iridanext_samples = iridanext_json.files.samples
+            def iridanext_metadata = iridanext_json.metadata.samples
+
+            assert iridanext_global.findAll { it.path == "chewbbaca/allele_calls/cgMLST/cgMLST99.tsv" }.size() == 1
+            assert iridanext_global.findAll { it.path == "chewbbaca/allele_calls/cgMLST/cgMLST100.tsv" }.size() == 1
+            assert iridanext_global.findAll { it.path == "chewbbaca/allele_calls/results_statistics.tsv" }.size() == 1
+            assert iridanext_global.findAll { it.path == "el_gato/el_gato_st.tsv" }.size() == 1
+
+            assert iridanext_samples.add_sample1.findAll { it.path == "spades/sample1.contigs.fa" }.size() == 1
+
+            assert iridanext_metadata.add_sample1.num_paired_trimmed_reads == "4662"
+            assert iridanext_metadata.add_sample1.st_approach == "reads"
+            assert iridanext_metadata.add_sample1.qc_status == "WARN"
+            assert iridanext_metadata.add_sample1.qc_message == "low_read_count;low_n50;low_qc_score;low_exact_allele_calls"
+
+            // Bracken final output (depends on kraken output)
+            assert path("$launchDir/results/kraken_bracken/sample1-abundances.tsv").exists()
+
+            lines = path("$launchDir/results/kraken_bracken/sample1-abundances.tsv").text
+            assert lines.contains("name\ttaxonomy_id\ttaxonomy_lvl\tkraken_assigned_reads\tadded_reads\tnew_est_reads\tfraction_total_reads")
+            assert lines.contains("Legionella pneumophila\t446\tS\t3409\t0\t3409\t1.00000")
+
+            // Trimmomatic
+            assert path("$launchDir/results/trimmomatic/sample1_paired_R1.fastq.gz").exists()
+            assert path("$launchDir/results/trimmomatic/sample1_paired_R2.fastq.gz").exists()
+
+            assert path("$launchDir/results/trimmomatic/sample1.summary.txt").exists()
+
+            lines = path("$launchDir/results/trimmomatic/sample1.summary.txt").text
+            assert lines.contains("Input Read Pairs: 5000")
+            assert lines.contains("Both Surviving Reads: 4662")
+
+            // QUAST scored report (final step for quast)
+            assert path("$launchDir/results/quast/scored_quast_report.csv").exists()
+
+            lines = path("$launchDir/results/quast/scored_quast_report.csv").text
+            assert lines.contains("sample,num_contigs,num_contigs_score,N50,N50_score,duplication_ratio,duplication_ratio_score,percent_alignment,percent_alignment_score,assembly_length,assembly_length_score,GC_content_percent,GC_content_score,final_score,score_rating")
+            assert lines.contains("sample1.contigs,19,1,716,0.0,1.0,1,0.051,0,95953,0,43.59,0,2.0,unideal")
 
             // Just checking that outdirs exist
             assert path("$launchDir/results/fastqc").exists()

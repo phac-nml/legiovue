@@ -9,16 +9,19 @@ Updates focusing on getting LegioVue setup to run in IRIDA-Next along with fixin
 
 ### `Added`
 
-- MultiQC module added to create html report
+- MultiQC module added to create html report [#23](https://github.com/phac-nml/legiovue/pull/23)
+- New column for samplesheet input and logic to use it for irida-next upload [#25](https://github.com/phac-nml/legiovue/pull/25)
 
 ### `Changed`
 
-- Bumped minimum nextflow version to 24.04.1
-- Addition of Quast values to the `scored_quast_report.csv` file
-- Changed the `final_qc_score` column's name and order within the `overall.qc.csv` file to make it clearer visually that the QC score does not take into account allele calling and cgMLST stats
-- Organization of the `nextflow_schema.json` file by moving results and adjusting input/output options
-- Naming convention in pipeline itself (all lowercase)
-- Tests updated
+- Bumped minimum nextflow version to 24.04.1 [#23](https://github.com/phac-nml/legiovue/pull/23)
+- Addition of Quast values to the `scored_quast_report.csv` file [#23](https://github.com/phac-nml/legiovue/pull/23)
+- Changed the `final_qc_score` column's name and order within the `overall.qc.csv` file to make it clearer visually that the QC score does not take into account allele calling and cgMLST stats [#23](https://github.com/phac-nml/legiovue/pull/23)
+- Organization of the `nextflow_schema.json` file by moving results and adjusting input/output options [#23](https://github.com/phac-nml/legiovue/pull/23)
+- Naming convention in pipeline itself (all lowercase) [#23](https://github.com/phac-nml/legiovue/pull/23)
+- Tests updated [#23](https://github.com/phac-nml/legiovue/pull/23) [#25](https://github.com/phac-nml/legiovue/pull/25)
+- Test kraken2 database from the amazon link to custom tiny Legionella pneumophila only one [#25](https://github.com/phac-nml/legiovue/pull/25)
+  - This should only be used for running CI tests, not production data unless you do not care about the classification stats!
 
 ### `Fixes`
 
@@ -69,5 +72,6 @@ Updates focusing on getting LegioVue setup to run in IRIDA-Next along with fixin
 
 - LegioVue pipeline created and initial beta code added
 
-[0.1.0]: https://github.com/phac-nml/legiovue/releases/tag/0.1.0
+[0.3.0]: https://github.com/phac-nml/legiovue/releases/tag/0.3.0
 [0.2.0]: https://github.com/phac-nml/legiovue/releases/tag/0.2.0
+[0.1.0]: https://github.com/phac-nml/legiovue/releases/tag/0.1.0

@@ -347,13 +347,6 @@ custom_data:
         min: 0
         max: 1
 
-# Extensions to clean from names
-extra_fn_clean_exts:
-  - type: remove
-    pattern: .contigs
-  - type: remove
-    pattern: -bracken-breakdown
-
 # Search Pathes
 sp:
   overall_quality_metrics:
