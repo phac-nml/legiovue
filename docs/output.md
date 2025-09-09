@@ -28,6 +28,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes d
 - [Final Quality Control](#final-quality-control)
   - [QUAST Scoring Script](#quast-scoring-script) - Simple assembly score of QUAST output based on established criteria
   - [Final QC Checks](#final-qc-checks) - Summary of pipeline QC metrics
+  - [MultiQC](#multiqc)
 
 Additionally [Pipeline information](#pipeline-information) which includes report metrics generated during the workflow execution can also be found
 
@@ -260,3 +261,14 @@ The `qc_message` column contains the reason for the `qc_status` and includes:
 | failing_read_count     | FAIL              | Read count below failing threshold (< 60,000 reads default) has been shown to lead to poor, uninformative assemblies and sample is kicked out |
 
 ---
+
+#### MultiQC
+
+<details markdown="1">
+<summary>Output files</summary>
+
+- `LegioVue-Run-Report_multiqc_report.html`: Final report summarizing quality metrics
+
+</details>
+
+The LegioVue Run Report HTML file is the final summary of all the samples run by the pipeline generated using RMarkdown. The report includes tables and visualization from most of the tools mentioned here.

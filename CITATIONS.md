@@ -47,3 +47,7 @@
 [GrapeTree](https://github.com/achtman-lab/GrapeTree)
 
 > Zhou, Z., Alikhan, N.-F., Sergeant, M. J., Luhmann, N., Vaz, C., Francisco, A. P., et al. (2018). GrapeTree: visualization of core genomic relationships among 100,000 bacterial pathogens. Genome Res. 28, 1395–1404. doi: 10.1101/gr.232397.117
+
+[MultiQC](https://seqera.io/multiqc/)
+
+> Ewels P, Magnusson M, Lundin S, Käller M. (2016). MultiQC: summarize analysis results for multiple tools and samples in a single report. Bioinformatics. 32(19):3047-8. doi: 10.1093/bioinformatics/btw354

@@ -86,6 +86,13 @@ def parse_args() -> argparse.ArgumentParser:
         default=10.0,
         help="Minimum legionella pneumophila abundance from bracken output"
     )
+    parser.add_argument(
+        '-id',
+        '--irida_id',
+        type=str,
+        required=False,
+        help="The irida sample name if being used"
+    )
     return parser
 
 
@@ -219,6 +226,21 @@ def main() -> None:
     if outdict['n50'] < 100000:
         warn_qual_criteria.append('low_n50')
 
+    # Score CSV
+    outdict['assembly_qc_score'] = 0
+    if args.final_score_csv:
+        outdict = grab_df_data(
+            args.final_score_csv,
+            ',',
+            f'{sample}.contigs',
+            'sample',
+            {'final_score': 'assembly_qc_score'},
+            outdict
+        )
+
+    if outdict['assembly_qc_score'] < 4:
+        warn_qual_criteria.append('low_qc_score')
+
     # ST
     outdict['st'] = 'NA'
     outdict['st_approach'] = 'NA'
@@ -258,21 +280,6 @@ def main() -> None:
     if outdict['chewbbaca_pct_exc'] < 90:
         warn_qual_criteria.append('low_exact_allele_calls')
 
-    # Score CSV
-    outdict['final_qc_score'] = 0
-    if args.final_score_csv:
-        outdict = grab_df_data(
-            args.final_score_csv,
-            ',',
-            f'{sample}.contigs',
-            'sample',
-            {'final_score': 'final_qc_score'},
-            outdict
-        )
-
-    if outdict['final_qc_score'] < 4:
-        warn_qual_criteria.append('low_qc_score')
-
     # QC Checks and Final Data Cols
     qc_status = "PASS"
     if failed:
@@ -283,6 +290,9 @@ def main() -> None:
 
     outdict['qc_status'] = qc_status
     outdict['qc_message'] = ';'.join(warn_qual_criteria)
+
+    if args.irida_id:
+        outdict['irida_id'] = str(args.irida_id)
 
     df = pd.DataFrame([outdict])
     df.to_csv(f'{sample}.qc.csv', sep=',', index=False)

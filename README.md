@@ -26,7 +26,7 @@ This project serves as a repository for the LegioVue analysis pipeline along wit
 
 ## Installation
 
-Installation requires both [nextflow](https://www.nextflow.io/) (minimum version tested `23.10.1`) and a dependency management system to run.
+Installation requires both [nextflow](https://www.nextflow.io/) (minimum version tested `24.04.1`) and a dependency management system to run.
 
 Steps:
 
@@ -50,7 +50,7 @@ Steps:
 
 By default, the `kraken2` and `SPAdes` steps have a minimum resource usage allocation set to `8 cpus` and `48GB memory` using the nf-core `process_high` label.
 
-This can be adjusted (along with the other labels) by creating and passing a [custom configuration file](https://nf-co.re/docs/usage/getting_started/configuration) with `-c <config>` or by adjusting the `--max_cpus` and `--max_memory` parameters. More info can be found in the [usage doc](./docs/usage.md)
+This can be adjusted (along with the other labels) by creating and passing a [custom configuration file](https://nf-co.re/docs/usage/getting_started/configuration) with `-c <config>` using the [`resourceLimits`](https://www.nextflow.io/docs/latest/reference/process.html#resourcelimits) definitions. More info can be found in the [usage doc](./docs/usage.md)
 
 The recommended `kraken2` database is the 8Gb standard database that can be found on the [AWS Index server](s3://genome-idx/kraken/standard_08gb_20240904) or the [the kraken2 database zone](https://benlangmead.github.io/aws-indexes/k2) so the required memory can be lowered a decent bit (16Gb) with minimal impact if resources are a limiting factor.
 
@@ -67,6 +67,7 @@ nextflow run phac-nml/legiovue \
     -profile <PROFILE> \
     --fastq_dir </PATH/TO/PAIRED_FASTQS> \
     --kraken2_db </PATH/TO/KRAKEN2_DB> \
+    --outdir <OUTDIR> \
     [Optional Args]
 ```
 
@@ -86,6 +87,7 @@ nextflow run phac-nml/legiovue \
     -profile <PROFILE> \
     --input </PATH/TO/INPUT.csv> \
     --kraken2_db </PATH/TO/KRAKEN2_DB> \
+    --outdir <OUTDIR> \
     [Optional Args]
 ```
 
@@ -111,6 +113,7 @@ All of the outputs can be found in [the output docs](./docs/output.md). All outp
 - `el_gato/el_gato_st.tsv`: Summarized el_gato ST calls for all samples.
 - `chewbbaca/allele_calls/cgMLST/`: cgMLST profiles that can be used for downstream visualization.
 - `overall.qc.csv`: Final quality summary report for each sample throughout the different pipeline steps. Important quality flags can be found in this file.
+- `LegioVue-Run-Report_multiqc_report.html`: MultiQC report including quality metrics from most of the tools used within the pipeline.
 
 ## Pipeline Components and Settings
 
@@ -180,6 +183,10 @@ The `qc_message` column contains the reason for the `qc_status` and includes:
 | low_qc_score           | WARN              | Low QUAST-Analyzer QC score (< 4) indicates that there may be issues in the assembly, possibly affecting the cgMLST profile.                                 |
 | no_lpn_detected        | FAIL              | Very low (< 10% default) _L.pneumophila_ abundance flags that the sample may not be _L.pneumophila_ and sample is removed from the remainder of the pipeline |
 | failing_read_count     | FAIL              | Post-trimming read count below failing threshold (< 60,000 reads default) has been shown to lead to poor, uninformative assemblies and sample is removed.    |
+
+**`MultiQC`**
+
+[MultiQC](https://seqera.io/multiqc/) is used to culminate the quality metrics from the tools mentioned earlier into an easily accessible html report with visual components. It includes results from [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/), [Kraken2](https://github.com/DerrickWood/kraken2), [QUAST](https://github.com/ablab/quast), [el_gato](https://github.com/appliedbinf/el_gato), [Trimmomatic](https://github.com/usadellab/Trimmomatic), and [chewBBACA](https://github.com/B-UMMI/chewBBACA).
 
 ## Limitations
 
