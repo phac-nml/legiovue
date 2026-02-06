@@ -20,14 +20,13 @@ include {KRAKEN2_CLASSIFICATION_NANOPORE    } from './modules/local/kraken.nf' /
 include {DRAGONFLYE                         } from './modules/local/dragonflye.nf' //Initial commit
 include {QUAST                              } from './modules/local/quast.nf' // use existing, confirm input/output
 include {SCORE_QUAST_NANOPORE               } from './modules/local/quast.nf' // Initial commit, modified for nanopore
-include {ASSEMBLY_DEPTH                     } from './modules/local/Assembly_Depth.nf' // To Do
-include {EL_GATO_ASSEMBLY                   } from './modules/local/el_gato.nf' // use existing 
 include {MINIMAP2_ASSEMBLY                  } from './modules/local/assembly_quality.nf' // Initial commit
 include {SAMTOOLS_COVERAGE_ASSEMBLY         } from './modules/local/assembly_quality.nf' // Initial commit
+include {EL_GATO_ASSEMBLY                   } from './modules/local/el_gato.nf' // use existing 
 include {MINIMAP2_ALLELES                   } from './modules/local/allele_quality.nf' // Initial commit
 include {SAMTOOLS_COVERAGE_ALLELES          } from './modules/local/allele_quality.nf' // Initial commit
 include {PYSAMSTATS_NANOPORE                } from './modules/local/allele_quality.nf' // Initial commit
-include {NANOPORE_QC_COLLECTION             } from './modules/local/Nanopore_QC_Collection.nf' // To Do
+include {PLOT_EL_GATO_ALLELES               } from './modules/local/plotting.nf' // use existing
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -67,6 +66,12 @@ workflow LEGIOVUE_ONT {
     //run dragonflye on Trimmed Reads
     DRAGONFLYE(NANOQ.out.trimmed_reads)
 
+    /*
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    ASSEMBLY QUALITY EVALUATION
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    */
+
     //run Quast on Dragonflye assembly
     QUAST(DRAGONFLYE.out.assembly, ch_quast_ref)
 
@@ -77,7 +82,13 @@ workflow LEGIOVUE_ONT {
     MINIMAP2_ASSEMBLY(ch_assembly, ch_trimmed_reads)
 
     //calculate coverage with samtools
-    SAMTOOLS_COVERAGE(MINIMAP2.out.assembly_sam)
+    SAMTOOLS_COVERAGE_ASSEMBLY(MINIMAP2.out.assembly_sam)
+
+    /*
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    SBT ALLELE ASSIGNMENT AND QUALITY EVALUATION
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    */
 
     //run el_gato with Dragonflye assembly
     EL_GATO(DRAGONFLYE.out.assembly)
@@ -91,6 +102,7 @@ workflow LEGIOVUE_ONT {
     //determine per base depth and qscore for alleles with pysamstats
     PYSAMSTATS_NANOPORE(SAMTOOLS_COVERAGE_ALLELES.out.alleles_bam)
 
-    //Collect QC Data
-    NANOPORE_QC_COLLECTION(NANOPLOT.out.untrimmed_NanoStats, NANOPLOT_TRIMMED.out.trimmed_NanoStats, QUAST.out.report, ASSEMBLY_DEPTH.out, ALLELE_DEPTH.out, SCORE_QUAST.out.report)
+    //plot allele depth and qscore with plotting utility
+    PLOT_EL_GATO_ALLELES(PYSAMSTATS_NANOPORE.out.allele_stats_tsv)
+
 }
