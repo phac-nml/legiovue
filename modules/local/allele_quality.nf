@@ -82,7 +82,7 @@ process PYSAMSTATS_NANOPORE {
     tuple val(meta), path(alleles_bam)
 
     output:
-    tuple val(meta), path("*${meta.id}_alleles_baseq.tsv"), emit: alleles_baseq
+    tuple val(meta), path("*${meta.id}_allele_stats.tsv"), emit: allele_stats_tsv
 
     when:
     task.ext.when == null || task.ext.when
@@ -92,6 +92,6 @@ process PYSAMSTATS_NANOPORE {
     pysamstats \\
         --type baseq \\
         $alleles_bam \\
-        > ./${meta.id}_alleles_baseq.tsv \\
+        > ./${meta.id}_allele_stats.tsv \\
     """
 }
