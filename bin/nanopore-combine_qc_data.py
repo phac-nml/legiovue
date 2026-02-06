@@ -52,6 +52,13 @@ def parse_args() -> argparse.ArgumentParser:
         help="Quast summary TSV output"
     )
     parser.add_argument(
+        '-qs',
+        '--quast_score_csv',
+        type=Path,
+        required=False,
+        help="Quast score CSV output"
+    )
+    parser.add_argument(
         '-as',
         '--assembly_cov_txt',
         type=Path,
@@ -73,18 +80,18 @@ def parse_args() -> argparse.ArgumentParser:
         help="Chewbbaca allele stats TSV output"
     )
     parser.add_argument(
-        '-fs',
-        '--final_score_csv',
-        type=Path,
-        required=False,
-        help="Quast final score CSV output"
-    )
-    parser.add_argument(
         '--min_reads',
         type=int,
         required=False,
         default=10000,
         help="Minimum number of reads required to be passed through the pipeline"
+    )
+    parser.add_argument(
+        '--min_reads_warn',
+        type=int,
+        required=False,
+        default=30000,
+        help="Minimum number of reads to issue a warning"
     )
     parser.add_argument(
         '--min_length',
@@ -94,11 +101,25 @@ def parse_args() -> argparse.ArgumentParser:
         help="Minimum read length required to be passed through the pipeline"
     )
     parser.add_argument(
+        '--min_length_warn',
+        type=float,
+        required=False,
+        default=4000.0,
+        help="Minimum read length to issue a warning"
+    )
+    parser.add_argument(
         '--min_qual',
         type=float,
         required=False,
         default=14.0,
-        help="Minimum read length required to be passed through the pipeline"
+        help="Minimum read quality required to be passed through the pipeline"
+    )
+    parser.add_argument(
+        '--min_qual_warn',
+        type=float,
+        required=False,
+        default=17.0,
+        help="Minimum read quality to issue a warning"
     )
     parser.add_argument(
         '--min_abundance_percent',
@@ -356,19 +377,19 @@ def main() -> None:
         if outdict['Post_Trim_Number_of_Reads'] < args.min_reads:
             failed = True
             failed_reason = ['failing_read_count']
-        elif outdict['Post_Trim_Number_of_Reads'] < 30000:
+        elif outdict['Post_Trim_Number_of_Reads'] < args.min_reads_warn:
             warn_qual_criteria.append('low_read_count')
 
         if outdict['Post_Trim_Median_Read_Length'] < args.min_length:
             failed = True
             failed_reason = ['failing_read_length']
-        elif outdict['Post_Trim_Median_Read_Length'] < 4000.0:
+        elif outdict['Post_Trim_Median_Read_Length'] < args.min_length_warn:
             warn_qual_criteria.append('low_read_length')
 
         if outdict['Post_Trim_Median_Read_Quality'] < args.min_qual:
             failed = True
             failed_reason = ['failing_read_quality']
-        elif outdict['Post_Trim_Median_Read_Quality'] < 17.0:
+        elif outdict['Post_Trim_Median_Read_Quality'] < args.min_qual_warn:
             warn_qual_criteria.append('low_read_quality')
 
     # Quast
@@ -540,18 +561,18 @@ def main() -> None:
             warn_qual_criteria.append('low_exact_allele_calls')
 
     # Score CSV
-    outdict['final_qc_score'] = 0
-    if args.final_score_csv:
+    outdict['assembly_qc_score'] = 0
+    if args.quast_score_csv:
         outdict = grab_df_data(
-            args.final_score_csv,
+            args.quast_score_csv,
             ',',
             f'{sample}_',
             'sample',
-            {'final_score': 'final_qc_score'},
+            {'final_score': 'assembly_qc_score'},
             outdict
         )
 
-        if outdict['final_qc_score'] < 4:
+        if outdict['assembly_qc_score'] < 4:
             warn_qual_criteria.append('low_qc_score')
 
     # QC Checks and Final Data Cols
