@@ -70,8 +70,8 @@ process COMBINE_SAMPLE_DATA_NANOPORE {
 
     input:
     tuple val(meta), path(bracken_report)
-    path(pretrim_nanoplot_txt)
-    path(trim_nanoplot_txt)
+    tuple val (meta), path(pretrim_nanoplot_txt)
+    tuple val (meta), path(trim_nanoplot_txt)
     path(quast_report)
     path(scored_quast_report)
     path(assembly_cov_txt)
