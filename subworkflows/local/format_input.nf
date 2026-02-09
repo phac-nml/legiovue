@@ -21,11 +21,28 @@ include {samplesheetToList } from 'plugin/nf-schema'
 workflow FORMAT_INPUT {
     main:
     if ( params.fastq_dir ) {
-        // Just adapting to the metamap format using fromFilePairs
+        // Try paired-end pattern first; don't fail if none found
         Channel
-            .fromFilePairs("${params.fastq_dir}/*_{R1,R2}*.fastq*", checkIfExists:true)
+            .fromFilePairs("${params.fastq_dir}/*_{R1,R2}*.fastq*", checkIfExists:false)
             .map { it -> [ [id: it[0], irida_id: it[0]], it[1] ] }
+            .ifEmpty {
+                // Fallback: map all files in the dir as single-end (e.g. nanopore)
+                Channel.fromPath("${params.fastq_dir}/*.fastq*")
+                    .map { reads ->
+                        def id = reads.baseName.replaceAll(/\.fastq.*\$/, '')
+                        [ [id: id, irida_id: id], [ file(reads) ] ]
+                    }
+            }
+            .set { ch_maybe_paired }
+
+        // Split into paired vs single (nanopore) channels based on file count
+        ch_maybe_paired
+            .filter { meta, fastqs -> fastqs.size() == 2 }
             .set { ch_paired_fastqs }
+
+        ch_maybe_paired
+            .filter { meta, fastqs -> fastqs.size() == 1 }
+            .set { ch_nanopore_fastqs }
     } else {
         // Matching the above formatting by creating a list of the fastq file pairs
         //  Schema requires pairs at the moment so this is ok. If we want to support ONT
@@ -41,19 +58,21 @@ workflow FORMAT_INPUT {
                     // Non-alphanumeric characters (excluding _,-,.) will be replaced with "_"
                     meta.id = meta.id.replaceAll(/[^A-Za-z0-9_.\-]/, '_')
                 }
-                // Used in the groupTuple below to ensure where multiple reads are provided for a sample, they are grouped together
-                if (!fastq_2) {
-                        return [ meta.id, meta + [ single_end:true ], [ fastq_1 ] ]
-                    } else {
-                        return [ meta.id, meta + [ single_end:false ], [ fastq_1, fastq_2 ] ]
-                    }
-
                 // Ensure ID is unique by appending meta.irida_id if needed
                 while (processedIDs.contains(meta.id)) {
                     meta.id = "${meta.id}_${meta.irida_id}"
                 }
                 // Add the ID to the set of processed IDs
                 processedIDs << meta.id
+
+                // Used in the groupTuple below to ensure where multiple reads are provided for a sample, they are grouped together
+                if (!fastq_2) {
+                    meta = meta + [ single_end: true ]
+                    return [ meta.id, meta, [ fastq_1 ] ]
+                } else {
+                    meta = meta + [ single_end: false ]
+                    return [ meta.id, meta, [ fastq_1, fastq_2 ] ]
+                }
             }
             .groupTuple()
             .map { samplesheet ->
@@ -63,11 +82,21 @@ workflow FORMAT_INPUT {
                 meta, fastqs ->
                     return [ meta, fastqs.flatten() ]
             }
+            .set { ch_all_fastqs }
+
+        // Split samples into single-end and paired-end channels
+        ch_all_fastqs
+            .filter { meta, fastqs -> meta.single_end == true }
+            .set { ch_nanopore_fastqs }
+
+        ch_all_fastqs
+            .filter { meta, fastqs -> meta.single_end == false }
             .set { ch_paired_fastqs }
     }
 
     emit:
-    pass = ch_paired_fastqs      // channel: [ val(meta), file(fastq_1), file(fastq_2) ]
+    pass = ch_paired_fastqs // channel of tuples: [ sample_id, meta, [fastq_1, fastq_2] ]
+    pass = ch_nanopore_fastqs // channel of tuples: [ sample_id, meta, [fastq_1] ]
 }
 
 /*
