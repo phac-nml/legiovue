@@ -180,19 +180,18 @@ workflow LEGIOVUE_ONT {
             ch_schema_targets
         )
         ch_prepped_schema = CHEWBBACA_PREP_EXTERNAL_SCHEMA.out.schema
-        ch_versions = ch_versions.mix(CHEWBBACA_PREP_EXTERNAL_SCHEMA.out.versions)
+        //ch_versions = ch_versions.mix(CHEWBBACA_PREP_EXTERNAL_SCHEMA.out.versions)
     }
     CHEWBBACA_ALLELE_CALL(
-        DRAGONFLYE.out.assembly,
-            .collect{ it[1] },
+        DRAGONFLYE.out.assembly.collect{ it[1] },
         ch_prepped_schema
     )
-    ch_versions = ch_versions.mix(CHEWBBACA_ALLELE_CALL.out.versions)
+    //ch_versions = ch_versions.mix(CHEWBBACA_ALLELE_CALL.out.versions)
 
     CHEWBBACA_EXTRACT_CGMLST(
         CHEWBBACA_ALLELE_CALL.out.results_alleles
     )
-    ch_versions = ch_versions.mix(CHEWBBACA_EXTRACT_CGMLST.out.versions)
+    //ch_versions = ch_versions.mix(CHEWBBACA_EXTRACT_CGMLST.out.versions)
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -218,8 +217,9 @@ workflow LEGIOVUE_ONT {
         COMBINE_SAMPLE_DATA_NANOPORE.out.csv
     )
 
-    CUSTOM_DUMPSOFTWAREVERSIONS(
-        ch_versions.unique().collectFile(name: 'collated_versions.yml')
-    )
+
+    // CUSTOM_DUMPSOFTWAREVERSIONS(
+    //     ch_versions.unique().collectFile(name: 'collated_versions.yml')
+    // )
 
 }
