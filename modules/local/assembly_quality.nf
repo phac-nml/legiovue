@@ -70,16 +70,3 @@ process SAMTOOLS_COVERAGE_ASSEMBLY {
         -o ./${meta.id}_assembly_coverage.txt \\
     """
 }
-
-workflow ASSEMBLY_DEPTH {
-    take:
-    ch_assembly
-    ch_trimmed_reads
-
-    main:
-    
-
-    //emit coverage report for qc data collection
-    emit:
-    SAMTOOLS_COVERAGE.out.assembly_coverage
-}
