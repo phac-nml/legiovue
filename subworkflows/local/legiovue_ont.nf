@@ -53,7 +53,7 @@ RUN WORKFLOW
 
 workflow LEGIOVUE_ONT {
     take:
-    ch_nanopore_fastqs
+    nanopore
 
     main:
     
@@ -65,7 +65,7 @@ workflow LEGIOVUE_ONT {
 
     //run kraken2 on nanopore reads
     KRAKEN2_CLASSIFICATION_NANOPORE(
-        ch_nanopore_fastqs,
+        nanopore,
         ch_kraken2_db
     )
 
@@ -83,12 +83,12 @@ workflow LEGIOVUE_ONT {
 
     //run NanoPlot
     NANOPLOT(
-        ch_nanopore_fastqs
+        nanopore
     )
 
     //Nanoq to trim reads under 1000bp in length
     NANOQ(
-        ch_nanopore_fastqs
+        nanopore
     )
 
     //run Nanoplot on Trimmed Reads

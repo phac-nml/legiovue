@@ -95,8 +95,8 @@ workflow FORMAT_INPUT {
     }
 
     emit:
-    pass = ch_paired_fastqs // channel of tuples: [ sample_id, meta, [fastq_1, fastq_2] ]
-    pass = ch_nanopore_fastqs // channel of tuples: [ sample_id, meta, [fastq_1] ]
+    paired = ch_paired_fastqs // channel of tuples: [ sample_id, meta, [fastq_1, fastq_2] ]
+    nanopore = ch_nanopore_fastqs // channel of tuples: [ sample_id, meta, [fastq_1] ]
 }
 
 /*
