@@ -13,21 +13,27 @@ IMPORT MODULES / SUBWORKFLOWS / FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include {KRAKEN2_CLASSIFICATION_NANOPORE    } from './modules/local/kraken.nf'
-include {BRACKEN                            } from './modules/local/bracken.nf'
-include {NANOPLOT                           } from './modules/local/nanoplot.nf'
-include {NANOQ                              } from './modules/local/nanoq.nf'
-include {NANOPLOT_TRIMMED                   } from './modules/local/nanoplot.nf'
-include {DRAGONFLYE                         } from './modules/local/dragonflye.nf'
-include {QUAST                              } from './modules/local/quast.nf'
-include {SCORE_QUAST_NANOPORE               } from './modules/local/quast.nf'
-include {MINIMAP2_ASSEMBLY                  } from './modules/local/assembly_quality.nf'
-include {SAMTOOLS_COVERAGE_ASSEMBLY         } from './modules/local/assembly_quality.nf'
-include {EL_GATO_ASSEMBLY                   } from './modules/local/el_gato.nf'
-include {MINIMAP2_ALLELES                   } from './modules/local/allele_quality.nf'
-include {SAMTOOLS_COVERAGE_ALLELES          } from './modules/local/allele_quality.nf'
-include {PYSAMSTATS_NANOPORE                } from './modules/local/allele_quality.nf'
-include {PLOT_EL_GATO_ALLELES               } from './modules/local/plotting.nf'
+include {KRAKEN2_CLASSIFICATION_NANOPORE    } from '../modules/local/kraken.nf'
+include {BRACKEN                            } from '../modules/local/bracken.nf'
+include {NANOPLOT                           } from '../modules/local/nanoplot.nf'
+include {NANOQ                              } from '../modules/local/nanoq.nf'
+include {NANOPLOT_TRIMMED                   } from '../modules/local/nanoplot.nf'
+include {DRAGONFLYE                         } from '../modules/local/dragonflye.nf'
+include {QUAST                              } from '../modules/local/quast.nf'
+include {SCORE_QUAST_NANOPORE               } from '../modules/local/quast.nf'
+include {MINIMAP2_ASSEMBLY                  } from '../modules/local/assembly_quality.nf'
+include {SAMTOOLS_COVERAGE_ASSEMBLY         } from '../modules/local/assembly_quality.nf'
+include {EL_GATO_ASSEMBLY                   } from '../modules/local/el_gato.nf'
+include {MINIMAP2_ALLELES                   } from '../modules/local/allele_quality.nf'
+include {SAMTOOLS_COVERAGE_ALLELES          } from '../modules/local/allele_quality.nf'
+include {PYSAMSTATS_NANOPORE                } from '../modules/local/allele_quality.nf'
+include {PLOT_EL_GATO_ALLELES               } from '../modules/local/plotting.nf'
+include {CHEWBBACA_PREP_EXTERNAL_SCHEMA     } from '../modules/local/chewbbaca.nf'
+include {CHEWBBACA_ALLELE_CALL              } from '../modules/local/chewbbaca.nf'
+include {CHEWBBACA_EXTRACT_CGMLST           } from '../modules/local/chewbbaca.nf'
+include {COMBINE_SAMPLE_DATA_NANOPORE       } from '../modules/local/qc.nf'
+include {CSVTK_CONCAT_QC_DATA               } from '../modules/local/csvtk.nf'
+include {CUSTOM_DUMPSOFTWAREVERSIONS        } from '../modules/nf-core/custom/dumpsoftwareversions/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -43,7 +49,8 @@ ch_max_contigs_nanopore = params.max_contigs_nanopore
 ch_min_align_percent_nanopore = params.min_align_percent_nanopore
 ch_min_n50_score_nanopore = params.min_n50_score_nanopore
 ch_max_n50_score_nanopore = params.max_n50_score_nanopore
-
+ch_prepped_schema = file(params.prepped_schema, type: 'dir', checkIfExists: true)
+ch_schema_targets   = params.schema_targets ? file(params.schema_targets, type: 'dir', checkIfExists: true) : []
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -160,6 +167,59 @@ workflow LEGIOVUE_ONT {
     //plot allele depth and qscore with plotting utility
     PLOT_EL_GATO_ALLELES(
         PYSAMSTATS_NANOPORE.out.allele_stats_tsv
+    )
+
+    /*
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    CHEWBBACA cgMLST ANALYSIS
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    */
+
+    if ( params.schema_targets ){
+        CHEWBBACA_PREP_EXTERNAL_SCHEMA(
+            ch_schema_targets
+        )
+        ch_prepped_schema = CHEWBBACA_PREP_EXTERNAL_SCHEMA.out.schema
+        ch_versions = ch_versions.mix(CHEWBBACA_PREP_EXTERNAL_SCHEMA.out.versions)
+    }
+    CHEWBBACA_ALLELE_CALL(
+        DRAGONFLYE.out.assembly,
+            .collect{ it[1] },
+        ch_prepped_schema
+    )
+    ch_versions = ch_versions.mix(CHEWBBACA_ALLELE_CALL.out.versions)
+
+    CHEWBBACA_EXTRACT_CGMLST(
+        CHEWBBACA_ALLELE_CALL.out.results_alleles
+    )
+    ch_versions = ch_versions.mix(CHEWBBACA_EXTRACT_CGMLST.out.versions)
+
+    /*
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    QC Collection
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    */
+
+    //combine QC data into single csv per sample
+    COMBINE_SAMPLE_DATA_NANOPORE(
+        BRACKEN.out.abundance,
+        NANOPLOT.out.untrimmed_NanoStats,
+        NANOPLOT_TRIMMED.out.trimmed_NanoStats,
+        QUAST.out.report,
+        SCORE_QUAST_NANOPORE.out.report,
+        SAMTOOLS_COVERAGE_ASSEMBLY.out.assembly_coverage,
+        SAMTOOLS_COVERAGE_ALLELES.out.alleles_coverage,
+        EL_GATO_ASSEMBLY.out.report,
+        CHEWBBACA_ALLELE_CALL.out.results_alleles
+    )
+
+    //combine all individual qc csvs into single csv for all samples
+    CSVTK_CONCAT_QC_DATA(
+        COMBINE_SAMPLE_DATA_NANOPORE.out.csv
+    )
+
+    CUSTOM_DUMPSOFTWAREVERSIONS(
+        ch_versions.unique().collectFile(name: 'collated_versions.yml')
     )
 
 }
