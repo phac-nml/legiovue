@@ -20,17 +20,24 @@ include {samplesheetToList } from 'plugin/nf-schema'
 */
 workflow FORMAT_INPUT {
     main:
+    // ensure channels exist in all code paths so they're visible to emit
+    ch_paired_fastqs = Channel.empty()
+    ch_nanopore_fastqs = Channel.empty()
     if ( params.fastq_dir ) {
         // Try paired-end pattern first; don't fail if none found
         Channel
             .fromFilePairs("${params.fastq_dir}/*_{R1,R2}*.fastq*", checkIfExists:false)
-            .map { it -> [ [id: it[0], irida_id: it[0]], it[1] ] }
+            .map { it ->
+                def meta = [ id: it[0], irida_id: it[0] ]
+                return [ meta.id, meta, it[1] ]
+            }
             .ifEmpty {
                 // Fallback: map all files in the dir as single-end (e.g. nanopore)
                 Channel.fromPath("${params.fastq_dir}/*.fastq*")
                     .map { reads ->
                         def id = reads.baseName.replaceAll(/\.fastq.*\$/, '')
-                        [ [id: id, irida_id: id], [ file(reads) ] ]
+                        def meta = [ id: id, irida_id: id ]
+                        return [ meta.id, meta, [ file(reads) ] ]
                     }
             }
             .set { ch_maybe_paired }

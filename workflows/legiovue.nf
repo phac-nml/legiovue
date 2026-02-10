@@ -37,6 +37,7 @@ workflow LEGIOVUE {
     paired       // channel: [ val(meta), [ file(fastq_1), file(fastq_2) ] ]
 
     main:
+    paired.view()
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
     // 0. Initialize channels from params and make version channel
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
