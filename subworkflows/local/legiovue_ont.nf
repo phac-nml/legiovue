@@ -43,12 +43,7 @@ INITIALIZE CHANNELS FROM PARAMS
 
 ch_quast_ref = file(params.quast_ref, checkIfExists: true)
 ch_kraken2_db = file(params.kraken2_db, checkIfExists: true)
-ch_min_abundance = params.min_abundance_percent
 ch_quast_ref = file(params.quast_ref, checkIfExists: true)
-ch_max_contigs_nanopore = params.max_contigs_nanopore
-ch_min_align_percent_nanopore = params.min_align_percent_nanopore
-ch_min_n50_score_nanopore = params.min_n50_score_nanopore
-ch_max_n50_score_nanopore = params.max_n50_score_nanopore
 ch_prepped_schema = file(params.prepped_schema, type: 'dir', checkIfExists: true)
 ch_schema_targets   = params.schema_targets ? file(params.schema_targets, type: 'dir', checkIfExists: true) : []
 
@@ -71,14 +66,14 @@ workflow LEGIOVUE_ONT {
     */
 
     //run kraken2 on nanopore reads
-    KRAKEN2_CLASSIFICATION_NANOPORE(
+    KRAKEN2_CLASSIFY_NANOPORE(
         nanopore,
         ch_kraken2_db
     )
 
     //run bracken on kraken2 output
     BRACKEN(
-        KRAKEN2_CLASSIFICATION_NANOPORE.out.report,
+        KRAKEN2_CLASSIFY_NANOPORE.out.report,
         ch_kraken2_db
     )
     
