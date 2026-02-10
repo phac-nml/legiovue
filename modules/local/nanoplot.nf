@@ -25,7 +25,6 @@ process NANOPLOT {
     """
 }
 
-#!/usr/bin/env nextflow
 process NANOPLOT_TRIMMED {
     label 'process_low'
 

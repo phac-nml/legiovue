@@ -13,27 +13,27 @@ IMPORT MODULES / SUBWORKFLOWS / FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include {KRAKEN2_CLASSIFICATION_NANOPORE    } from '../modules/local/kraken.nf'
-include {BRACKEN                            } from '../modules/local/bracken.nf'
-include {NANOPLOT                           } from '../modules/local/nanoplot.nf'
-include {NANOQ                              } from '../modules/local/nanoq.nf'
-include {NANOPLOT_TRIMMED                   } from '../modules/local/nanoplot.nf'
-include {DRAGONFLYE                         } from '../modules/local/dragonflye.nf'
-include {QUAST                              } from '../modules/local/quast.nf'
-include {SCORE_QUAST_NANOPORE               } from '../modules/local/quast.nf'
-include {MINIMAP2_ASSEMBLY                  } from '../modules/local/assembly_quality.nf'
-include {SAMTOOLS_COVERAGE_ASSEMBLY         } from '../modules/local/assembly_quality.nf'
-include {EL_GATO_ASSEMBLY                   } from '../modules/local/el_gato.nf'
-include {MINIMAP2_ALLELES                   } from '../modules/local/allele_quality.nf'
-include {SAMTOOLS_COVERAGE_ALLELES          } from '../modules/local/allele_quality.nf'
-include {PYSAMSTATS_NANOPORE                } from '../modules/local/allele_quality.nf'
-include {PLOT_EL_GATO_ALLELES               } from '../modules/local/plotting.nf'
-include {CHEWBBACA_PREP_EXTERNAL_SCHEMA     } from '../modules/local/chewbbaca.nf'
-include {CHEWBBACA_ALLELE_CALL              } from '../modules/local/chewbbaca.nf'
-include {CHEWBBACA_EXTRACT_CGMLST           } from '../modules/local/chewbbaca.nf'
-include {COMBINE_SAMPLE_DATA_NANOPORE       } from '../modules/local/qc.nf'
-include {CSVTK_CONCAT_QC_DATA               } from '../modules/local/csvtk.nf'
-include {CUSTOM_DUMPSOFTWAREVERSIONS        } from '../modules/nf-core/custom/dumpsoftwareversions/main'
+include {KRAKEN2_CLASSIFY_NANOPORE          } from '../../modules/local/kraken.nf'
+include {BRACKEN                            } from '../../modules/local/bracken.nf'
+include {NANOPLOT                           } from '../../modules/local/nanoplot.nf'
+include {NANOQ                              } from '../../modules/local/nanoq.nf'
+include {NANOPLOT_TRIMMED                   } from '../../modules/local/nanoplot.nf'
+include {DRAGONFLYE                         } from '../../modules/local/dragonflye.nf'
+include {QUAST                              } from '../../modules/local/quast.nf'
+include {SCORE_QUAST_NANOPORE               } from '../../modules/local/quast.nf'
+include {MINIMAP2_ASSEMBLY                  } from '../../modules/local/assembly_quality.nf'
+include {SAMTOOLS_COVERAGE_ASSEMBLY         } from '../../modules/local/assembly_quality.nf'
+include {EL_GATO_ASSEMBLY                   } from '../../modules/local/el_gato.nf'
+include {MINIMAP2_ALLELES                   } from '../../modules/local/allele_quality.nf'
+include {SAMTOOLS_COVERAGE_ALLELES          } from '../../modules/local/allele_quality.nf'
+include {PYSAMSTATS_NANOPORE                } from '../../modules/local/allele_quality.nf'
+include {PLOT_EL_GATO_ALLELES               } from '../../modules/local/plotting.nf'
+include {CHEWBBACA_PREP_EXTERNAL_SCHEMA     } from '../../modules/local/chewbbaca.nf'
+include {CHEWBBACA_ALLELE_CALL              } from '../../modules/local/chewbbaca.nf'
+include {CHEWBBACA_EXTRACT_CGMLST           } from '../../modules/local/chewbbaca.nf'
+include {COMBINE_SAMPLE_DATA_NANOPORE       } from '../../modules/local/qc.nf'
+include {CSVTK_CONCAT_QC_DATA               } from '../../modules/local/utils.nf'
+include {CUSTOM_DUMPSOFTWAREVERSIONS        } from '../../modules/nf-core/custom/dumpsoftwareversions/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -43,7 +43,7 @@ INITIALIZE CHANNELS FROM PARAMS
 
 ch_quast_ref = file(params.quast_ref, checkIfExists: true)
 ch_kraken2_db = file(params.kraken2_db, checkIfExists: true)
-ch_min_abundance = params.min_abundance
+ch_min_abundance = params.min_abundance_percent
 ch_quast_ref = file(params.quast_ref, checkIfExists: true)
 ch_max_contigs_nanopore = params.max_contigs_nanopore
 ch_min_align_percent_nanopore = params.min_align_percent_nanopore
