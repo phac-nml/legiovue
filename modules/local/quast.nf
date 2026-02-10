@@ -120,7 +120,7 @@ process SCORE_QUAST_NANOPORE {
     """
     quast_analyzer.py \\
         --max_contigs ${params.max_contigs_nanopore} \\
-        --min_align_percent ${params.min_align_percent_nanopore} \\
+        --min_align_percent ${params.min_align_percent} \\
         --min_n50_score ${params.min_n50_score_nanopore} \\
         --max_n50_score ${params.max_n50_score_nanopore} \\
         $transposed_report \\
