@@ -26,7 +26,7 @@ process QUAST {
         --threads $task.cpus \\
         -o ./ \\
         -r $reference \\
-        *.contigs.fa
+        $contigs
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
