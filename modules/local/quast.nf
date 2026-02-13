@@ -96,6 +96,56 @@ process SCORE_QUAST {
     """
 }
 
+process QUAST_NANOPORE {
+    label 'process_medium'
+
+    conda "bioconda::quast=5.3.0"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/quast:5.3.0--py313pl5321h5ca1c30_2' :
+        'biocontainers/quast:5.3.0--py313pl5321h5ca1c30_2' }"
+
+    input:
+    path contigs
+    path reference
+
+    output:
+    path "transposed_report.tsv", emit: report
+    path "report.html", emit: html_report
+    path "report.pdf", emit: pdf_report
+    path "*_stats", emit: stats_folders
+    path "versions.yml", emit: versions
+
+    when:
+    task.ext.when == null || task.ext.when
+
+    script:
+    """
+    quast \\
+        --threads $task.cpus \\
+        -o ./ \\
+        -r $reference \\
+        $contigs
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        quast: \$(quast.py --version 2>&1 | sed 's/^.*QUAST v//; s/ .*\$//')
+    END_VERSIONS
+    """
+
+    stub:
+    """
+    touch transposed_report.tsv
+    touch report.html
+    touch report.pdf
+    mkdir quast_stats
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        quast: \$(quast.py --version 2>&1 | sed 's/^.*QUAST v//; s/ .*\$//')
+    END_VERSIONS
+    """
+}
+
 process SCORE_QUAST_NANOPORE {
     label 'process_single'
 

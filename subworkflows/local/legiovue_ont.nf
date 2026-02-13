@@ -20,7 +20,7 @@ include {NANOPLOT                           } from '../../modules/local/nanoplot
 include {NANOQ                              } from '../../modules/local/nanoq.nf'
 include {NANOPLOT_TRIMMED                   } from '../../modules/local/nanoplot.nf'
 include {DRAGONFLYE                         } from '../../modules/local/dragonflye.nf'
-include {QUAST                              } from '../../modules/local/quast.nf'
+include {QUAST_NANOPORE                     } from '../../modules/local/quast.nf'
 include {SCORE_QUAST_NANOPORE               } from '../../modules/local/quast.nf'
 include {MINIMAP2_ASSEMBLY                  } from '../../modules/local/assembly_quality.nf'
 include {SAMTOOLS_COVERAGE_ASSEMBLY         } from '../../modules/local/assembly_quality.nf'
@@ -128,7 +128,7 @@ workflow LEGIOVUE_ONT {
     */
 
     //run Quast on Dragonflye assembly
-    QUAST(
+    QUAST_NANOPORE(
         DRAGONFLYE.out.assembly,
         ch_quast_ref
     )
