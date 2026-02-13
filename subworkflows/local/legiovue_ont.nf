@@ -102,13 +102,13 @@ workflow LEGIOVUE_ONT {
     //run NanoPlot
     NANOPLOT(
         ch_abundance_filter.pass
-            .join(paired, by: [0])
+            .join(nanopore, by: [0])
     )
 
     //Nanoq to trim reads under 1000bp in length
     NANOQ(
         ch_abundance_filter.pass
-            .join(paired, by: [0])
+            .join(nanopore, by: [0])
     )
 
     //run Nanoplot on Trimmed Reads
