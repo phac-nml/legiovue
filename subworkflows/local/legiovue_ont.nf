@@ -15,6 +15,7 @@ IMPORT MODULES / SUBWORKFLOWS / FUNCTIONS
 
 include {KRAKEN2_CLASSIFY_NANOPORE          } from '../../modules/local/kraken.nf'
 include {BRACKEN                            } from '../../modules/local/bracken.nf'
+include {CREATE_ABUNDANCE_FILTER            } from '../../modules/local/utils.nf'
 include {NANOPLOT                           } from '../../modules/local/nanoplot.nf'
 include {NANOQ                              } from '../../modules/local/nanoq.nf'
 include {NANOPLOT_TRIMMED                   } from '../../modules/local/nanoplot.nf'
@@ -76,6 +77,21 @@ workflow LEGIOVUE_ONT {
         KRAKEN2_CLASSIFY_NANOPORE.out.report,
         ch_kraken2_db
     )
+
+    //create abundance filter for downstream analysis
+    CREATE_ABUNDANCE_FILTER(
+        BRACKEN.out.abundance
+    )
+
+    //split samples into pass and fail based on abundance filter results
+    CREATE_ABUNDANCE_FILTER.out.abundance_check
+        .splitCsv(header:true, sep:',')
+        .branch{ meta, row ->
+            pass: row.pass == 'YES'
+                return meta                     // To join the passing fastqs on
+            fail: true
+                return tuple(meta, [])          // To allow tracking samples failures later on
+        }.set{ ch_abundance_filter }
     
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -85,12 +101,14 @@ workflow LEGIOVUE_ONT {
 
     //run NanoPlot
     NANOPLOT(
-        nanopore
+        ch_abundance_filter.pass
+            .join(paired, by: [0])
     )
 
     //Nanoq to trim reads under 1000bp in length
     NANOQ(
-        nanopore
+        ch_abundance_filter.pass
+            .join(paired, by: [0])
     )
 
     //run Nanoplot on Trimmed Reads
