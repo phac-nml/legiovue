@@ -1,10 +1,10 @@
 process QUAST {
     label 'process_medium'
 
-    conda "bioconda::quast=5.2.0"
+    conda "bioconda::quast=5.3.0"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/quast:5.2.0--py39pl5321h2add14b_1' :
-        'biocontainers/quast:5.2.0--py39pl5321h2add14b_1' }"
+        'https://depot.galaxyproject.org/singularity/quast:5.3.0--py313pl5321h5ca1c30_2' :
+        'biocontainers/quast:5.3.0--py313pl5321h5ca1c30_2' }"
 
     input:
     path contigs
