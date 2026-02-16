@@ -73,8 +73,8 @@ process PYSAMSTATS_NANOPORE {
 
     conda "bioconda::pysamstats=1.1.2"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/pysamstats:1.1.2--py39he47c912_12':
-        'biocontainers/pysamstats:1.1.2--py39he47c912_12' }"
+        'https://depot.galaxyproject.org/singularity/pysamstats:1.1.2--py39h0699b22_14':
+        'biocontainers/pysamstats:1.1.2--py39h0699b22_14' }"
 
     publishDir '6.Allele_Evaluation', mode: 'copy'
     

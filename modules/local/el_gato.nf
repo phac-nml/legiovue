@@ -87,6 +87,7 @@ process EL_GATO_ASSEMBLY {
 
     output:
     tuple val(meta), path("${meta.id}_ST.tsv"), emit: report
+    tuple val(meta), path("./out/identified_alleles.fna"), emit: alleles
     tuple val(meta), path("${meta.id}_run.log"), emit: log
     tuple val(meta), path("${meta.id}_assembly.json"), emit: json
     path "versions.yml", emit: versions

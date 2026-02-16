@@ -135,7 +135,7 @@ workflow LEGIOVUE_ONT {
 
     //run Quast scoring on Quast output
     SCORE_QUAST_NANOPORE(
-        QUAST.out.report
+        QUAST_NANOPORE.out.report
     )
 
     //remove contig flags with awk to create single contig assembly
@@ -163,7 +163,7 @@ workflow LEGIOVUE_ONT {
 
     //map trimmed reads to el_gato alleles with minimap2
     MINIMAP2_ALLELES(
-        EL_GATO_ASSEMBLY.out.report,
+        EL_GATO_ASSEMBLY.out.alleles,
         NANOQ.out.trimmed_reads
     )
 
@@ -217,7 +217,7 @@ workflow LEGIOVUE_ONT {
         BRACKEN.out.abundance,
         NANOPLOT.out.untrimmed_NanoStats,
         NANOPLOT_TRIMMED.out.trimmed_NanoStats,
-        QUAST.out.report,
+        QUAST_NANOPORE.out.report,
         SCORE_QUAST_NANOPORE.out.report,
         SAMTOOLS_COVERAGE_ASSEMBLY.out.assembly_coverage,
         SAMTOOLS_COVERAGE_ALLELES.out.alleles_coverage,
