@@ -52,7 +52,7 @@ template:
   name: legiovue
   description: Legionella pneumophila WGS analysis
   author: Darian Hole, Molly Pratt, Jennifer Tanner
-  version: 0.3.0
+  version: 0.4.0
   force: true
   skip_features:
     - github
