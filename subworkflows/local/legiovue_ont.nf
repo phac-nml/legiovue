@@ -28,7 +28,7 @@ include {EL_GATO_ASSEMBLY                   } from '../../modules/local/el_gato.
 include {MINIMAP2_ALLELES                   } from '../../modules/local/allele_quality.nf'
 include {SAMTOOLS_COVERAGE_ALLELES          } from '../../modules/local/allele_quality.nf'
 include {PYSAMSTATS_NANOPORE                } from '../../modules/local/allele_quality.nf'
-include {PLOT_EL_GATO_ALLELES               } from '../../modules/local/plotting.nf'
+include {PLOT_EL_GATO_ALLELES_NANOPORE      } from '../../modules/local/plotting.nf'
 include {CHEWBBACA_PREP_EXTERNAL_SCHEMA     } from '../../modules/local/chewbbaca.nf'
 include {CHEWBBACA_ALLELE_CALL              } from '../../modules/local/chewbbaca.nf'
 include {CHEWBBACA_EXTRACT_CGMLST           } from '../../modules/local/chewbbaca.nf'
@@ -178,7 +178,7 @@ workflow LEGIOVUE_ONT {
     )
 
     //plot allele depth and qscore with plotting utility
-    PLOT_EL_GATO_ALLELES(
+    PLOT_EL_GATO_ALLELES_NANOPORE(
         PYSAMSTATS_NANOPORE.out.allele_stats_tsv
     )
 
@@ -222,7 +222,7 @@ workflow LEGIOVUE_ONT {
         SAMTOOLS_COVERAGE_ASSEMBLY.out.assembly_coverage,
         SAMTOOLS_COVERAGE_ALLELES.out.alleles_coverage,
         EL_GATO_ASSEMBLY.out.report,
-        CHEWBBACA_ALLELE_CALL.out.results_alleles
+        CHEWBBACA_ALLELE_CALL.out.statistics
     )
 
     //combine all individual qc csvs into single csv for all samples
