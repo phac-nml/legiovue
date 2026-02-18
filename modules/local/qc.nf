@@ -80,7 +80,7 @@ process COMBINE_SAMPLE_DATA_NANOPORE {
     path(chewbbaca_stats)
 
     output:
-    tuple val(meta), path("*.csv"), emit: csv
+    tuple val(meta), path("./${meta.id}.qc.csv"), emit: csv
     path "versions.yml", emit: versions
 
     when:
@@ -94,7 +94,7 @@ process COMBINE_SAMPLE_DATA_NANOPORE {
     // def chewbbaca_stats_arg     = chewbbaca_stats ? "-al $chewbbaca_stats" : ""
     // def irida_id_arg            = meta.irida_id ? "-id ${meta.irida_id}": ""
     """
-    combine_qc_data.py \\
+    nanopore_combine_qc_data.py \\
         --sample ${meta.id} \\
         --bracken_tsv $bracken_report \\
         --pretrim_nanoplot_txt $pretrim_nanoplot_txt \\
@@ -107,10 +107,11 @@ process COMBINE_SAMPLE_DATA_NANOPORE {
         --min_reads ${params.min_reads_nanopore} \\
         --min_reads_warn ${params.min_reads_warn_nanopore} \\
         --min_length ${params.min_length_nanopore} \\
-        --min_length_warn ${params.min_length_warn_nanopore} \\
+        --min_length_warn ${params.min_read_length_warn_nanopore} \\
         --min_qual ${params.min_quality_nanopore} \\
-        --min_qual_warn ${params.min_quality_warn_nanopore} \\
+        --min_qual_warn ${params.min_read_quality_warn_nanopore} \\
         --min_abundance_percent ${params.min_abundance_percent} \\
+        --outdir ./ \\
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
