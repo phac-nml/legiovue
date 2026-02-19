@@ -228,6 +228,7 @@ workflow LEGIOVUE_ONT {
     //combine all individual qc csvs into single csv for all samples
     CSVTK_CONCAT_QC_DATA(
         COMBINE_SAMPLE_DATA_NANOPORE.out.csv
+            .collect{ it[1] }
     )
 
 

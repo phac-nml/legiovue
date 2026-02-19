@@ -98,7 +98,7 @@ process CSVTK_CONCAT_QC_DATA {
         'biocontainers/csvtk:0.30.0--h9ee0642_0' }"
 
     input:
-    tuple val(meta), path(csvs)
+    path csvs
 
     output:
     path "overall.qc.csv", emit: csv
