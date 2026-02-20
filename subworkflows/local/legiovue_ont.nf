@@ -48,6 +48,9 @@ ch_quast_ref = file(params.quast_ref, checkIfExists: true)
 ch_prepped_schema = file(params.prepped_schema, type: 'dir', checkIfExists: true)
 ch_schema_targets   = params.schema_targets ? file(params.schema_targets, type: 'dir', checkIfExists: true) : []
 
+// Empty version channel
+ch_versions = Channel.empty()
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 RUN WORKFLOW
@@ -71,17 +74,20 @@ workflow LEGIOVUE_ONT {
         nanopore,
         ch_kraken2_db
     )
+    ch_versions = ch_versions.mix(KRAKEN2_CLASSIFY_NANOPORE.out.versions)
 
     //run bracken on kraken2 output
     BRACKEN(
         KRAKEN2_CLASSIFY_NANOPORE.out.report,
         ch_kraken2_db
     )
+    ch_versions = ch_versions.mix(BRACKEN.out.versions)
 
     //create abundance filter for downstream analysis
     CREATE_ABUNDANCE_FILTER(
         BRACKEN.out.abundance
     )
+    ch_versions = ch_versions.mix(CREATE_ABUNDANCE_FILTER.out.versions)
 
     //split samples into pass and fail based on abundance filter results
     CREATE_ABUNDANCE_FILTER.out.abundance_check
@@ -104,22 +110,26 @@ workflow LEGIOVUE_ONT {
         ch_abundance_filter.pass
             .join(nanopore, by: [0])
     )
+    ch_versions = ch_versions.mix(NANOPLOT.out.versions)
 
     //Nanoq to trim reads under 1000bp in length
     NANOQ(
         ch_abundance_filter.pass
             .join(nanopore, by: [0])
     )
+    ch_versions = ch_versions.mix(NANOQ.out.versions)
 
     //run Nanoplot on Trimmed Reads
     NANOPLOT_TRIMMED(
         NANOQ.out.trimmed_reads
     )
+    ch_versions = ch_versions.mix(NANOPLOT_TRIMMED.out.versions)
 
     //run dragonflye on Trimmed Reads
     DRAGONFLYE(
         NANOQ.out.trimmed_reads
     )
+    ch_versions = ch_versions.mix(DRAGONFLYE.out.versions)
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -132,11 +142,13 @@ workflow LEGIOVUE_ONT {
         DRAGONFLYE.out.assembly,
         ch_quast_ref
     )
+    ch_versions = ch_versions.mix(QUAST_NANOPORE.out.versions)
 
     //run Quast scoring on Quast output
     SCORE_QUAST_NANOPORE(
         QUAST_NANOPORE.out.report
     )
+    ch_versions = ch_versions.mix(SCORE_QUAST_NANOPORE.out.versions)
 
     //remove contig flags with awk to create single contig assembly
     //map trimmed reads to single contig assembly with minimap2
@@ -144,11 +156,13 @@ workflow LEGIOVUE_ONT {
         DRAGONFLYE.out.assembly,
         NANOQ.out.trimmed_reads
     )
+    ch_versions = ch_versions.mix(MINIMAP2_ASSEMBLY.out.versions)
 
     //calculate coverage with samtools
     SAMTOOLS_COVERAGE_ASSEMBLY(
         MINIMAP2_ASSEMBLY.out.assembly_sam
     )
+    ch_versions = ch_versions.mix(SAMTOOLS_COVERAGE_ASSEMBLY.out.versions)
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -160,27 +174,32 @@ workflow LEGIOVUE_ONT {
     EL_GATO_ASSEMBLY(
         DRAGONFLYE.out.assembly
     )
+    ch_versions = ch_versions.mix(EL_GATO_ASSEMBLY.out.versions)
 
     //map trimmed reads to el_gato alleles with minimap2
     MINIMAP2_ALLELES(
         EL_GATO_ASSEMBLY.out.alleles,
         NANOQ.out.trimmed_reads
     )
+    ch_versions = ch_versions.mix(MINIMAP2_ALLELES.out.versions)
 
     //calculate coverage with samtools
     SAMTOOLS_COVERAGE_ALLELES(
         MINIMAP2_ALLELES.out.alleles_sam
     )
+    ch_versions = ch_versions.mix(SAMTOOLS_COVERAGE_ALLELES.out.versions)
 
     //determine per base depth and qscore for alleles with pysamstats
     PYSAMSTATS_NANOPORE(
         SAMTOOLS_COVERAGE_ALLELES.out.alleles_bam
     )
+    ch_versions = ch_versions.mix(PYSAMSTATS_NANOPORE.out.versions)
 
     //plot allele depth and qscore with plotting utility
     PLOT_EL_GATO_ALLELES_NANOPORE(
         PYSAMSTATS_NANOPORE.out.allele_stats_tsv
     )
+    ch_versions = ch_versions.mix(PLOT_EL_GATO_ALLELES_NANOPORE.out.versions)
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -193,18 +212,18 @@ workflow LEGIOVUE_ONT {
             ch_schema_targets
         )
         ch_prepped_schema = CHEWBBACA_PREP_EXTERNAL_SCHEMA.out.schema
-        //ch_versions = ch_versions.mix(CHEWBBACA_PREP_EXTERNAL_SCHEMA.out.versions)
+        ch_versions = ch_versions.mix(CHEWBBACA_PREP_EXTERNAL_SCHEMA.out.versions)
     }
     CHEWBBACA_ALLELE_CALL(
         DRAGONFLYE.out.assembly.collect{ it[1] },
         ch_prepped_schema
     )
-    //ch_versions = ch_versions.mix(CHEWBBACA_ALLELE_CALL.out.versions)
+    ch_versions = ch_versions.mix(CHEWBBACA_ALLELE_CALL.out.versions)
 
     CHEWBBACA_EXTRACT_CGMLST(
         CHEWBBACA_ALLELE_CALL.out.results_alleles
     )
-    //ch_versions = ch_versions.mix(CHEWBBACA_EXTRACT_CGMLST.out.versions)
+    ch_versions = ch_versions.mix(CHEWBBACA_EXTRACT_CGMLST.out.versions)
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -224,16 +243,18 @@ workflow LEGIOVUE_ONT {
         EL_GATO_ASSEMBLY.out.report,
         CHEWBBACA_ALLELE_CALL.out.statistics
     )
+    ch_versions = ch_versions.mix(COMBINE_SAMPLE_DATA_NANOPORE.out.versions)
 
     //combine all individual qc csvs into single csv for all samples
     CSVTK_CONCAT_QC_DATA(
         COMBINE_SAMPLE_DATA_NANOPORE.out.csv
             .collect{ it[1] }
     )
+    ch_versions = ch_versions.mix(CSVTK_CONCAT_QC_DATA.out.versions)
 
 
-    // CUSTOM_DUMPSOFTWAREVERSIONS(
-    //     ch_versions.unique().collectFile(name: 'collated_versions.yml')
-    // )
+    CUSTOM_DUMPSOFTWAREVERSIONS(
+        ch_versions.unique().collectFile(name: 'collated_versions.yml')
+    )
 
 }

@@ -16,6 +16,7 @@ process MINIMAP2_ASSEMBLY {
 
     output:
     tuple val(meta), path("*${meta.id}.sam"), emit: assembly_sam
+    path "versions.yml", emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -32,6 +33,12 @@ process MINIMAP2_ASSEMBLY {
         ./${meta.id}_single_contig.fasta \\
         $trimmed_reads \\
         > ./${meta.id}.sam
+
+    # Versions #
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        minimap2: \$(echo \$(minimap2 --version 2>&1))
+    END_VERSIONS
     """
 }
 
@@ -51,6 +58,7 @@ process SAMTOOLS_COVERAGE_ASSEMBLY {
 
     output:
     tuple val(meta), path("*${meta.id}_assembly_coverage.txt"), emit: assembly_coverage
+    path "versions.yml", emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -68,5 +76,10 @@ process SAMTOOLS_COVERAGE_ASSEMBLY {
     samtools coverage \\
         ./${meta.id}.bam \\
         -o ./${meta.id}_assembly_coverage.txt \\
+    
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        samtools: \$(echo \$(samtools --version 2>&1) | sed 's/^.*samtools //; s/Using.*\$//' )
+    END_VERSIONS
     """
 }

@@ -15,6 +15,7 @@ process DRAGONFLYE {
     output: 
         tuple val(meta), path("./${meta.id}.fasta"), emit: assembly
         tuple val(meta), path("./${meta.id}_dragonflye.log"), emit: log
+        path "versions.yml", emit: versions
     
     script:
     """
@@ -32,5 +33,10 @@ process DRAGONFLYE {
     cp \\
         ./out/dragonflye.log \\
         ./${meta.id}_dragonflye.log \\
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        dragonflye: \$(echo \$(dragonflye --version 2>&1 | sed 's/^.*dragonflye //' ))
+    END_VERSIONS
     """
 }

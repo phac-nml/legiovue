@@ -115,7 +115,7 @@ process COMBINE_SAMPLE_DATA_NANOPORE {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        combine_qc_data: 0.3.0
+        nanopore_combine_qc_data: 0.3.0
     END_VERSIONS
     """
 
@@ -125,7 +125,7 @@ process COMBINE_SAMPLE_DATA_NANOPORE {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        combine_qc_data: 0.3.0
+        nanopore_combine_qc_data: 0.3.0
     END_VERSIONS
     """
 }

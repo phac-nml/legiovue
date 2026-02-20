@@ -16,6 +16,7 @@ process MINIMAP2_ALLELES {
 
     output:
     tuple val(meta), path("*${meta.id}_alleles.sam"), emit: alleles_sam
+    path "versions.yml", emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -27,6 +28,12 @@ process MINIMAP2_ALLELES {
         $alleles \\
         $trimmed_reads \\
         > ./${meta.id}_alleles.sam
+    
+    # Versions #
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        minimap2: \$(echo \$(minimap2 --version 2>&1))
+    END_VERSIONS
     """
 }
 
@@ -47,6 +54,7 @@ process SAMTOOLS_COVERAGE_ALLELES {
     output:
     tuple val(meta), path("*${meta.id}_alleles_coverage.txt"), emit: alleles_coverage
     tuple val(meta), path("${meta.id}_alleles.bam"), emit: alleles_bam
+    path "versions.yml", emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -64,6 +72,11 @@ process SAMTOOLS_COVERAGE_ALLELES {
     samtools coverage \\
         ./${meta.id}_alleles.bam \\
         -o ./${meta.id}_alleles_coverage.txt \\
+    
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        samtools: \$(echo \$(samtools --version 2>&1) | sed 's/^.*samtools //; s/Using.*\$//' )
+    END_VERSIONS
     """
 }
 
@@ -83,6 +96,7 @@ process PYSAMSTATS_NANOPORE {
 
     output:
     tuple val(meta), path("*${meta.id}_allele_stats.tsv"), emit: allele_stats_tsv
+    path "versions.yml", emit: versions
 
     when:
     task.ext.when == null || task.ext.when
@@ -93,5 +107,10 @@ process PYSAMSTATS_NANOPORE {
         --type baseq \\
         $alleles_bam \\
         > ./${meta.id}_allele_stats.tsv \\
+    
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        pysamstats: \$(echo \$(pysamstats -h | tail -n 2 | grep -Eo ": \\S+" | cut -d" " -f2))
+    END_VERSIONS
     """
 }

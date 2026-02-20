@@ -15,6 +15,7 @@ process NANOPLOT {
     output:
         path "./${meta.id}_Untrimmed/"
         tuple val(meta), path("./${meta.id}_Untrimmed/${meta.id}_Untrimmed_NanoStats.txt"), emit: untrimmed_NanoStats
+        path "versions.yml", emit: versions
 
     script:
     """
@@ -25,6 +26,11 @@ process NANOPLOT {
 
     #rename output files to include sample name \\
     mv ./${meta.id}_Untrimmed/NanoStats.txt ./${meta.id}_Untrimmed/${meta.id}_Untrimmed_NanoStats.txt \\
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        nanoplot: \$(echo \$(NanoPlot --version 2>&1) | sed 's/^.*NanoPlot //; s/ .*\$//')
+    END_VERSIONS
     """
 }
 
@@ -44,6 +50,7 @@ process NANOPLOT_TRIMMED {
     output:
         path "./${meta.id}_Trimmed/"
         tuple val(meta), path("./${meta.id}_Trimmed/${meta.id}_Trimmed_NanoStats.txt"), emit: trimmed_NanoStats
+        path "versions.yml", emit: versions
 
     script:
     """
@@ -54,5 +61,10 @@ process NANOPLOT_TRIMMED {
     
     #rename output files to include sample name \\
     mv ./${meta.id}_Trimmed/NanoStats.txt ./${meta.id}_Trimmed/${meta.id}_Trimmed_NanoStats.txt \\
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        nanoplot: \$(echo \$(NanoPlot --version 2>&1) | sed 's/^.*NanoPlot //; s/ .*\$//')
+    END_VERSIONS
     """
 }

@@ -2,10 +2,10 @@
 process NANOQ {
     label 'process_low'
 
-    conda "bioconda::dragonflye=1.2.1"
+    conda "bioconda::nanoq=0.10.0"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/dragonflye:1.2.1--hdfd78af_0' :
-        'biocontainers/dragonflye:1.2.1--hdfd78af_0' }"
+        'https://depot.galaxyproject.org/singularity/nanoq:0.10.0--hc1c3326_4 ' :
+        'biocontainers/nanoq:0.10.0--hc1c3326_4 ' }"
 
     publishDir '2.Trimmed_Reads', mode: 'copy'
 
@@ -14,6 +14,7 @@ process NANOQ {
 
     output:
         tuple val(meta), path ("Trimmed_${meta.id}.fastq"), emit: trimmed_reads
+        path "versions.yml", emit: versions
 
     script:
     """
@@ -22,5 +23,10 @@ process NANOQ {
         --input $nanopore_fastqs \\
         --output Trimmed_${meta.id}.fastq \\
         --output-type u \\
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        nanoq: \$(echo \$(nanoq --version | sed -e 's/nanoq //g'))
+    END_VERSIONS
     """
 }
