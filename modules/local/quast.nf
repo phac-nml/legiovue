@@ -30,7 +30,7 @@ process QUAST {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        quast: \$(quast.py --version 2>&1 | sed 's/^.*QUAST v//; s/ .*\$//')
+        quast: \$(quast.py --version | sed 's/^.*QUAST v//; s/ .*\$//')
     END_VERSIONS
     """
 
@@ -43,7 +43,7 @@ process QUAST {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        quast: \$(quast.py --version 2>&1 | sed 's/^.*QUAST v//; s/ .*\$//')
+        quast: \$(quast.py --version | sed 's/^.*QUAST v//; s/ .*\$//')
     END_VERSIONS
     """
 }
@@ -129,7 +129,7 @@ process QUAST_NANOPORE {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        quast: \$(quast.py --version 2>&1 | sed 's/^.*QUAST v//; s/ .*\$//')
+        quast: \$(quast.py --version | sed 's/^.*QUAST v//; s/ .*\$//')
     END_VERSIONS
     """
 
@@ -142,7 +142,7 @@ process QUAST_NANOPORE {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        quast: \$(quast.py --version 2>&1 | sed 's/^.*QUAST v//; s/ .*\$//')
+        quast: \$(quast.py --version | sed 's/^.*QUAST v//; s/ .*\$//')
     END_VERSIONS
     """
 }
