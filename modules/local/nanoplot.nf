@@ -32,6 +32,17 @@ process NANOPLOT {
         nanoplot: \$(echo \$(NanoPlot --version 2>&1) | sed 's/^.*NanoPlot //; s/ .*\$//')
     END_VERSIONS
     """
+
+    stub:
+    """
+    mkdir -p ${meta.id}_Untrimmed
+    touch ${meta.id}_Untrimmed/${meta.id}_Untrimmed_NanoStats.txt
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        nanoplot: \$(NanoPlot --version 2>&1 | sed 's/^.*NanoPlot //; s/ .*\$//')
+    END_VERSIONS
+    """
 }
 
 process NANOPLOT_TRIMMED {
@@ -65,6 +76,17 @@ process NANOPLOT_TRIMMED {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         nanoplot: \$(echo \$(NanoPlot --version 2>&1) | sed 's/^.*NanoPlot //; s/ .*\$//')
+    END_VERSIONS
+    """
+
+    stub:
+    """
+    mkdir -p ${meta.id}_Trimmed
+    touch ${meta.id}_Trimmed/${meta.id}_Trimmed_NanoStats.txt
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        nanoplot: \$(NanoPlot --version 2>&1 | sed 's/^.*NanoPlot //; s/ .*\$//')
     END_VERSIONS
     """
 }

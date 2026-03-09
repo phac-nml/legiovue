@@ -29,4 +29,14 @@ process NANOQ {
         nanoq: \$(echo \$(nanoq --version | sed -e 's/nanoq //g'))
     END_VERSIONS
     """
+
+    stub:
+    """
+    touch Trimmed_${meta.id}.fastq
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        nanoq: \$(nanoq --version | sed -e 's/nanoq //g')
+    END_VERSIONS
+    """
 }

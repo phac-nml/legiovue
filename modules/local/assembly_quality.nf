@@ -40,6 +40,16 @@ process MINIMAP2_ASSEMBLY {
         minimap2: \$(echo \$(minimap2 --version 2>&1))
     END_VERSIONS
     """
+
+    stub:
+    """
+    touch ${meta.id}.sam
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        minimap2: \$(minimap2 --version 2>&1)
+    END_VERSIONS
+    """
 }
 
 process SAMTOOLS_COVERAGE_ASSEMBLY {
@@ -80,6 +90,16 @@ process SAMTOOLS_COVERAGE_ASSEMBLY {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         samtools: \$(echo \$(samtools --version 2>&1) | sed 's/^.*samtools //; s/Using.*\$//' )
+    END_VERSIONS
+    """
+
+    stub:
+    """
+    touch ${meta.id}_assembly_coverage.txt
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        samtools: \$(samtools --version 2>&1 | sed 's/^.*samtools //; s/Using.*\$//' )
     END_VERSIONS
     """
 }

@@ -35,6 +35,16 @@ process MINIMAP2_ALLELES {
         minimap2: \$(echo \$(minimap2 --version 2>&1))
     END_VERSIONS
     """
+
+    stub:
+    """
+    touch ${meta.id}_alleles.sam
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        minimap2: \$(minimap2 --version 2>&1)
+    END_VERSIONS
+    """
 }
 
 process SAMTOOLS_COVERAGE_ALLELES {
@@ -78,6 +88,17 @@ process SAMTOOLS_COVERAGE_ALLELES {
         samtools: \$(echo \$(samtools --version 2>&1) | sed 's/^.*samtools //; s/Using.*\$//' )
     END_VERSIONS
     """
+
+    stub:
+    """
+    touch ${meta.id}_alleles_coverage.txt
+    touch ${meta.id}_alleles.bam
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        samtools: \$(samtools --version 2>&1 | sed 's/^.*samtools //; s/Using.*\$//' )
+    END_VERSIONS
+    """
 }
 
 process PYSAMSTATS_NANOPORE {
@@ -111,6 +132,16 @@ process PYSAMSTATS_NANOPORE {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         pysamstats: \$(echo \$(pysamstats -h | tail -n 2 | grep -Eo ": \\S+" | cut -d" " -f2))
+    END_VERSIONS
+    """
+
+    stub:
+    """
+    touch ${meta.id}_allele_stats.tsv
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        pysamstats: \$(echo \$(pysamstats -v 2>&1 | head -n 1))
     END_VERSIONS
     """
 }

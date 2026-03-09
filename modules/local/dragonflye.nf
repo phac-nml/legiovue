@@ -39,4 +39,15 @@ process DRAGONFLYE {
         dragonflye: \$(echo \$(dragonflye --version 2>&1 | sed 's/^.*dragonflye //' ))
     END_VERSIONS
     """
+
+    stub:
+    """
+    touch ${meta.id}.fasta
+    touch ${meta.id}_dragonflye.log
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        dragonflye: \$(dragonflye --version 2>&1 | sed 's/^.*dragonflye //')
+    END_VERSIONS
+    """
 }
