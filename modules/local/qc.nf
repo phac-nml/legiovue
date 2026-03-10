@@ -87,12 +87,6 @@ process COMBINE_SAMPLE_DATA_NANOPORE {
     task.ext.when == null || task.ext.when
 
     script:
-    // def trimmomatic_arg         = trimmomatic_summary ? "-tr $trimmomatic_summary" : ""
-    // def quast_report_arg        = quast_report ? "-qa $quast_report" : ""
-    // def scored_quast_report_arg = scored_quast_report ? "-fs $scored_quast_report" : ""
-    // def st_report_arg           = st_report ? "-st $st_report" : ""
-    // def chewbbaca_stats_arg     = chewbbaca_stats ? "-al $chewbbaca_stats" : ""
-    // def irida_id_arg            = meta.irida_id ? "-id ${meta.irida_id}": ""
     """
     nanopore_combine_qc_data.py \\
         --sample ${meta.id} \\
