@@ -51,8 +51,6 @@ process QUAST {
 process SCORE_QUAST {
     label 'process_single'
 
-    publishDir "${params.outdir}", pattern: "scored_quast_report.csv", mode: 'copy'
-
     conda "conda-forge::python=3.10.4"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/python:3.10.4' :
@@ -149,8 +147,6 @@ process QUAST_NANOPORE {
 
 process SCORE_QUAST_NANOPORE {
     label 'process_single'
-
-    publishDir "${params.outdir}", pattern: "scored_quast_report.csv", mode: 'copy'
 
     conda "conda-forge::python=3.10.4"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?

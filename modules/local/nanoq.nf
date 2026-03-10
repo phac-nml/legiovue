@@ -7,8 +7,6 @@ process NANOQ {
         'https://depot.galaxyproject.org/singularity/nanoq:0.10.0--hc1c3326_4 ' :
         'biocontainers/nanoq:0.10.0--hc1c3326_4 ' }"
 
-    publishDir '2.Trimmed_Reads', mode: 'copy'
-
     input:
         tuple val(meta), path(nanopore_fastqs) 
 

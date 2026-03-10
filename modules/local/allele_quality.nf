@@ -7,8 +7,6 @@ process MINIMAP2_ALLELES {
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/minimap2:2.28--he4a0461_3' :
         'biocontainers/minimap2:2.28--he4a0461_3' }"
-
-    publishDir '6.Allele_Evaluation', mode: 'copy'
     
     input:
     tuple val(meta), path(alleles)
@@ -55,8 +53,6 @@ process SAMTOOLS_COVERAGE_ALLELES {
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/samtools:1.14--hb421002_0' :
         'biocontainers/samtools:1.14--hb421002_0' }"
-
-    publishDir '6.Allele_Evaluation', mode: 'copy'
     
     input:
     tuple val(meta), path(alleles_sam)
@@ -109,8 +105,6 @@ process PYSAMSTATS_NANOPORE {
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/pysamstats:1.1.2--py39h0699b22_14':
         'biocontainers/pysamstats:1.1.2--py39h0699b22_14' }"
-
-    publishDir '6.Allele_Evaluation', mode: 'copy'
     
     input:
     tuple val(meta), path(alleles_bam)

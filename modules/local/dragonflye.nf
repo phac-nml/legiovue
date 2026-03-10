@@ -7,8 +7,6 @@ process DRAGONFLYE {
         'https://depot.galaxyproject.org/singularity/dragonflye:1.2.1--hdfd78af_0' :
         'biocontainers/dragonflye:1.2.1--hdfd78af_0' }"
 
-    publishDir '3.Dragonflye_Assembly', mode: 'copy'
-
     input: 
         tuple val(meta), path(trimmed_reads) 
 
