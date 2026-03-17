@@ -25,6 +25,7 @@ include {SCORE_QUAST_NANOPORE               } from '../../modules/local/quast.nf
 include {MINIMAP2_ASSEMBLY                  } from '../../modules/local/assembly_quality.nf'
 include {SAMTOOLS_COVERAGE_ASSEMBLY         } from '../../modules/local/assembly_quality.nf'
 include {EL_GATO_ASSEMBLY                   } from '../../modules/local/el_gato.nf'
+include {EL_GATO_REPORT                     } from '../../modules/local/el_gato.nf'
 include {MINIMAP2_ALLELES                   } from '../../modules/local/allele_quality.nf'
 include {SAMTOOLS_COVERAGE_ALLELES          } from '../../modules/local/allele_quality.nf'
 include {PYSAMSTATS_NANOPORE                } from '../../modules/local/allele_quality.nf'
@@ -175,6 +176,11 @@ workflow LEGIOVUE_ONT {
         DRAGONFLYE.out.assembly
     )
     ch_versions = ch_versions.mix(EL_GATO_ASSEMBLY.out.versions)
+
+    EL_GATO_REPORT(
+        EL_GATO_ASSEMBLY.out.json
+    )
+    ch_versions = ch_versions.mix(EL_GATO_REPORT.out.versions)
 
     //map trimmed reads to el_gato alleles with minimap2
     MINIMAP2_ALLELES(
