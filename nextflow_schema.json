@@ -222,7 +222,7 @@
                 "chewBBACA_docker_container": {
                     "type": "string",
                     "default": "biocontainers/chewBBACA:3.5.3--pyh106432d_1",
-                    "description": "The docker version of chewBBACA to use for cgMLST"
+                    "description": "The docker version of chewBBACA to use for cgMLST. Changing this in the nextflow.config file establishs a new version."
                 }
             },
             "fa_icon": "fab fa-cc-diners-club"
