@@ -25,6 +25,7 @@ include {SCORE_QUAST_NANOPORE               } from '../../modules/local/quast.nf
 include {MINIMAP2_ASSEMBLY                  } from '../../modules/local/assembly_quality.nf'
 include {SAMTOOLS_COVERAGE_ASSEMBLY         } from '../../modules/local/assembly_quality.nf'
 include {EL_GATO_ASSEMBLY                   } from '../../modules/local/el_gato.nf'
+include {EL_GATO_REPORT_NANOPORE            } from '../../modules/local/el_gato.nf'
 include {MINIMAP2_ALLELES                   } from '../../modules/local/allele_quality.nf'
 include {SAMTOOLS_COVERAGE_ALLELES          } from '../../modules/local/allele_quality.nf'
 include {PYSAMSTATS_NANOPORE                } from '../../modules/local/allele_quality.nf'
@@ -33,7 +34,7 @@ include {CHEWBBACA_PREP_EXTERNAL_SCHEMA     } from '../../modules/local/chewbbac
 include {CHEWBBACA_ALLELE_CALL              } from '../../modules/local/chewbbaca.nf'
 include {CHEWBBACA_EXTRACT_CGMLST           } from '../../modules/local/chewbbaca.nf'
 include {COMBINE_SAMPLE_DATA_NANOPORE       } from '../../modules/local/qc.nf'
-include {CSVTK_CONCAT_QC_DATA               } from '../../modules/local/utils.nf'
+include {CSVTK_CONCAT_QC_DATA_NANOPORE      } from '../../modules/local/utils.nf'
 include {CUSTOM_DUMPSOFTWAREVERSIONS        } from '../../modules/nf-core/custom/dumpsoftwareversions/main'
 
 /*
@@ -176,6 +177,12 @@ workflow LEGIOVUE_ONT {
     )
     ch_versions = ch_versions.mix(EL_GATO_ASSEMBLY.out.versions)
 
+    //create el_gato report with elgato_report.py
+    EL_GATO_REPORT_NANOPORE(
+        EL_GATO_ASSEMBLY.out.json
+    )
+    ch_versions = ch_versions.mix(EL_GATO_REPORT_NANOPORE.out.versions)
+
     //map trimmed reads to el_gato alleles with minimap2
     MINIMAP2_ALLELES(
         EL_GATO_ASSEMBLY.out.alleles,
@@ -246,11 +253,11 @@ workflow LEGIOVUE_ONT {
     ch_versions = ch_versions.mix(COMBINE_SAMPLE_DATA_NANOPORE.out.versions)
 
     //combine all individual qc csvs into single csv for all samples
-    CSVTK_CONCAT_QC_DATA(
+    CSVTK_CONCAT_QC_DATA_NANOPORE(
         COMBINE_SAMPLE_DATA_NANOPORE.out.csv
             .collect{ it[1] }
     )
-    ch_versions = ch_versions.mix(CSVTK_CONCAT_QC_DATA.out.versions)
+    ch_versions = ch_versions.mix(CSVTK_CONCAT_QC_DATA_NANOPORE.out.versions)
 
 
     CUSTOM_DUMPSOFTWAREVERSIONS(
