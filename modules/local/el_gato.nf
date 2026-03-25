@@ -179,7 +179,7 @@ process EL_GATO_REPORT_NANOPORE {
         'biocontainers/el_gato:1.20.2--py311h7e72e81_0' }"
 
     input:
-    tuple val (meta), path (assembly_jsons)
+    path assembly_jsons
 
     output:
     path "*.pdf", emit: pdf

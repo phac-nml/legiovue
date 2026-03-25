@@ -89,6 +89,54 @@ process CSVTK_JOIN_ALLELE_STATS {
     """
 }
 
+process CSVTK_CONCAT_SBT_DATA_NANOPORE {
+    label 'process_single'
+
+    conda "bioconda::csvtk=0.30.0"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/csvtk:0.30.0--h9ee0642_0':
+        'biocontainers/csvtk:0.30.0--h9ee0642_0' }"
+
+    input:
+    path tsvs
+
+    output:
+    path "nanopore_el_gato_st.tsv", emit: tsv
+    path "versions.yml", emit: versions
+
+    when:
+    task.ext.when == null || task.ext.when
+
+    script:
+    """
+    csvtk \\
+        concat \\
+        $tsvs \\
+    | \\
+    csvtk \\
+        mutate2 -t \\
+            --name approach \\
+            --after neuA_neuAH \\
+            --expression "'assembly'" \\
+    > nanopore_el_gato_st.tsv
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        csvtk: \$(echo \$( csvtk version | sed -e "s/csvtk v//g" ))
+    END_VERSIONS
+    """
+
+    stub:
+    """
+    touch nanopore_el_gato_st.tsv
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        csvtk: \$(echo \$( csvtk version | sed -e "s/csvtk v//g" ))
+    END_VERSIONS
+    """
+}
+
 process CSVTK_CONCAT_QC_DATA {
     label 'process_single'
 
