@@ -1,10 +1,10 @@
 process CHEWBBACA_PREP_EXTERNAL_SCHEMA {
     label 'process_low'
 
-    conda "bioconda::chewbbaca=3.3.5"
+    conda "${params.chewbbaca_conda_build}"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/chewbbaca:3.3.5--pyhdfd78af_0':
-        'biocontainers/chewbbaca:3.3.5--pyhdfd78af_0' }"
+        params.chewbbaca_singularity_container :
+        params.chewbbaca_docker_container }"
 
     input:
     path targets

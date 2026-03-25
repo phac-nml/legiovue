@@ -135,6 +135,62 @@
                 }
             }
         },
+        "el_gato_options": {
+            "title": "el gato options",
+            "type": "object",
+            "default": "",
+            "properties": {
+                "el_gato_conda_build": {
+                    "type": "string",
+                    "default": "bioconda::el_gato=1.20.2",
+                    "description": "The conda version of el gato to use for sequence typing"
+                },
+                "el_gato_singularity_container": {
+                    "type": "string",
+                    "default": "https://depot.galaxyproject.org/singularity/el_gato:1.20.2--py311h7e72e81_0",
+                    "description": "The singularity version of el gato to use for sequence typing"
+                },
+                "el_gato_docker_container": {
+                    "type": "string",
+                    "default": "biocontainers/el_gato:1.20.2--py311h7e72e81_0",
+                    "description": "The docker version of el gato to use for sequence typing"
+                },
+                "el_gato_pandas_conda_build": {
+                    "type": "string",
+                    "default": "conda-forge::pandas=2.2.1",
+                    "description": "The conda version of pandas used for el gato work"
+                },
+                "el_gato_pandas_singularity_container": {
+                    "type": "string",
+                    "default": "https://depot.galaxyproject.org/singularity/pandas:2.2.1",
+                    "description": "The singularity version of pandas used for el gato work."
+                },
+                "el_gato_pandas_docker_container": {
+                    "type": "string",
+                    "default": "biocontainers/pandas:2.2.1",
+                    "description": "The docker version of pandas used for el gato work."
+                },
+                "el_gato_sbt_name": {
+                    "type": "string",
+                    "default": "el gato db stable release 1.20.2",
+                    "description": "The explicit name of the el gato db used for sequencing. This should be modified when a custom blast SBT is used."
+                },
+                "el_gato_sbt_path": {
+                    "type": "string",
+                    "format": "file-path",
+                    "default": "",
+                    "description": "The path to the blast SBT file to use for el gato sequence typing. When blank, el gato defaults to $HOME/el_gato/el_gato/db. This should be modified when a custom blast SBT is used.",
+                    "hidden": true
+                },
+                "el_gato_allele_profiles_path": {
+                    "type": "string",
+                    "format": "file-path",
+                    "default": "",
+                    "description": "The path to the allele profiles tsv file to use for el gato sequence typing. When blank, el gato defaults to $HOME/el_gato/el_gato/db/lpneumophila.txt. This should be modified when a custom blast SBT is used.",
+                    "hidden": true
+                }
+            }
+        },
         "chewbbaca_options": {
             "title": "ChewBBACA options",
             "type": "object",
@@ -152,6 +208,21 @@
                     "description": "ChewBBACA prepped schema directory",
                     "format": "directory-path",
                     "hidden": true
+                },
+                "chewBBACA_conda_build": {
+                    "type": "string",
+                    "default": "bioconda::chewBBACA=3.5.3",
+                    "description": "The conda version of chewBBACA to use for cgMLST"
+                },
+                "chewBBACA_singularity_container": {
+                    "type": "string",
+                    "default": "https://depot.galaxyproject.org/singularity/chewbbaca:3.5.3--pyhdfd78af_1",
+                    "description": "The singularity version of chewBBACA to use for cgMLST"
+                },
+                "chewBBACA_docker_container": {
+                    "type": "string",
+                    "default": "biocontainers/chewBBACA:3.5.3--pyh106432d_1",
+                    "description": "The docker version of chewBBACA to use for cgMLST"
                 }
             },
             "fa_icon": "fab fa-cc-diners-club"
@@ -211,6 +282,9 @@
         },
         {
             "$ref": "#/$defs/quast_and_quality_options"
+        },
+        {
+            "$ref": "#/$defs/el_gato_options"
         },
         {
             "$ref": "#/$defs/chewbbaca_options"
