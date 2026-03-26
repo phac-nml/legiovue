@@ -18,7 +18,6 @@ include {BRACKEN_NANOPORE                       } from '../../modules/local/brac
 include {CREATE_ABUNDANCE_FILTER                } from '../../modules/local/utils.nf'
 include {NANOPLOT                               } from '../../modules/local/nanoplot.nf'
 include {NANOQ                                  } from '../../modules/local/nanoq.nf'
-include {NANOPLOT_TRIMMED                       } from '../../modules/local/nanoplot.nf'
 include {DRAGONFLYE                             } from '../../modules/local/dragonflye.nf'
 include {QUAST_NANOPORE                         } from '../../modules/local/quast.nf'
 include {SCORE_QUAST_NANOPORE                   } from '../../modules/local/quast.nf'
@@ -122,12 +121,6 @@ workflow LEGIOVUE_ONT {
             .join(nanopore, by: [0])
     )
     ch_versions = ch_versions.mix(NANOQ.out.versions)
-
-    //run Nanoplot on Trimmed Reads
-    NANOPLOT_TRIMMED(
-        NANOQ.out.trimmed_reads
-    )
-    ch_versions = ch_versions.mix(NANOPLOT_TRIMMED.out.versions)
 
     //run dragonflye on Trimmed Reads
     DRAGONFLYE(
@@ -252,12 +245,12 @@ workflow LEGIOVUE_ONT {
     COMBINE_SAMPLE_DATA_NANOPORE(
         BRACKEN_NANOPORE.out.abundance,
         NANOPLOT.out.untrimmed_NanoStats,
-        NANOPLOT_TRIMMED.out.trimmed_NanoStats,
+        NANOQ.out.report,
         QUAST_NANOPORE.out.report,
         SCORE_QUAST_NANOPORE.out.report,
         SAMTOOLS_COVERAGE_ASSEMBLY.out.assembly_coverage,
-        SAMTOOLS_COVERAGE_ALLELES.out.alleles_coverage,
         EL_GATO_ASSEMBLY.out.report,
+        SAMTOOLS_COVERAGE_ALLELES.out.alleles_coverage,
         CHEWBBACA_ALLELE_CALL_NANOPORE.out.statistics
     )
     ch_versions = ch_versions.mix(COMBINE_SAMPLE_DATA_NANOPORE.out.versions)
@@ -279,7 +272,7 @@ workflow LEGIOVUE_ONT {
     MultiQC Summary HTML
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-    /*
+    
     MULTIQC_NANOPORE(
         ch_multiqc_config_nanopore,
         NANOPLOT.out.untrimmed_NanoStats
@@ -299,5 +292,5 @@ workflow LEGIOVUE_ONT {
         CUSTOM_DUMPSOFTWAREVERSIONS_NANOPORE.out.mqc_yml
     )
     ch_versions = ch_versions.mix(MULTIQC_NANOPORE.out.versions)
-    */
+    
 }

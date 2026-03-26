@@ -39,10 +39,10 @@ def parse_args() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         '-tr',
-        '--trim_nanoplot_txt',
+        '--trim_nanoq_txt',
         type=Path,
         required=False,
-        help="Post Trimming Nanoplot summary TXT output"
+        help="Post Trimming Nanoq summary TXT output"
     )
     parser.add_argument(
         '-qa',
@@ -197,7 +197,7 @@ def grab_posttrim_data(file_path: Path, outdict: dict) -> dict:
             elif "Median read quality:" in line:
                 qual = float(re.search(r'\d+.\d+', line).group(0))
                 outdict['Post_Trim_Median_Read_Quality'] = qual
-            elif ">Q15:" in line:
+            elif "> 15" in line:
                 qual = (re.search(r'(\d+.\d+%)', line).group(0))
                 outdict['Post_trim_Percent_Reads_>Q15'] = qual
     return outdict
@@ -373,14 +373,14 @@ def main() -> None:
     if args.pretrim_nanoplot_txt:
         outdict = grab_pretrim_data(args.pretrim_nanoplot_txt, outdict)
 
-    # Post Trimming Nanoplot
+    # Post Trimming Nanoq
     outdict['Post_Trim_Number_of_Reads'] = 0
     outdict['Post_Trim_Median_Read_Length'] = 0
     outdict['Post_Trim_Median_Read_Quality'] = 0
     outdict['Post_trim_Percent_Reads_>Q15'] = 0
     outdict['Percent_Reads_Passing_Filter'] = 0
-    if args.trim_nanoplot_txt:
-        outdict = grab_posttrim_data(args.trim_nanoplot_txt, outdict)
+    if args.trim_nanoq_txt:
+        outdict = grab_posttrim_data(args.trim_nanoq_txt, outdict)
 
         if outdict['Post_Trim_Number_of_Reads'] < args.min_reads:
             failed = True

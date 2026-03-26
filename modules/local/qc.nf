@@ -71,7 +71,7 @@ process COMBINE_SAMPLE_DATA_NANOPORE {
     input:
     tuple val(meta), path(bracken_report)
     tuple val(meta), path(pretrim_nanoplot_txt)
-    tuple val(meta), path(trim_nanoplot_txt)
+    tuple val(meta), path(trim_nanoq_txt)
     path(quast_report)
     path(scored_quast_report)
     tuple val(meta), path(assembly_cov_txt)
@@ -92,7 +92,7 @@ process COMBINE_SAMPLE_DATA_NANOPORE {
         --sample ${meta.id} \\
         --bracken_tsv $bracken_report \\
         --pretrim_nanoplot_txt $pretrim_nanoplot_txt \\
-        --trim_nanoplot_txt $trim_nanoplot_txt \\
+        --trim_nanoq_txt $trim_nanoq_txt \\
         --quast_tsv $quast_report \\
         --quast_score_csv $scored_quast_report \\
         --assembly_cov_txt $assembly_cov_txt \\

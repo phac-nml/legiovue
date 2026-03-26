@@ -13,6 +13,7 @@ process NANOPLOT {
     output:
         path "./${meta.id}_Untrimmed/"
         tuple val(meta), path("./${meta.id}_Untrimmed/${meta.id}_Untrimmed_NanoStats.txt"), emit: untrimmed_NanoStats
+        tuple val(meta), path("./${meta.id}_Untrimmed/NanoPlot-report.html"), emit: untrimmed_report
         path "versions.yml", emit: versions
 
     script:
@@ -57,6 +58,7 @@ process NANOPLOT_TRIMMED {
     output:
         path "./${meta.id}_Trimmed/"
         tuple val(meta), path("./${meta.id}_Trimmed/${meta.id}_Trimmed_NanoStats.txt"), emit: trimmed_NanoStats
+        tuple val(meta), path("./${meta.id}_Trimmed/NanoPlot-report.html"), emit: trimmed_report
         path "versions.yml", emit: versions
 
     script:

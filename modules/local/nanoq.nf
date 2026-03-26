@@ -12,7 +12,7 @@ process NANOQ {
 
     output:
         tuple val(meta), path ("Trimmed_${meta.id}.fastq"), emit: trimmed_reads
-        tuple val(meta), path ("${meta.id}_nanoq.json"), emit: report
+        tuple val(meta), path ("${meta.id}_nanoq.txt"), emit: report
         path "versions.yml", emit: versions
 
     script:
@@ -22,8 +22,10 @@ process NANOQ {
         --input $nanopore_fastqs \\
         --output Trimmed_${meta.id}.fastq \\
         --output-type u \\
-        --json \\
-        --report ${meta.id}_nanoq.json \\
+        --stats \\
+        --header \\
+        -vvv \\
+        --report ${meta.id}_nanoq.txt \\
 
 
     cat <<-END_VERSIONS > versions.yml
