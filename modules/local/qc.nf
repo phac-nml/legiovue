@@ -75,8 +75,8 @@ process COMBINE_SAMPLE_DATA_NANOPORE {
     path(quast_report)
     path(scored_quast_report)
     tuple val(meta), path(assembly_cov_txt)
+    tuple val(meta), path(sbt_tsv)
     tuple val(meta), path(allele_cov_txt)
-    tuple val(meta), path(st_report)
     path(chewbbaca_stats)
 
     output:
@@ -96,6 +96,7 @@ process COMBINE_SAMPLE_DATA_NANOPORE {
         --quast_tsv $quast_report \\
         --quast_score_csv $scored_quast_report \\
         --assembly_cov_txt $assembly_cov_txt \\
+        --st_tsv $sbt_tsv \\
         --allele_cov_txt $allele_cov_txt \\
         --chewbbaca_stats_tsv $chewbbaca_stats \\
         --min_reads ${params.min_reads_nanopore} \\

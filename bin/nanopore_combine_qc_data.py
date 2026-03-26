@@ -66,6 +66,13 @@ def parse_args() -> argparse.ArgumentParser:
         help="Assembly Coverage TXT output"
     )
     parser.add_argument(
+        '-st',
+        '--st_tsv',
+        type=Path,
+        required=False,
+        help="SBT result tsv"
+    )
+    parser.add_argument(
         '-al',
         '--allele_cov_txt',
         type=Path,
@@ -371,6 +378,7 @@ def main() -> None:
     outdict['Post_Trim_Median_Read_Length'] = 0
     outdict['Post_Trim_Median_Read_Quality'] = 0
     outdict['Post_trim_Percent_Reads_>Q15'] = 0
+    outdict['Percent_Reads_Passing_Filter'] = 0
     if args.trim_nanoplot_txt:
         outdict = grab_posttrim_data(args.trim_nanoplot_txt, outdict)
 
@@ -391,6 +399,15 @@ def main() -> None:
             failed_reason = ['failing_read_quality']
         elif outdict['Post_Trim_Median_Read_Quality'] < args.min_qual_warn:
             warn_qual_criteria.append('low_read_quality')
+        # Calculate % Reads Passing Filter
+        if outdict['Pretrim_Number_of_Reads'] > 0:
+            outdict['Percent_Reads_Passing_Filter'] = (
+                outdict['Post_Trim_Number_of_Reads'] /
+                outdict['Pretrim_Number_of_Reads']
+            ) * 100
+        else:
+            outdict['Percent_Reads_Passing_Filter'] = 0
+
 
     # Quast
     outdict['n50'] = 0
@@ -435,6 +452,22 @@ def main() -> None:
             failed_reason = ['failing_assembly_meanbaseq']
         elif outdict['assembly_meanbaseq'] < 35:
             warn_qual_criteria.append('low_assembly_meanbaseq')
+
+    # ST
+    outdict['st'] = 'NA'
+    outdict['st_approach'] = 'assembly'
+    if args.st_tsv:
+        mapping_dict = {
+            'ST': 'st',
+        }
+        outdict = grab_df_data(
+            args.st_tsv,
+            '\t',
+            sample,
+            'Sample',
+            mapping_dict,
+            outdict
+        )
 
     # Allele Coverage
     outdict['flaA_meandepth'] = 0
