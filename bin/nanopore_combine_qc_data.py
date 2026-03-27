@@ -426,7 +426,7 @@ def main() -> None:
         outdict = grab_df_data(
             args.quast_tsv,
             '\t',
-            f'{sample}_',
+            f'{sample}',
             'Assembly',
             mapping_dict,
             outdict
@@ -453,12 +453,28 @@ def main() -> None:
         elif outdict['assembly_meanbaseq'] < 35:
             warn_qual_criteria.append('low_assembly_meanbaseq')
 
+    # Score CSV
+    outdict['assembly_qc_score'] = 0
+    if args.quast_score_csv:
+        outdict = grab_df_data(
+            args.quast_score_csv,
+            ',',
+            f'{sample}',
+            'sample',
+            {'final_score': 'assembly_qc_score'},
+            outdict
+        )
+
+        if outdict['assembly_qc_score'] < 4:
+            warn_qual_criteria.append('low_qc_score')
+
     # ST
     outdict['st'] = 'NA'
-    outdict['st_approach'] = 'assembly'
+    outdict['st_approach'] = 'NA'
     if args.st_tsv:
         mapping_dict = {
             'ST': 'st',
+            'approach': 'st_approach'
         }
         outdict = grab_df_data(
             args.st_tsv,
@@ -592,21 +608,6 @@ def main() -> None:
 
         if outdict['chewbbaca_pct_exc'] < 90:
             warn_qual_criteria.append('low_exact_allele_calls')
-
-    # Score CSV
-    outdict['assembly_qc_score'] = 0
-    if args.quast_score_csv:
-        outdict = grab_df_data(
-            args.quast_score_csv,
-            ',',
-            f'{sample}_',
-            'sample',
-            {'final_score': 'assembly_qc_score'},
-            outdict
-        )
-
-        if outdict['assembly_qc_score'] < 4:
-            warn_qual_criteria.append('low_qc_score')
 
     # QC Checks and Final Data Cols
     qc_status = "PASS"
