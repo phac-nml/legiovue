@@ -114,13 +114,13 @@ def parse_sample_line(sample_line: str, headers: list) -> dict:
     return dict(zip(headers, fields))
 
 
-def calculate_score(metric: int, bottom=100000, top=300000):
+def calculate_score(metric: int, bottom=100000, top=3500000):
     """Calculate variable score based on a bottom and top range
 
     Args:
         metric (int): Metric to score
         bottom (int, optional): Bottom of the score range. Defaults to 100000.
-        top (int, optional): Top of the score range. Defaults to 300000.
+        top (int, optional): Top of the score range. Defaults to 3500000.
 
     Returns:
         float: 2-digit calculated score between 0-1
