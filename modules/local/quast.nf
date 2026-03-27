@@ -103,7 +103,7 @@ process QUAST_NANOPORE {
         'biocontainers/quast:5.3.0--py313pl5321h5ca1c30_2' }"
 
     input:
-    tuple val(meta), path(assembly)
+    path(assembly)
     path reference
 
     output:
@@ -122,7 +122,6 @@ process QUAST_NANOPORE {
         --threads $task.cpus \\
         -o ./ \\
         -r $reference \\
-        --labels ${meta.id}_ \\
         $assembly
 
     cat <<-END_VERSIONS > versions.yml
