@@ -136,7 +136,8 @@ workflow LEGIOVUE_ONT {
 
     //run Quast on Dragonflye assembly
     QUAST_NANOPORE(
-        DRAGONFLYE.out.assembly,
+        DRAGONFLYE.out.assembly
+            .collect{ it[1] },
         ch_quast_ref
     )
     ch_versions = ch_versions.mix(QUAST_NANOPORE.out.versions)
@@ -241,17 +242,26 @@ workflow LEGIOVUE_ONT {
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
 
-    //combine QC data into single csv per sample
+    //create channels for outputs with all samples included
+    ch_nanopore_quast_report     = QUAST_NANOPORE.out.report.collect().ifEmpty([])
+    ch_nanopore_quast_score      = SCORE_QUAST_NANOPORE.out.report.collect().ifEmpty([])
+    ch_nanopore_sbt              = CSVTK_CONCAT_SBT_DATA_NANOPORE.out.tsv.collect().ifEmpty([])
+    ch_nanopore_cgmlst_stats     = CHEWBBACA_ALLELE_CALL_NANOPORE.out.statistics.collect().ifEmpty([])
+
+    // Group all singular inputs by sample before combining
+    def grouped_inputs = BRACKEN_NANOPORE.out.abundance
+        .join(NANOPLOT.out.untrimmed_NanoStats)
+        .join(NANOQ.out.report)
+        .join(SAMTOOLS_COVERAGE_ASSEMBLY.out.assembly_coverage)
+        .join(SAMTOOLS_COVERAGE_ALLELES.out.alleles_coverage)
+        
+    //input for collection of all qc data into single csv per sample
     COMBINE_SAMPLE_DATA_NANOPORE(
-        BRACKEN_NANOPORE.out.abundance,
-        NANOPLOT.out.untrimmed_NanoStats,
-        NANOQ.out.report,
-        QUAST_NANOPORE.out.report,
-        SCORE_QUAST_NANOPORE.out.report,
-        SAMTOOLS_COVERAGE_ASSEMBLY.out.assembly_coverage,
-        EL_GATO_ASSEMBLY.out.report,
-        SAMTOOLS_COVERAGE_ALLELES.out.alleles_coverage,
-        CHEWBBACA_ALLELE_CALL_NANOPORE.out.statistics
+        grouped_inputs,
+        ch_nanopore_quast_report,
+        ch_nanopore_quast_score,
+        ch_nanopore_sbt,
+        ch_nanopore_cgmlst_stats
     )
     ch_versions = ch_versions.mix(COMBINE_SAMPLE_DATA_NANOPORE.out.versions)
 

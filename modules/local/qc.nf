@@ -69,14 +69,15 @@ process COMBINE_SAMPLE_DATA_NANOPORE {
         'biocontainers/pandas:2.2.1' }"
 
     input:
-    tuple val(meta), path(bracken_report)
-    tuple val(meta), path(pretrim_nanoplot_txt)
-    tuple val(meta), path(trim_nanoq_txt)
+    tuple val(meta),
+        path(bracken_report),
+        path(pretrim_nanoplot_txt),
+        path(trim_nanoq_txt),
+        path(assembly_cov_txt),
+        path(allele_cov_txt)
     path(quast_report)
-    path(scored_quast_report)
-    tuple val(meta), path(assembly_cov_txt)
-    tuple val(meta), path(sbt_tsv)
-    tuple val(meta), path(allele_cov_txt)
+    path(scored_quast_report)  
+    path(sbt_tsv)
     path(chewbbaca_stats)
 
     output:
