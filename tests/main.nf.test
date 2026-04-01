@@ -103,13 +103,13 @@ nextflow_pipeline {
 
             lines = path("$launchDir/results/chewbbaca/allele_calls/results_statistics.tsv").text
             assert lines.contains("FILE\tEXC\tINF\tPLOT3\tPLOT5\tLOTSC\tNIPH\tNIPHEM\tALM\tASM\tPAMA\tLNF\tInvalid CDSs\tClassified_CDSs\tTotal_CDSs")
-            assert lines.contains("in1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t1521\t0\t0\t40")
+            assert lines.contains("in1.contigs\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t1521\t0\t0\t40")
 
             assert path("$launchDir/results/chewbbaca/allele_calls/cgMLST/missing_loci_stats.tsv").exists()
 
             lines = path("$launchDir/results/chewbbaca/allele_calls/cgMLST/missing_loci_stats.tsv").text
             assert lines.contains("FILE\tmissing\tpercentage")
-            assert lines.contains("in1\t1521\t1.0")
+            assert lines.contains("in1.contigs\t1521\t1.0")
 
             // el_gato final allele data
             assert path("$launchDir/results/el_gato/el_gato_st.tsv").exists()
@@ -216,13 +216,13 @@ nextflow_pipeline {
 
             lines = path("$launchDir/results/chewbbaca/allele_calls/results_statistics.tsv").text
             assert lines.contains("FILE\tEXC\tINF\tPLOT3\tPLOT5\tLOTSC\tNIPH\tNIPHEM\tALM\tASM\tPAMA\tLNF\tInvalid CDSs\tClassified_CDSs\tTotal_CDSs")
-            assert lines.contains("sample1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t1521\t0\t0\t40")
+            assert lines.contains("sample1.contigs\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t1521\t0\t0\t40")
 
             assert path("$launchDir/results/chewbbaca/allele_calls/cgMLST/missing_loci_stats.tsv").exists()
 
             lines = path("$launchDir/results/chewbbaca/allele_calls/cgMLST/missing_loci_stats.tsv").text
             assert lines.contains("FILE\tmissing\tpercentage")
-            assert lines.contains("sample1\t1521\t1.0")
+            assert lines.contains("sample1.contigs\t1521\t1.0")
 
             // el_gato final allele data
             assert path("$launchDir/results/el_gato/el_gato_st.tsv").exists()

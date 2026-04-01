@@ -147,7 +147,7 @@ custom_data:
         min: 0
         max: 1521
       PLOT3:
-        title: "PLOT5"
+        title: "PLOT3"
         description: "Possible Locus On the Tip of a contig close to the contig's 3' end"
         min: 0
         max: 1521
