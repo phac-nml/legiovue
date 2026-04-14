@@ -2,10 +2,10 @@ process EL_GATO_READS {
     tag "$meta.id"
     label 'process_medium'
 
-    conda "bioconda::el_gato=1.20.2"
+    conda "${params.el_gato_conda_build}"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/el_gato:1.20.2--py311h7e72e81_0' :
-        'biocontainers/el_gato:1.20.2--py311h7e72e81_0' }"
+        params.el_gato_singularity_container :
+        params.el_gato_docker_container }"
 
     input:
     tuple val(meta), path(reads)
@@ -29,6 +29,8 @@ process EL_GATO_READS {
         --out out \\
         --sample ${meta.id} \\
         --header \\
+        ${params.el_gato_sbt_path ? "--sbt " + params.el_gato_sbt_path : ""} \\
+        ${params.el_gato_allele_profiles_path ? "--profile " + params.el_gato_allele_profiles_path : ""} \\
         $reads_in \\
     > ${meta.id}_ST.tsv
 
@@ -45,9 +47,10 @@ process EL_GATO_READS {
         mv out/reads_vs_all_ref_filt_sorted.bam.bai ${meta.id}_reads_vs_all_ref_filt_sorted.bam.bai
     fi
 
-    cat <<-END_VERSIONS > versions.yml
+    cat << END_VERSIONS > versions.yml
     "${task.process}":
         el_gato: \$(el_gato.py --version | sed 's/^el_gato version: //')
+        el_gato_sbt_name: ${params.el_gato_sbt_name}
     END_VERSIONS
     """
 
@@ -63,9 +66,10 @@ process EL_GATO_READS {
     touch ${meta.id}_run.log
     touch ${meta.id}_reads.json
 
-    cat <<-END_VERSIONS > versions.yml
+    cat << END_VERSIONS > versions.yml
     "${task.process}":
         el_gato: \$(el_gato.py --version | sed 's/^el_gato version: //')
+        el_gato_sbt_name: ${params.el_gato_sbt_name}
     END_VERSIONS
     """
 }
@@ -77,10 +81,10 @@ process EL_GATO_ASSEMBLY {
     //  Due to an issue in el_gato with samples that can't find any loci
     label 'error_ignore'
 
-    conda "bioconda::el_gato=1.20.2"
+    conda "${params.el_gato_conda_build}"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/el_gato:1.20.2--py311h7e72e81_0' :
-        'biocontainers/el_gato:1.20.2--py311h7e72e81_0' }"
+        params.el_gato_singularity_container :
+        params.el_gato_docker_container }"
 
     input:
     tuple val(meta), path(assembly)
@@ -101,6 +105,8 @@ process EL_GATO_ASSEMBLY {
         --out out \\
         --sample ${meta.id} \\
         --header \\
+        ${params.el_gato_sbt_path ? "--sbt " + params.el_gato_sbt_path : ""} \\
+        ${params.el_gato_allele_profiles_path ? "--profile " + params.el_gato_allele_profiles_path : ""} \\        -- sbt SBT \\
         --assembly $assembly \\
     > ${meta.id}_ST.tsv
 
@@ -108,9 +114,10 @@ process EL_GATO_ASSEMBLY {
     mv out/run.log ${meta.id}_run.log
     mv out/report.json ${meta.id}_assembly.json
 
-    cat <<-END_VERSIONS > versions.yml
+    cat << END_VERSIONS > versions.yml
     "${task.process}":
         el_gato: \$(el_gato.py --version | sed 's/^el_gato version: //')
+        el_gato_sbt_name: ${params.el_gato_sbt_name}
     END_VERSIONS
     """
 
@@ -120,9 +127,11 @@ process EL_GATO_ASSEMBLY {
     touch ${meta.id}_run.log
     touch ${meta.id}_assembly.json
 
-    cat <<-END_VERSIONS > versions.yml
+
+    cat << END_VERSIONS > versions.yml
     "${task.process}":
         el_gato: \$(el_gato.py --version | sed 's/^el_gato version: //')
+        el_gato_sbt_name: ${params.el_gato_sbt_name}
     END_VERSIONS
     """
 }
@@ -130,10 +139,10 @@ process EL_GATO_ASSEMBLY {
 process EL_GATO_REPORT {
     label 'process_low'
 
-    conda "bioconda::el_gato=1.20.2"
+    conda "${params.el_gato_conda_build}"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/el_gato:1.20.2--py311h7e72e81_0' :
-        'biocontainers/el_gato:1.20.2--py311h7e72e81_0' }"
+        params.el_gato_singularity_container :
+        params.el_gato_docker_container }"
 
     input:
     path read_jsons
@@ -152,19 +161,21 @@ process EL_GATO_REPORT {
         -i *.json \\
         -o el_gato_report.pdf
 
-    cat <<-END_VERSIONS > versions.yml
+    cat << END_VERSIONS > versions.yml
     "${task.process}":
         el_gato: \$(el_gato.py --version | sed 's/^el_gato version: //')
+        el_gato_sbt_name: ${params.el_gato_sbt_name}
     END_VERSIONS
-    """
+    """    
 
     stub:
     """
     touch el_gato_report.pdf
 
-    cat <<-END_VERSIONS > versions.yml
+    cat << END_VERSIONS > versions.yml
     "${task.process}":
         el_gato: \$(el_gato.py --version | sed 's/^el_gato version: //')
+        el_gato_sbt_name: ${params.el_gato_sbt_name}
     END_VERSIONS
     """
 }
@@ -172,10 +183,10 @@ process EL_GATO_REPORT {
 process COMBINE_EL_GATO {
     label 'process_low'
 
-    conda "conda-forge::pandas=2.2.1"
+    conda "${params.el_gato_pandas_conda_build}"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/pandas:2.2.1' :
-        'biocontainers/pandas:2.2.1' }"
+        params.el_gato_pandas_singularity_container :
+        params.el_gato_pandas_docker_container }"
 
     input:
     path reads_st
@@ -205,7 +216,6 @@ process COMBINE_EL_GATO {
     stub:
     """
     touch el_gato_st.tsv
-
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         combine_el_gato: 0.1.0
