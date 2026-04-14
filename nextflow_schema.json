@@ -177,7 +177,7 @@
                 },
                 "el_gato_sbt_path": {
                     "type": "string",
-                    "format": "file-path",
+                    "format": "directory-path",
                     "default": "",
                     "description": "The path to the blast SBT file to use for el gato sequence typing. When blank, el gato defaults to $HOME/el_gato/el_gato/db. This should be modified when a custom blast SBT is used.",
                     "hidden": true
