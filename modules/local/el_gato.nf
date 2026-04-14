@@ -30,7 +30,7 @@ process EL_GATO_READS {
         --sample ${meta.id} \\
         --header \\
         ${params.el_gato_sbt_path ? "--sbt " + params.el_gato_sbt_path : ""} \\
-        ${params.el_gato_allele_profiles_path ? "--allele-profiles " + params.el_gato_allele_profiles_path : ""} \\
+        ${params.el_gato_allele_profiles_path ? "--profile " + params.el_gato_allele_profiles_path : ""} \\
         $reads_in \\
     > ${meta.id}_ST.tsv
 
@@ -106,7 +106,7 @@ process EL_GATO_ASSEMBLY {
         --sample ${meta.id} \\
         --header \\
         ${params.el_gato_sbt_path ? "--sbt " + params.el_gato_sbt_path : ""} \\
-        ${params.el_gato_allele_profiles_path ? "--allele-profiles " + params.el_gato_allele_profiles_path : ""} \\        -- sbt SBT \\
+        ${params.el_gato_allele_profiles_path ? "--profile " + params.el_gato_allele_profiles_path : ""} \\        -- sbt SBT \\
         --assembly $assembly \\
     > ${meta.id}_ST.tsv
 
