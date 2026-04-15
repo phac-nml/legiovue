@@ -3,6 +3,21 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0]
+
+Small adjustments to containers, labels, and workflow best practices
+
+### `Changed`
+
+- `quast_analyzer.py` `--min_align_percent` argument changed from an integer to float to match up with the `nextflow_schema.json` definition [#27](https://github.com/phac-nml/legiovue/pull/27)
+- Added the final multiqc report to the `iridanext.config` file [#27](https://github.com/phac-nml/legiovue/pull/27)
+- Removal of `quay.io` prefix from some containers [#27](https://github.com/phac-nml/legiovue/pull/27)
+- Adjusted `legiovue.nf` closures to be more detailed [#27](https://github.com/phac-nml/legiovue/pull/27)
+
+### `Removed`
+
+- Unused `slackreport.json` removed [#27](https://github.com/phac-nml/legiovue/pull/27)
+
 ## [0.3.0]
 
 Updates focusing on getting LegioVue setup to run in IRIDA-Next along with fixing updating to some best-practices and bumping the minimum nextflow version
@@ -72,6 +87,7 @@ Updates focusing on getting LegioVue setup to run in IRIDA-Next along with fixin
 
 - LegioVue pipeline created and initial beta code added
 
+[0.4.0]: https://github.com/phac-nml/legiovue/releases/tag/0.4.0
 [0.3.0]: https://github.com/phac-nml/legiovue/releases/tag/0.3.0
 [0.2.0]: https://github.com/phac-nml/legiovue/releases/tag/0.2.0
 [0.1.0]: https://github.com/phac-nml/legiovue/releases/tag/0.1.0

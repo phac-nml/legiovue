@@ -134,6 +134,7 @@ nextflow_pipeline {
             assert iridanext_global.findAll { it.path == "chewbbaca/allele_calls/cgMLST/cgMLST100.tsv" }.size() == 1
             assert iridanext_global.findAll { it.path == "chewbbaca/allele_calls/results_statistics.tsv" }.size() == 1
             assert iridanext_global.findAll { it.path == "el_gato/el_gato_st.tsv" }.size() == 1
+            assert iridanext_global.findAll { it.path == "LegioVue-Run-Report_multiqc_report.html" }.size() == 1
 
             assert iridanext_samples.in1.findAll { it.path == "spades/in1.contigs.fa" }.size() == 1
 
@@ -247,6 +248,7 @@ nextflow_pipeline {
             assert iridanext_global.findAll { it.path == "chewbbaca/allele_calls/cgMLST/cgMLST100.tsv" }.size() == 1
             assert iridanext_global.findAll { it.path == "chewbbaca/allele_calls/results_statistics.tsv" }.size() == 1
             assert iridanext_global.findAll { it.path == "el_gato/el_gato_st.tsv" }.size() == 1
+            assert iridanext_global.findAll { it.path == "LegioVue-Run-Report_multiqc_report.html" }.size() == 1
 
             assert iridanext_samples.add_sample1.findAll { it.path == "spades/sample1.contigs.fa" }.size() == 1
 

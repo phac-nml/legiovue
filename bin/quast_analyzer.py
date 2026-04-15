@@ -69,7 +69,7 @@ def init_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         '--min_align_percent',
-        type=int,
+        type=float,
         default=75,
         help='Thresold for minimum QUAST genome fraction percentage to get scoring points'
     )
@@ -142,7 +142,7 @@ def calculate_n50_score(metric: int, bottom: int, top: int) -> float:
 
 
 def analyze_sample(
-    sample: dict, max_contigs: int, min_align_percent: int,
+    sample: dict, max_contigs: int, min_align_percent: float,
     min_n50_score: int, max_n50_score: int
 ) -> dict:
     """Extract and values from the sample dictionary
@@ -150,7 +150,7 @@ def analyze_sample(
     Args:
         sample (dict): Dictionary containing all sample values from quast input line
         max_contigs (int): Max contigs to allow before failing criteria
-        min_align_percent (int): Minimum align percentage allowed before failing criteria
+        min_align_percent (float): Minimum align percentage allowed before failing criteria
 
     Returns:
         dict: Sample scoring dict

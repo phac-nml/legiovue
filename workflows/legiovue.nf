@@ -48,7 +48,7 @@ workflow LEGIOVUE {
     // ch_metadata         = params.metadata ? file(params.metadata, checkIfExists: true) : []
 
     // Empty version channel
-    ch_versions = Channel.empty()
+    ch_versions = channel.empty()
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
     // 1. Kraken and Bracken Check with maybe(?) Host Removal (TODO)
@@ -125,7 +125,7 @@ workflow LEGIOVUE {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
     QUAST(
         SPADES.out.contigs
-            .collect{ it[1] },
+            .collect{ _meta, contigs -> contigs },
         ch_quast_ref
     )
     ch_versions = ch_versions.mix(QUAST.out.versions)
@@ -138,7 +138,7 @@ workflow LEGIOVUE {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
     // 6. El_Gato - Second round with assemblies for failing samples only
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
-    ch_el_gato_report = Channel.value([])
+    ch_el_gato_report = channel.value([])
     if ( ! params.skip_el_gato ){
         EL_GATO_READS(
             ch_filtered_paired_fastqs.pass
@@ -149,14 +149,14 @@ workflow LEGIOVUE {
         //  inconclusive ST as it has been found to potentially call one
         EL_GATO_READS.out.report
             .splitCsv(header:true, sep:'\t')
-            .branch{ meta, row ->
+            .branch{ _meta, row ->
                 rerun: row.ST in ['MD-', 'MA?']
                 assigned: true
             }.set{ rerun_samples }
 
         EL_GATO_ASSEMBLY(
             rerun_samples.rerun
-                .map{ it -> it[0] }
+                .map{ meta, _tsv -> meta }
                 .join(SPADES.out.contigs, by:[0])
         )
         ch_versions = ch_versions.mix(EL_GATO_ASSEMBLY.out.versions)
@@ -164,10 +164,10 @@ workflow LEGIOVUE {
         // Combine and add in the approach used
         COMBINE_EL_GATO(
             EL_GATO_READS.out.report
-                .map{ it[1] }
+                .map{ _meta, tsv -> tsv }
                 .collectFile(name: 'read_st.tsv', keepHeader: true),
             EL_GATO_ASSEMBLY.out.report
-                .map{ it[1] }
+                .map{ _meta, tsv -> tsv }
                 .collectFile(name: 'assembly_st.tsv', keepHeader: true)
                 .ifEmpty([])
         )
@@ -179,9 +179,9 @@ workflow LEGIOVUE {
         //  file from the splitCsv output from my current understanding
         EL_GATO_REPORT(
             EL_GATO_READS.out.json
-                .collect{ it[1] },
+                .collect{ _meta, json -> json },
             EL_GATO_ASSEMBLY.out.json
-                .collect{ it[1] }
+                .collect{ _meta, json -> json }
                 .ifEmpty([])
         )
         ch_versions = ch_versions.mix(EL_GATO_REPORT.out.versions)
@@ -227,7 +227,7 @@ workflow LEGIOVUE {
     }
     CHEWBBACA_ALLELE_CALL(
         SPADES.out.contigs
-            .collect{ it[1] },
+            .collect{ _meta, contigs -> contigs },
         ch_prepped_schema
     )
     ch_versions = ch_versions.mix(CHEWBBACA_ALLELE_CALL.out.versions)
@@ -264,7 +264,7 @@ workflow LEGIOVUE {
 
     CSVTK_CONCAT_QC_DATA(
         COMBINE_SAMPLE_DATA.out.csv
-            .collect{ it[1] }
+            .collect{ _meta, csv -> csv }
     )
     ch_versions = ch_versions.mix(CSVTK_CONCAT_QC_DATA.out.versions)
 
@@ -281,15 +281,15 @@ workflow LEGIOVUE {
     MULTIQC(
         ch_multiqc_config,
         FASTQC.out.zip
-            .collect{ it[1] },
+            .collect{ _meta, zip -> zip },
         SCORE_QUAST.out.report
             .ifEmpty([]),
         ch_el_gato_report
             .ifEmpty([]),
         BRACKEN.out.breakdown
-            .collect{ it[1] },
+            .collect{ _meta, tsv -> tsv },
         TRIMMOMATIC.out.stderr
-            .collect{ it[1] },
+            .collect{ _meta, log -> log },
         CHEWBBACA_ALLELE_CALL.out.statistics
             .ifEmpty([]),
         CSVTK_CONCAT_QC_DATA.out.csv
