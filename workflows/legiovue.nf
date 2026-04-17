@@ -42,9 +42,11 @@ workflow LEGIOVUE {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
     ch_kraken2_db       = file(params.kraken2_db, checkIfExists: true)
     ch_quast_ref        = file(params.quast_ref, checkIfExists: true)
-    ch_multiqc_config   = file(params.multiqc_config, checkIfExists:true)
+    ch_el_gato_sbt      = params.el_gato_sbt ? file(params.el_gato_sbt, checkIfExists: true) : []
+    ch_el_gato_profile  = params.el_gato_profile ? file(params.el_gato_profile, checkIfExists: true) : []
     ch_prepped_schema   = file(params.prepped_schema, type: 'dir', checkIfExists: true)
     ch_schema_targets   = params.schema_targets ? file(params.schema_targets, type: 'dir', checkIfExists: true) : []
+    ch_multiqc_config   = file(params.multiqc_config, checkIfExists:true)
     // ch_metadata         = params.metadata ? file(params.metadata, checkIfExists: true) : []
 
     // Empty version channel
@@ -141,7 +143,9 @@ workflow LEGIOVUE {
     ch_el_gato_report = channel.value([])
     if ( ! params.skip_el_gato ){
         EL_GATO_READS(
-            ch_filtered_paired_fastqs.pass
+            ch_filtered_paired_fastqs.pass,
+            ch_el_gato_sbt,
+            ch_el_gato_profile
         )
         ch_versions = ch_versions.mix(EL_GATO_READS.out.versions)
 
@@ -157,7 +161,9 @@ workflow LEGIOVUE {
         EL_GATO_ASSEMBLY(
             rerun_samples.rerun
                 .map{ meta, _tsv -> meta }
-                .join(SPADES.out.contigs, by:[0])
+                .join(SPADES.out.contigs, by:[0]),
+            ch_el_gato_sbt,
+            ch_el_gato_profile
         )
         ch_versions = ch_versions.mix(EL_GATO_ASSEMBLY.out.versions)
 

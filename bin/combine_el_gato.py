@@ -62,6 +62,7 @@ def main() -> None:
         assembly_df = parse_tsv_to_df(args.assembly_tsv, 'assembly')
 
     # Make sure that assemblies take priority over reads if duplicated
+    #  This is because the assemblies may have an ST where the reads did not
     if (not assembly_df.empty) and (not read_df.empty):
         read_df = read_df[~read_df['Sample'].isin(assembly_df['Sample'])]
 

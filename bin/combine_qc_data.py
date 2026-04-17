@@ -7,6 +7,7 @@ that can be combined at the end as a final report
 import argparse
 import re
 import pandas as pd
+import sys
 from pathlib import Path
 
 def parse_args() -> argparse.ArgumentParser:
@@ -145,8 +146,14 @@ def grab_df_data(
     #  Could be the sample (most likely)
     #  or something else
     df = df[df[target_col].str.contains(f'^{target}$', regex=True) ]
-    if (df.empty) or (len(df) > 1):
+
+    # Empty df is ok, means there likely wasn't data so 
+    #  as the defaults are set before just return
+    if df.empty:
         return outdict
+    # More than 1 column means there may be something odd happening with sample name parsing and splitting, this shouldn't occur
+    elif len(df) > 1:
+        sys.exit(f"Error: Multiple entries found for '{target}' in file '{file_path}'. Check sample names for potential overlap")
 
     # Get wanted values based on data_cols_dict
     for key, val in data_cols_dict.items():
@@ -270,7 +277,7 @@ def main() -> None:
         outdict = grab_df_data(
             args.chewbbaca_stats_tsv,
             '\t',
-            sample,
+            f'{sample}.contigs',
             'FILE',
             mapping_dict,
             outdict

@@ -9,6 +9,8 @@ process EL_GATO_READS {
 
     input:
     tuple val(meta), path(reads)
+    path el_gato_sbt
+    path el_gato_profile
 
     output:
     tuple val(meta), path("${meta.id}_ST.tsv"), emit: report
@@ -23,6 +25,8 @@ process EL_GATO_READS {
 
     script:
     def reads_in = "--read1 ${reads[0]} --read2 ${reads[1]}"
+    def sbt_arg = el_gato_sbt ? "--sbt ${el_gato_sbt}" : ""
+    def profile_arg = el_gato_profile ? "--profile ${el_gato_profile}" : ""
     """
     el_gato.py \\
         --threads $task.cpus \\
@@ -30,6 +34,8 @@ process EL_GATO_READS {
         --sample ${meta.id} \\
         --header \\
         $reads_in \\
+        $sbt_arg \\
+        $profile_arg \\
     > ${meta.id}_ST.tsv
 
     # Rename outputs #
@@ -84,6 +90,8 @@ process EL_GATO_ASSEMBLY {
 
     input:
     tuple val(meta), path(assembly)
+    path el_gato_sbt
+    path el_gato_profile
 
     output:
     tuple val(meta), path("${meta.id}_ST.tsv"), emit: report
@@ -95,6 +103,8 @@ process EL_GATO_ASSEMBLY {
     task.ext.when == null || task.ext.when
 
     script:
+    def sbt_arg = el_gato_sbt ? "--sbt ${el_gato_sbt}" : ""
+    def profile_arg = el_gato_profile ? "--profile ${el_gato_profile}" : ""
     """
     el_gato.py \\
         --threads $task.cpus \\
@@ -102,6 +112,8 @@ process EL_GATO_ASSEMBLY {
         --sample ${meta.id} \\
         --header \\
         --assembly $assembly \\
+        $sbt_arg \\
+        $profile_arg \\
     > ${meta.id}_ST.tsv
 
     # Rename outputs #

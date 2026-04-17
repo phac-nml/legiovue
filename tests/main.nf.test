@@ -179,7 +179,7 @@ nextflow_pipeline {
     }
 
     //--- Test 5
-    test("Data Run Samplesheet Test with IRIDA ID") {
+    test("Data Run Samplesheet Test with IRIDA ID and sbt profile") {
         tag "success"
 
         when {
@@ -188,6 +188,7 @@ nextflow_pipeline {
                 kraken2_db = "${projectDir}/tests/test_data/lgk2_db"
                 outdir = "results"
                 min_reads = 100
+                el_gato_profile = "${projectDir}/tests/test_data/lpneumophila.txt"
             }
         }
         then {
