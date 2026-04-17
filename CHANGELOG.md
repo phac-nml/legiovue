@@ -6,10 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.4.0]
 
 Overall small adjustments and bugfixes to:
-  - modules
-  - containers
-  - labels
-  - workflow best practices
+
+- modules
+- containers
+- labels
+- workflow best practices
 
 ### `Changed`
 
@@ -21,6 +22,7 @@ Overall small adjustments and bugfixes to:
 - ChewBBACA update to 3.5.3 [#32](https://github.com/phac-nml/legiovue/pull/32)
   - Had to update final QC summary to capture the change to `.configs` in the FILE column
 - Add el_gato ST database as a parameter [#32](https://github.com/phac-nml/legiovue/pull/32)
+  - As `--el_gato_sbt` and `--el_gato_profile`
 - Added in a profile to hopefully address issue [#30] - config specification - that is available with `-profile env_params` [#32](https://github.com/phac-nml/legiovue/pull/32)
   - It adds in params to set the el_gato version/containers and the ChewBBACA version and container
   - It does always warn that the docker based params are null but they do work

@@ -95,6 +95,12 @@ custom_data:
         title: "Largest Contig"
         description: "Length of the longest contig in the assembly"
         scale: YlGn
+      assembly_qc_score:
+        title: "Assembly QC Score"
+        description: "Summarized score of assembly QC from 0 - 6 based on set assembly criteria"
+        min: 0
+        max: 6
+        scale: Blues
       st:
         title: "Sequence Type"
         description: "Sequence type based on Legionella pneumophila database with el_gato"

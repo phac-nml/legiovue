@@ -147,7 +147,7 @@ def grab_df_data(
     #  or something else
     df = df[df[target_col].str.contains(f'^{target}$', regex=True) ]
 
-    # Empty df is ok, means there likely wasn't data so 
+    # Empty df is ok, means there likely wasn't data so
     #  as the defaults are set before just return
     if df.empty:
         return outdict
