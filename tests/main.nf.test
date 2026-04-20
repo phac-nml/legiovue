@@ -65,6 +65,48 @@ nextflow_pipeline {
     }
 
     //--- Test 4
+    test("Too Long Fastq from --fastq_dir Test") {
+        tag "fail"
+
+        when {
+            params {
+                fastq_dir = "${baseDir}/tests/test_data_long/"
+                outdir = "results"
+                kraken2_db = "${projectDir}/tests/test_data/lgk2_db"
+                min_reads = 100
+            }
+        }
+        then {
+            // Status
+            assert workflow.failed
+
+            // Message
+            assert workflow.stdout.contains("The following sample names are too long (>30 chars): [thisnameisgreaterthan30characters-1]. Please shorten them or adjust '--max_name_length'")
+        }
+    }
+
+    //--- Test 4
+    test("Too Long Fastq from --input Test") {
+        tag "fail"
+
+        when {
+            params {
+                input = "$baseDir/tests/test_data/input_toolong.csv"
+                outdir = "results"
+                kraken2_db = "${projectDir}/tests/test_data/lgk2_db"
+                min_reads = 100
+            }
+        }
+        then {
+            // Status
+            assert workflow.failed
+
+            // Message
+            assert workflow.stdout.contains("The following sample names are too long (>30 chars): [thisnameisgreaterthan30characters-1]. Please shorten them or adjust '--max_name_length'")
+        }
+    }
+
+    //--- Test 4
     test("Data Run Fastq Dir Test") {
         tag "success"
 

@@ -66,6 +66,20 @@ workflow FORMAT_INPUT {
             .set { ch_paired_fastqs }
     }
 
+    // Check after channel is made for the too long ids
+    def tooLongIDs = [] as Set
+    ch_paired_fastqs
+        .map{ meta, _fastqs ->
+            if (meta.id.size() > params.max_name_length) {
+                tooLongIDs << meta.id
+            }
+        }
+        .subscribe {
+            if (tooLongIDs) {
+            error("The following sample names are too long (>${params.max_name_length} chars): ${tooLongIDs}. Please shorten them or adjust '--max_name_length'")
+            }
+        }
+
     emit:
     pass = ch_paired_fastqs      // channel: [ val(meta), file(fastq_1), file(fastq_2) ]
 }
