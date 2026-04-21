@@ -85,7 +85,7 @@ nextflow_pipeline {
         }
     }
 
-    //--- Test 4
+    //--- Test 5
     test("Too Long Fastq from --input Test") {
         tag "fail"
 
@@ -102,11 +102,11 @@ nextflow_pipeline {
             assert workflow.failed
 
             // Message
-            assert workflow.stdout.contains("The following sample names are too long (>30 chars): [thisnameisgreaterthan30characters-1]. Please shorten them or adjust '--max_name_length'")
+            assert workflow.stdout.contains("The following sample names are too long (>30 chars): [thisnameisgreaterthan30characters-1, thisnameisgreaterthan30characters-2]. Please shorten them or adjust '--max_name_length'")
         }
     }
 
-    //--- Test 4
+    //--- Test 6
     test("Data Run Fastq Dir Test") {
         tag "success"
 
@@ -220,7 +220,7 @@ nextflow_pipeline {
         }
     }
 
-    //--- Test 5
+    //--- Test 7
     test("Data Run Samplesheet Test with IRIDA ID and sbt profile") {
         tag "success"
 

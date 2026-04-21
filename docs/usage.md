@@ -121,9 +121,13 @@ It is required to pick one of the following to get fastq data into the pipeline
 | --max_n50_score         | Thresold for maximum QUAST N50 score to get max scoring points                        | Int   | 220000                     |                                                                                                                        |
 | skip_el_gato            | Flag to skip running el_gato sequence typing                                          | Bool  | False                      |                                                                                                                        |
 | skip_plotting           | Flag to skip running the el_gato allele plotting                                      | Bool  | False                      |                                                                                                                        |
+| el_gato_sbt             | Path to el_gato SBT database                                                          | Path  |                            | El_gato has the database bundled with the tool but this is for if you wanted to specify a local copy                   |
+| el_gato_profile         | Path to el_gato database profile text file                                            | Path  |                            | El_gato has the database bundled with the tool but this is for if you wanted to specify a local copy                   |
 | --prepped_schema        | Path to a prepped `chewBBACA` schema to save running the prep command                 | Path  | data/SeqSphere_1521_schema | Provided with pipeline                                                                                                 |
 | --schema_targets        | Path to schema targets to prep for `chewBBACA`                                        | Path  | null                       |                                                                                                                        |
 | --publish_dir_mode      | Specifies how intermediate files should be saved to the output directory              | Str   | copy                       |                                                                                                                        |
+
+| --max_name_length | Maximum length that a sample name can be | Int | 20 | |
 
 ## Core Nextflow Arguments
 

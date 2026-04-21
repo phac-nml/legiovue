@@ -1,3 +1,4 @@
 sample,fastq_1,fastq_2
 thisnameisgreaterthan30characters-1,https://github.com/phac-nml/legiovue/raw/dev/tests/test_data/in1_R1.fastq.gz,https://github.com/phac-nml/legiovue/raw/dev/tests/test_data/in1_R2.fastq.gz
+thisnameisgreaterthan30characters-2,https://github.com/phac-nml/legiovue/raw/dev/tests/test_data/in2_R1.fastq.gz,https://github.com/phac-nml/legiovue/raw/dev/tests/test_data/in2_R2.fastq.gz
 normal-2,https://github.com/phac-nml/legiovue/raw/dev/tests/test_data/in1_R1.fastq.gz,https://github.com/phac-nml/legiovue/raw/dev/tests/test_data/in1_R2.fastq.gz

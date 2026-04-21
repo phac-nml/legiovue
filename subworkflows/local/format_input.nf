@@ -67,6 +67,7 @@ workflow FORMAT_INPUT {
     }
 
     // Check after channel is made for the too long ids
+    //  That way we can group them up to report all of them
     def tooLongIDs = [] as Set
     ch_paired_fastqs
         .map{ meta, _fastqs ->
@@ -76,7 +77,7 @@ workflow FORMAT_INPUT {
         }
         .subscribe {
             if (tooLongIDs) {
-            error("The following sample names are too long (>${params.max_name_length} chars): ${tooLongIDs}. Please shorten them or adjust '--max_name_length'")
+                error("The following sample names are too long (>${params.max_name_length} chars): ${tooLongIDs}. Please shorten them or adjust '--max_name_length'")
             }
         }
 
