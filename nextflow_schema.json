@@ -205,6 +205,8 @@
                 "max_name_length": {
                     "type": "integer",
                     "default": 30,
+                    "minimum": 0,
+                    "maximum": 200,
                     "description": "Maximum length that a sample name can be",
                     "hidden": true
                 },
