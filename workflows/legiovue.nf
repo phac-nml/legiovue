@@ -100,8 +100,8 @@ workflow LEGIOVUE {
 
     // Filter by min count
     TRIMMOMATIC.out.trimmed_reads
-        .branch{
-            pass: it[1][1].countFastq() >= params.min_reads
+        .branch{ _meta, paired_reads ->
+            pass: paired_reads[1].countFastq() >= params.min_reads
             fail: true
         }.set{ ch_filtered_paired_fastqs }
 

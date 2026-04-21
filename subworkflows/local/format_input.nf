@@ -24,7 +24,9 @@ workflow FORMAT_INPUT {
         // Just adapting to the metamap format using fromFilePairs
         Channel
             .fromFilePairs("${params.fastq_dir}/*_{R1,R2}*.fastq*", checkIfExists:true)
-            .map { it -> [ [id: it[0], irida_id: it[0]], it[1] ] }
+            .map { sample, fastqs ->
+                [ [id: sample, irida_id: sample], fastqs ]
+            }
             .set { ch_paired_fastqs }
     } else {
         // Matching the above formatting by creating a list of the fastq file pairs
@@ -33,8 +35,7 @@ workflow FORMAT_INPUT {
         def processedIDs = [] as Set
         Channel
             .fromList(samplesheetToList(params.input, "assets/schema_input.json"))
-            .map {
-                meta, fastq_1, fastq_2 ->
+            .map { meta, fastq_1, fastq_2 ->
                 if (!meta.id) {
                     meta.id = meta.irida_id
                 } else {
@@ -59,9 +60,8 @@ workflow FORMAT_INPUT {
             .map { samplesheet ->
                 validateInputSamplesheet(samplesheet)
             }
-            .map {
-                meta, fastqs ->
-                    return [ meta, fastqs.flatten() ]
+            .map { meta, fastqs ->
+                return [ meta, fastqs.flatten() ]
             }
             .set { ch_paired_fastqs }
     }
@@ -70,16 +70,18 @@ workflow FORMAT_INPUT {
     //  That way we can group them up to report all of them
     def tooLongIDs = [] as Set
     ch_paired_fastqs
-        .map{ meta, _fastqs ->
-            if (meta.id.size() > params.max_name_length) {
-                tooLongIDs << meta.id
+        .subscribe(
+            onNext: { meta, _fastqs ->
+                if (meta.id.size() > params.max_name_length) {
+                    tooLongIDs << meta.id
+                }
+            },
+            onComplete: {
+                if (tooLongIDs) {
+                    error("The following sample names are too long (>${params.max_name_length} chars): ${tooLongIDs}. Please shorten them or adjust '--max_name_length'")
+                }
             }
-        }
-        .subscribe {
-            if (tooLongIDs) {
-                error("The following sample names are too long (>${params.max_name_length} chars): ${tooLongIDs}. Please shorten them or adjust '--max_name_length'")
-            }
-        }
+        )
 
     emit:
     pass = ch_paired_fastqs      // channel: [ val(meta), file(fastq_1), file(fastq_2) ]
