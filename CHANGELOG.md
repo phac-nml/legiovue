@@ -5,7 +5,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.4.0]
 
-Small adjustments to containers, labels, and workflow best practices
+Overall small adjustments and bugfixes to:
+
+- modules
+- containers
+- labels
+- workflow best practices
 
 ### `Changed`
 
@@ -13,10 +18,24 @@ Small adjustments to containers, labels, and workflow best practices
 - Added the final multiqc report to the `iridanext.config` file [#27](https://github.com/phac-nml/legiovue/pull/27)
 - Removal of `quay.io` prefix from some containers [#27](https://github.com/phac-nml/legiovue/pull/27)
 - Adjusted `legiovue.nf` closures to be more detailed [#27](https://github.com/phac-nml/legiovue/pull/27)
+- Small multiqc module adjustments to save IO resources [#32](https://github.com/phac-nml/legiovue/pull/32)
+- ChewBBACA update to 3.5.3 [#32](https://github.com/phac-nml/legiovue/pull/32)
+  - Had to update final QC summary to capture the change to `.configs` in the FILE column
+- Add el_gato ST database as a parameter [#32](https://github.com/phac-nml/legiovue/pull/32)
+  - As `--el_gato_sbt` and `--el_gato_profile`
+- Added in a profile to hopefully address issue [#30] - config specification - that is available with `-profile env_params` [#32](https://github.com/phac-nml/legiovue/pull/32)
+  - It adds in params to set the el_gato version/containers and the ChewBBACA version and container
+  - It does always warn that the docker based params are null but they do work
 
 ### `Removed`
 
 - Unused `slackreport.json` removed [#27](https://github.com/phac-nml/legiovue/pull/27)
+
+### `Fixes`
+
+- [#29](https://github.com/phac-nml/legiovue/issues/29) - Plot3 column mislabeled in multiqc report as plot5
+- [#28](https://github.com/phac-nml/legiovue/issues/28) - Long names failing after SPAdes assemble / for ChewBBACA late into pipeline
+- [#21](https://github.com/phac-nml/legiovue/issues/21) - ChewBBACA plotly issue
 
 ## [0.3.0]
 

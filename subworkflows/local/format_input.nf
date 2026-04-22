@@ -22,19 +22,19 @@ workflow FORMAT_INPUT {
     main:
     if ( params.fastq_dir ) {
         // Just adapting to the metamap format using fromFilePairs
-        Channel
+        ch_paired_fastqs = Channel
             .fromFilePairs("${params.fastq_dir}/*_{R1,R2}*.fastq*", checkIfExists:true)
-            .map { it -> [ [id: it[0], irida_id: it[0]], it[1] ] }
-            .set { ch_paired_fastqs }
+            .map { sample, fastqs ->
+                [ [id: sample, irida_id: sample], fastqs ]
+            }
     } else {
         // Matching the above formatting by creating a list of the fastq file pairs
         //  Schema requires pairs at the moment so this is ok. If we want to support ONT
         //  data later will need to adjust the logic
         def processedIDs = [] as Set
-        Channel
+        ch_paired_fastqs = Channel
             .fromList(samplesheetToList(params.input, "assets/schema_input.json"))
-            .map {
-                meta, fastq_1, fastq_2 ->
+            .map { meta, fastq_1, fastq_2 ->
                 if (!meta.id) {
                     meta.id = meta.irida_id
                 } else {
@@ -59,12 +59,27 @@ workflow FORMAT_INPUT {
             .map { samplesheet ->
                 validateInputSamplesheet(samplesheet)
             }
-            .map {
-                meta, fastqs ->
-                    return [ meta, fastqs.flatten() ]
+            .map { meta, fastqs ->
+                return [ meta, fastqs.flatten() ]
             }
-            .set { ch_paired_fastqs }
     }
+
+    // Check after channel is made for the too long ids
+    //  That way we can group them up to report all of them
+    def tooLongIDs = [] as Set
+    ch_paired_fastqs
+        .subscribe(
+            onNext: { meta, _fastqs ->
+                if (meta.id.size() > params.max_name_length) {
+                    tooLongIDs << meta.id
+                }
+            },
+            onComplete: {
+                if (tooLongIDs) {
+                    error("The following sample names are too long (>${params.max_name_length} chars): ${tooLongIDs}. Please shorten them or adjust '--max_name_length'")
+                }
+            }
+        )
 
     emit:
     pass = ch_paired_fastqs      // channel: [ val(meta), file(fastq_1), file(fastq_2) ]

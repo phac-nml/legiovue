@@ -24,23 +24,11 @@ process MULTIQC {
 
     script:
     """
-    mkdir -p multiqc_work_dir
-    cp -r \\
-        ${fastqcs_zips} \\
-        ${scored_quast_report} \\
-        ${el_gato_report} \\
-        ${bracken_breakdowns} \\
-        ${trimmomatic_stderrs} \\
-        ${chewbbacca_allele_stats} \\
-        ${overall_qc} \\
-        ${versions_yml} \\
-        multiqc_work_dir/
-
     multiqc \\
         -f \\
         -k yaml \\
         --config $multiqc_config \\
-        multiqc_work_dir/
+        ./
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

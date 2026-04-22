@@ -88,6 +88,30 @@
             },
             "fa_icon": "fas fa-forward"
         },
+        "el_gato_options": {
+            "title": "El_Gato Database Options",
+            "type": "object",
+            "description": "Options involved in adjusting the el_gato d",
+            "default": "",
+            "properties": {
+                "el_gato_sbt": {
+                    "type": "string",
+                    "description": "Path to el_gato SBT database",
+                    "exists": true,
+                    "format": "directory-path",
+                    "fa_icon": "fas fa-server"
+                },
+                "el_gato_profile": {
+                    "type": "string",
+                    "description": "Path to el_gato database profile text file",
+                    "exists": true,
+                    "format": "file-path",
+                    "mimetype": "text/csv",
+                    "pattern": "^\\S+\\.txt$",
+                    "fa_icon": "far fa-file-alt"
+                }
+            }
+        },
         "quast_and_quality_options": {
             "title": "QUAST and Quality options",
             "type": "object",
@@ -178,6 +202,14 @@
                     "enum": ["symlink", "rellink", "link", "copy", "copyNoFollow", "move"],
                     "hidden": true
                 },
+                "max_name_length": {
+                    "type": "integer",
+                    "default": 30,
+                    "minimum": 0,
+                    "maximum": 200,
+                    "description": "Maximum length that a sample name can be",
+                    "hidden": true
+                },
                 "help": {
                     "type": "boolean",
                     "description": "Display help info and exit",
@@ -208,6 +240,9 @@
         },
         {
             "$ref": "#/$defs/skipping_options"
+        },
+        {
+            "$ref": "#/$defs/el_gato_options"
         },
         {
             "$ref": "#/$defs/quast_and_quality_options"
