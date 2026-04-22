@@ -22,18 +22,17 @@ workflow FORMAT_INPUT {
     main:
     if ( params.fastq_dir ) {
         // Just adapting to the metamap format using fromFilePairs
-        Channel
+        ch_paired_fastqs = Channel
             .fromFilePairs("${params.fastq_dir}/*_{R1,R2}*.fastq*", checkIfExists:true)
             .map { sample, fastqs ->
                 [ [id: sample, irida_id: sample], fastqs ]
             }
-            .set { ch_paired_fastqs }
     } else {
         // Matching the above formatting by creating a list of the fastq file pairs
         //  Schema requires pairs at the moment so this is ok. If we want to support ONT
         //  data later will need to adjust the logic
         def processedIDs = [] as Set
-        Channel
+        ch_paired_fastqs = Channel
             .fromList(samplesheetToList(params.input, "assets/schema_input.json"))
             .map { meta, fastq_1, fastq_2 ->
                 if (!meta.id) {
@@ -63,7 +62,6 @@ workflow FORMAT_INPUT {
             .map { meta, fastqs ->
                 return [ meta, fastqs.flatten() ]
             }
-            .set { ch_paired_fastqs }
     }
 
     // Check after channel is made for the too long ids

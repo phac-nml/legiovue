@@ -27,6 +27,9 @@ process EL_GATO_READS {
     def reads_in = "--read1 ${reads[0]} --read2 ${reads[1]}"
     def sbt_arg = el_gato_sbt ? "--sbt ${el_gato_sbt}" : ""
     def profile_arg = el_gato_profile ? "--profile ${el_gato_profile}" : ""
+
+    // Setup tracking what sbt database was used
+    def sbt_database_note = el_gato_sbt ? "Local ${el_gato_sbt.name} database" : "Stable versioned database release"
     """
     el_gato.py \\
         --threads $task.cpus \\
@@ -54,6 +57,7 @@ process EL_GATO_READS {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         el_gato: \$(el_gato.py --version | sed 's/^el_gato version: //')
+        el_gato_sbt_name: ${sbt_database_note}
     END_VERSIONS
     """
 
@@ -72,6 +76,7 @@ process EL_GATO_READS {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         el_gato: \$(el_gato.py --version | sed 's/^el_gato version: //')
+        el_gato_sbt_name: NA
     END_VERSIONS
     """
 }
@@ -105,6 +110,9 @@ process EL_GATO_ASSEMBLY {
     script:
     def sbt_arg = el_gato_sbt ? "--sbt ${el_gato_sbt}" : ""
     def profile_arg = el_gato_profile ? "--profile ${el_gato_profile}" : ""
+
+    // Setup tracking what sbt database was used
+    def sbt_database_note = el_gato_sbt ? "Local ${el_gato_sbt.name} database" : "Stable versioned database release"
     """
     el_gato.py \\
         --threads $task.cpus \\
@@ -123,6 +131,7 @@ process EL_GATO_ASSEMBLY {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         el_gato: \$(el_gato.py --version | sed 's/^el_gato version: //')
+        el_gato_sbt_name: ${sbt_database_note}
     END_VERSIONS
     """
 
@@ -135,6 +144,7 @@ process EL_GATO_ASSEMBLY {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         el_gato: \$(el_gato.py --version | sed 's/^el_gato version: //')
+        el_gato_sbt_name: NA
     END_VERSIONS
     """
 }

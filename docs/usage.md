@@ -126,7 +126,7 @@ It is required to pick one of the following to get fastq data into the pipeline
 | --prepped_schema        | Path to a prepped `chewBBACA` schema to save running the prep command                 | Path  | data/SeqSphere_1521_schema | Provided with pipeline                                                                                                 |
 | --schema_targets        | Path to schema targets to prep for `chewBBACA`                                        | Path  | null                       |                                                                                                                        |
 | --publish_dir_mode      | Specifies how intermediate files should be saved to the output directory              | Str   | copy                       |                                                                                                                        |
-| --max_name_length       | Maximum length that a sample name can be                                              | Int   | 20                         |                                                                                                                        |
+| --max_name_length       | Maximum length that a sample name can be                                              | Int   | 30                         |                                                                                                                        |
 
 ## Core Nextflow Arguments
 
