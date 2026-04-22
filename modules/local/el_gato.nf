@@ -112,7 +112,7 @@ process EL_GATO_ASSEMBLY {
     def profile_arg = el_gato_profile ? "--profile ${el_gato_profile}" : ""
 
     // Setup tracking what sbt database was used
-    def sbt_database_note = el_gato_sbt ? "Local ${el_gato_sbt.name} database" : "Stable versioned database release"
+    def sbt_database_note = el_gato_sbt ? "Local ${el_gato_sbt.name} Lpn database" : "Included el_gato Lpn database"
     """
     el_gato.py \\
         --threads $task.cpus \\
