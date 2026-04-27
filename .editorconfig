@@ -44,3 +44,11 @@ end_of_line = unset
 insert_final_newline = unset
 trim_trailing_whitespace = unset
 indent_style = unset
+
+# ignore lpn database file
+[/tests/test_data/lpneumophila.txt]
+charset = unset
+end_of_line = unset
+insert_final_newline = unset
+trim_trailing_whitespace = unset
+indent_style = unset

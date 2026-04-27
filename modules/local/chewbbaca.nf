@@ -1,10 +1,10 @@
 process CHEWBBACA_PREP_EXTERNAL_SCHEMA {
     label 'process_low'
 
-    conda "bioconda::chewbbaca=3.3.5"
+    conda "bioconda::chewbbaca=3.5.3"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/chewbbaca:3.3.5--pyhdfd78af_0':
-        'biocontainers/chewbbaca:3.3.5--pyhdfd78af_0' }"
+        'https://depot.galaxyproject.org/singularity/chewbbaca:3.5.3--pyh106432d_1':
+        'biocontainers/chewbbaca:3.5.3--pyh106432d_1' }"
 
     input:
     path targets
@@ -44,10 +44,10 @@ process CHEWBBACA_PREP_EXTERNAL_SCHEMA {
 process CHEWBBACA_ALLELE_CALL {
     label 'process_medium'
 
-    conda "bioconda::chewbbaca=3.3.5"
+    conda "bioconda::chewbbaca=3.5.3"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/chewbbaca:3.3.5--pyhdfd78af_0':
-        'biocontainers/chewbbaca:3.3.5--pyhdfd78af_0' }"
+        'https://depot.galaxyproject.org/singularity/chewbbaca:3.5.3--pyh106432d_1':
+        'biocontainers/chewbbaca:3.5.3--pyh106432d_1' }"
 
     input:
     path assemblies
@@ -110,10 +110,10 @@ process CHEWBBACA_ALLELE_CALL {
 process CHEWBBACA_EXTRACT_CGMLST {
     label 'process_low'
 
-    conda "bioconda::chewbbaca=3.3.5"
+    conda "bioconda::chewbbaca=3.5.3"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/chewbbaca:3.3.5--pyhdfd78af_0':
-        'biocontainers/chewbbaca:3.3.5--pyhdfd78af_0' }"
+        'https://depot.galaxyproject.org/singularity/chewbbaca:3.5.3--pyh106432d_1':
+        'biocontainers/chewbbaca:3.5.3--pyh106432d_1' }"
 
     input:
     path results_alleles

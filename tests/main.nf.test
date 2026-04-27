@@ -65,6 +65,48 @@ nextflow_pipeline {
     }
 
     //--- Test 4
+    test("Too Long Fastq from --fastq_dir Test") {
+        tag "fail"
+
+        when {
+            params {
+                fastq_dir = "${baseDir}/tests/test_data_long/"
+                outdir = "results"
+                kraken2_db = "${projectDir}/tests/test_data/lgk2_db"
+                min_reads = 100
+            }
+        }
+        then {
+            // Status
+            assert workflow.failed
+
+            // Message
+            assert workflow.stdout.contains("The following sample names are too long (>30 chars): [thisnameisgreaterthan30characters-1]. Please shorten them or adjust '--max_name_length'")
+        }
+    }
+
+    //--- Test 5
+    test("Too Long Fastq from --input Test") {
+        tag "fail"
+
+        when {
+            params {
+                input = "$baseDir/tests/test_data/input_toolong.csv"
+                outdir = "results"
+                kraken2_db = "${projectDir}/tests/test_data/lgk2_db"
+                min_reads = 100
+            }
+        }
+        then {
+            // Status
+            assert workflow.failed
+
+            // Message
+            assert workflow.stdout.contains("The following sample names are too long (>30 chars): [thisnameisgreaterthan30characters-1, thisnameisgreaterthan30characters-2]. Please shorten them or adjust '--max_name_length'")
+        }
+    }
+
+    //--- Test 6
     test("Data Run Fastq Dir Test") {
         tag "success"
 
@@ -103,13 +145,13 @@ nextflow_pipeline {
 
             lines = path("$launchDir/results/chewbbaca/allele_calls/results_statistics.tsv").text
             assert lines.contains("FILE\tEXC\tINF\tPLOT3\tPLOT5\tLOTSC\tNIPH\tNIPHEM\tALM\tASM\tPAMA\tLNF\tInvalid CDSs\tClassified_CDSs\tTotal_CDSs")
-            assert lines.contains("in1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t1521\t0\t0\t40")
+            assert lines.contains("in1.contigs\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t1521\t0\t0\t40")
 
             assert path("$launchDir/results/chewbbaca/allele_calls/cgMLST/missing_loci_stats.tsv").exists()
 
             lines = path("$launchDir/results/chewbbaca/allele_calls/cgMLST/missing_loci_stats.tsv").text
             assert lines.contains("FILE\tmissing\tpercentage")
-            assert lines.contains("in1\t1521\t1.0")
+            assert lines.contains("in1.contigs\t1521\t1.0")
 
             // el_gato final allele data
             assert path("$launchDir/results/el_gato/el_gato_st.tsv").exists()
@@ -134,6 +176,7 @@ nextflow_pipeline {
             assert iridanext_global.findAll { it.path == "chewbbaca/allele_calls/cgMLST/cgMLST100.tsv" }.size() == 1
             assert iridanext_global.findAll { it.path == "chewbbaca/allele_calls/results_statistics.tsv" }.size() == 1
             assert iridanext_global.findAll { it.path == "el_gato/el_gato_st.tsv" }.size() == 1
+            assert iridanext_global.findAll { it.path == "LegioVue-Run-Report_multiqc_report.html" }.size() == 1
 
             assert iridanext_samples.in1.findAll { it.path == "spades/in1.contigs.fa" }.size() == 1
 
@@ -177,8 +220,8 @@ nextflow_pipeline {
         }
     }
 
-    //--- Test 5
-    test("Data Run Samplesheet Test with IRIDA ID") {
+    //--- Test 7
+    test("Data Run Samplesheet Test with IRIDA ID and sbt profile") {
         tag "success"
 
         when {
@@ -187,6 +230,7 @@ nextflow_pipeline {
                 kraken2_db = "${projectDir}/tests/test_data/lgk2_db"
                 outdir = "results"
                 min_reads = 100
+                el_gato_profile = "${projectDir}/tests/test_data/lpneumophila.txt"
             }
         }
         then {
@@ -216,13 +260,13 @@ nextflow_pipeline {
 
             lines = path("$launchDir/results/chewbbaca/allele_calls/results_statistics.tsv").text
             assert lines.contains("FILE\tEXC\tINF\tPLOT3\tPLOT5\tLOTSC\tNIPH\tNIPHEM\tALM\tASM\tPAMA\tLNF\tInvalid CDSs\tClassified_CDSs\tTotal_CDSs")
-            assert lines.contains("sample1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t1521\t0\t0\t40")
+            assert lines.contains("sample1.contigs\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t1521\t0\t0\t40")
 
             assert path("$launchDir/results/chewbbaca/allele_calls/cgMLST/missing_loci_stats.tsv").exists()
 
             lines = path("$launchDir/results/chewbbaca/allele_calls/cgMLST/missing_loci_stats.tsv").text
             assert lines.contains("FILE\tmissing\tpercentage")
-            assert lines.contains("sample1\t1521\t1.0")
+            assert lines.contains("sample1.contigs\t1521\t1.0")
 
             // el_gato final allele data
             assert path("$launchDir/results/el_gato/el_gato_st.tsv").exists()
@@ -247,6 +291,7 @@ nextflow_pipeline {
             assert iridanext_global.findAll { it.path == "chewbbaca/allele_calls/cgMLST/cgMLST100.tsv" }.size() == 1
             assert iridanext_global.findAll { it.path == "chewbbaca/allele_calls/results_statistics.tsv" }.size() == 1
             assert iridanext_global.findAll { it.path == "el_gato/el_gato_st.tsv" }.size() == 1
+            assert iridanext_global.findAll { it.path == "LegioVue-Run-Report_multiqc_report.html" }.size() == 1
 
             assert iridanext_samples.add_sample1.findAll { it.path == "spades/sample1.contigs.fa" }.size() == 1
 
