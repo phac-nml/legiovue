@@ -29,6 +29,7 @@ The pipeline is built using [Nextflow](https://www.nextflow.io/) and processes d
   - [QUAST Scoring Script](#quast-scoring-script) - Simple assembly score of QUAST output based on established criteria
   - [Final QC Checks](#final-qc-checks) - Summary of pipeline QC metrics
   - [MultiQC](#multiqc)
+- [Final CSV Column Definitions](#final-qc-column-definitions)
 
 Additionally [Pipeline information](#pipeline-information) which includes report metrics generated during the workflow execution can also be found
 
@@ -272,3 +273,26 @@ The `qc_message` column contains the reason for the `qc_status` and includes:
 </details>
 
 The LegioVue Run Report HTML file is the final summary of all the samples run by the pipeline generated using RMarkdown. The report includes tables and visualization from most of the tools mentioned here.
+
+### Final QC Column Definitions
+
+The final output QC CSV file contains the following columns and they are defined as such:
+
+| Column | Description | Data Type | Notes |
+| sample | The name of the sample | String | |
+| lpn_abundance | Abundance of L. pneumophila reads within the sample calculated from kraken/bracken | Number | |
+| num_paired_trimmed_reads | Total number of paired trimmed reads kept after read filtering and trimming | Integer | |
+| pct_paired_reads_passing_qc | Percentage of read pairs retained after read filtering and trimming | Number | |
+| n50 | The contig length such that at least half of the nucleotides in the assembly belong to contigs of this length or greater | Integer | Calculated by `QUAST` |
+| num_contigs | The number of assembled contigs in the de novo assembly | Integer | Calculated by `QUAST` |
+| pct_gc | Percentage of guanine and cytosine bases in the assembled genome | Number | Calculated by `QUAST` |
+| assembly_len | Total length of all contigs in the assembled genome | Integer | Calculated by `QUAST` |
+| largest_contig | Length of the longest contig in the assembly | Integer | Calculated by `QUAST` |
+| assembly_qc_score | Summarized score of assembly QC from 0 - 6 based on set assembly criteria | Number | See [QUAST Scoring Script](#quast-scoring-script) for more detail |
+| st | Sequence type based on Legionella pneumophila database with `el_gato` | Integer | |
+| st_approach | Method used by `el_gato` to determine the sequence type | String | Either "reads", "assembly", or "NA" |
+| chewbbaca_exc | EXaCt match (100% DNA identity) with previously identified alleles | Integer | |
+| chewbbaca_inf | INFerred new alleles that had no exact match in the schema but are highly similar to loci in the schema | Integer | |
+| chewbbaca_pct_exc | Percentage of EXaCt match (100% DNA identity) with previously identified alleles | Number | |
+| qc_status | Overall quality control outcome based on the predefined metrics and thresholds for L.pn | String | Will be "PASS", "WARN", or "FAIL" |
+| qc_message | Quality control message for failing/warning samples | String | See [Final QC Checks](#final-qc-checks) for descriptions of warnings |

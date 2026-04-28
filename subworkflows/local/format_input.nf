@@ -55,10 +55,9 @@ workflow FORMAT_INPUT {
         //  Schema requires pairs at the moment so this is ok. If we want to support ONT
         //  data later will need to adjust the logic
         def processedIDs = [] as Set
-        Channel
+        ch_paired_fastqs = Channel
             .fromList(samplesheetToList(params.input, "assets/schema_input.json"))
-            .map {
-                meta, fastq_1, fastq_2 ->
+            .map { meta, fastq_1, fastq_2 ->
                 if (!meta.id) {
                     meta.id = meta.irida_id
                 } else {
@@ -85,9 +84,8 @@ workflow FORMAT_INPUT {
             .map { samplesheet ->
                 validateInputSamplesheet(samplesheet)
             }
-            .map {
-                meta, fastqs ->
-                    return [ meta, fastqs.flatten() ]
+            .map { meta, fastqs ->
+                return [ meta, fastqs.flatten() ]
             }
             .set { ch_all_fastqs }
 
@@ -100,6 +98,23 @@ workflow FORMAT_INPUT {
             .filter { meta, fastqs -> meta.single_end == false }
             .set { ch_paired_fastqs }
     }
+
+    // Check after channel is made for the too long ids
+    //  That way we can group them up to report all of them
+    def tooLongIDs = [] as Set
+    ch_paired_fastqs
+        .subscribe(
+            onNext: { meta, _fastqs ->
+                if (meta.id.size() > params.max_name_length) {
+                    tooLongIDs << meta.id
+                }
+            },
+            onComplete: {
+                if (tooLongIDs) {
+                    error("The following sample names are too long (>${params.max_name_length} chars): ${tooLongIDs}. Please shorten them or adjust '--max_name_length'")
+                }
+            }
+        )
 
     emit:
     paired = ch_paired_fastqs // channel of tuples: [ sample_id, meta, [fastq_1, fastq_2] ]
