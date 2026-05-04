@@ -75,9 +75,10 @@ Where:
 
 - `-profile <PROFILE>`: The nextflow profile to use.
   - Specification of a dependency management system (docker, singularity, conda)
-- `--fastq_dir </PATH/TO/PAIRED_FASTQS>`: Path to directory containing paired Illumina `_R1` and `_R2` fastq files
-  - Fastqs must be formatted as `<NAME>_{R1,R2}\*.fastq\*`
-  - At the moment everything before the first `_R1/_R2` is kept as the sample name
+- `--fastq_dir </PATH/TO/PAIRED_FASTQS>`: Path to directory containing paired Illumina `_R1` and `_R2` fastq files or single end Nanopore fastq files.
+  - Illumina Paired Fastqs must be formatted as `<NAME>_{R1,R2}\*.fastq\*`
+  - Nanopore Fastqs must be formatted as `<NAME>_\*.fastq\*`
+  - At the moment everything before the first `_R1/_R2` for paired data or `.fastq` for single end data is kept as the sample name
 - `--kraken2_db </PATH/TO/KRAKEN2_DB>`: Path to a kraken2 database
 
 Samplesheet CSV Input:
@@ -98,7 +99,7 @@ Where:
 - `--input </PATH/TO/INPUT.csv>`: Path to a CSV file with the header line `sample,fastq_1,fastq_2`
   - `sample` is the name of the sample
   - `fastq_1,fastq_2` is the path to both the fastq reads
-    - Note that paired end sequencing is required at this time!
+    - if using single end data place path to file in fastq_1 and leave fastq_2 blank
   - [Example file](./tests/test_data/input.csv)
 - `--kraken2_db </PATH/TO/KRAKEN2_DB>`: Path to a kraken2 database
 
@@ -109,11 +110,11 @@ Where:
 
 All of the outputs can be found in [the output docs](./docs/output.md). All outputs are by default put in the `results` folder with some of the major outputs being as follows:
 
-- `spades/`: Contains the SPAdes assemblies (contigs as .fasta files) for each sample.
-- `el_gato/el_gato_st.tsv`: Summarized el_gato ST calls for all samples.
-- `chewbbaca/allele_calls/cgMLST/`: cgMLST profiles that can be used for downstream visualization.
-- `overall.qc.csv`: Final quality summary report for each sample throughout the different pipeline steps. Important quality flags can be found in this file.
-- `LegioVue-Run-Report_multiqc_report.html`: MultiQC report including quality metrics from most of the tools used within the pipeline.
+- `assembly/spades/` or `assembly/dragonflye/`: Contains the assemblies (contigs as .fasta files) for each sample.
+- `el_gato/illumina/el_gato_st.tsv` or `el_gato/nanopore/nanopore_el_gato_st.tsv`: Summarized el_gato ST calls for all samples.
+- `chewbbaca/illumina/allele_calls/cgMLST/` or `chewbbaca/nanopore/allele_calls/cgMLST/`: cgMLST profiles that can be used for downstream visualization.
+- `qc/overall.qc.csv` or `qc/nanopore_overall.qc.csv`: Final quality summary report for each sample throughout the different pipeline steps. Important quality flags can be found in this file.
+- `multiqc/illumina/LegioVue-Run-Report_multiqc_report.html` or `multiqc/nanopore/LegioVue-Run-Report_multiqc_report.html`: MultiQC report including quality metrics from most of the tools used within the pipeline.
 
 ## Pipeline Components and Settings
 
@@ -125,19 +126,37 @@ All of the outputs can be found in [the output docs](./docs/output.md). All outp
 
 [Trimmomatic](https://github.com/usadellab/Trimmomatic) is used to remove Illumina adapters (`ILLUMINACLIP:TruSeq3-PE.fa:2:30:10:2:True`) and trim reads according to quality (`LEADING:3`, `TRAILING:3`, `SLIDINGWINDOW:4:20`). Reads shorter than 100bp are dropped (`MINLEN:100`).
 
+**`Nanoplot`**
+
+[Nanoplot](https://github.com/wdecoster/nanoplot) provides quality information about the untrimmed single end reads including reads lengths, read qscore, and read numbers.
+
+**`Nanoq`**
+
+[Nanoq](https://github.com/esteinig/nanoq) provides read filtering and summary reports for nanopore reads. Reads shorter than 1000bp are dropped (`--min-len 1000`).
+
 **`FastQC`**
 
 [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) provides quality information about the trimmed reads including estimates of duplication, %GC, and N content. Samples retaining fewer than 150,000 high-quality read pairs after trimming are removed unless `--min_reads <COUNT>` is specified.
 
 **`SPAdes`** and **`QUAST`**
 
-High-quality reads (both paired and unpaired) are then assembled into Legionella genomes using the [SPAdes](https://github.com/ablab/spades) assembler and `--careful` option, which aims to minimize mismatches and short indels in the assembly. The quality of the resulting assemblies is evaluated with [QUAST](https://github.com/ablab/quast). At this step, genomes are compared to a _Legionella pneumophila_ [reference genome](data/C9_S.reference.fna) and an assembly quality score is calculated for each sample using a custom script.
+High-quality illumina reads (both paired and unpaired) are then assembled into Legionella genomes using the [SPAdes](https://github.com/ablab/spades) assembler and `--careful` option, which aims to minimize mismatches and short indels in the assembly. The quality of the resulting assemblies is evaluated with [QUAST](https://github.com/ablab/quast). At this step, genomes are compared to a _Legionella pneumophila_ [reference genome](data/C9_S.reference.fna) and an assembly quality score is calculated for each sample using a custom script.
 
 The `quast_analyzer.py` script assigns a score to each SPAdes assembly based on pre-cgMLST metrics (_e.g.,_ similarity to RefSeq complete _Lp_ genomes, N50, # contigs, %GC content) originally outlined in the supplementary appendix (Supplementary Table 2) of the following paper:
 
 > Gorzynski, J., Wee, B., Llano, M., Alves, J., Cameron, R., McMenamin, J., et al. (2022). Epidemiological analysis of Legionnaires’ disease in Scotland: a genomic study. The Lancet Microbe 3, e835–e845. doi: 10.1016/S2666-5247(22)00231-2
 
 Quality thresholds and score effects have been updated in this pipeline to better capture quality issues that are likely to affect the interpretation of the resulting cgMLST profile. Assemblies are assigned a quality score out of 6, where a score of 6/6 represents an "excellent" high-quality _Legionella pneumophila_ assembly.
+
+**`Dragonflye`**
+
+Nanopore reads are assmebled into Legionella genomes using the [Dragonflye](https://github.com/rpetit3/dragonflye) assembly pipeline under default parameters. The quality of the resulting assemblies is evaluated with [QUAST](https://github.com/ablab/quast). At this step, genomes are compared to a _Legionella pneumophila_ [reference genome](data/C9_S.reference.fna) and an assembly quality score is calculated for each sample using a custom script.
+
+The `nanopore_quast_analyzer.py` script assigns a score to each Dragonflye assembly based on pre-cgMLST metrics (_e.g.,_ similarity to RefSeq complete _Lp_ genomes, N50, # contigs, %GC content) originally outlined in the supplementary appendix (Supplementary Table 2) of the following paper:
+
+> Gorzynski, J., Wee, B., Llano, M., Alves, J., Cameron, R., McMenamin, J., et al. (2022). Epidemiological analysis of Legionnaires’ disease in Scotland: a genomic study. The Lancet Microbe 3, e835–e845. doi: 10.1016/S2666-5247(22)00231-2
+
+Quality thresholds and score effects have been updated in this pipeline to better capture quality issues that are likely to affect the interpretation of the resulting cgMLST profile for nanopore assemblies. Assemblies are assigned a quality score out of 6, where a score of 6/6 represents an "excellent" high-quality _Legionella pneumophila_ assembly.
 
 **`el_gato`**
 
@@ -177,20 +196,33 @@ The `qc_message` column contains the reason for the `qc_status` and includes:
 | Message                | Associated Status | Flag Reason                                                                                                                                                  |
 | ---------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | low_lpn_abundance      | WARN              | Low (< 75%) _L. pneumophila_ abundance is not expected with isolate sequencing and may indicate contamination.                                               |
-| low_read_count         | WARN              | Low read count (< 150,000 reads default) has been shown to lead to poor, uninformative assemblies.                                                           |
+| low_read_count         | WARN              | Low read count (< 150,000 illumina reads or < 30,000 nanopore reads default) has been shown to lead to poor, uninformative assemblies.                                                           |
+| low_read_length        | WARN              | Low post-trimming nanopore read length (< 4,000 bps default) |
+| low_read_quality       | WARN              | Low post-trimming nanopore read quality ( < 17.0 default) |
 | low_n50                | WARN              | Low N50 scores (< 100,000) have been shown to negatively affect clustering outputs by inflating observed allele differences.                                 |
+| low_assembly_meandepth | WARN              | Low mean read depth across nanopore assembly (< 30 default) |
+| low_assembly_meanbaseq | WARN              | low mean baseq across nanopore assembly (< 35 default) |
+| low_allele_meandepth   | WARN              | low mean read depth across listed allele in nanopore assembly (< 35 default) |
+| low_allele_meanqscore  | WARN              | low mean read qscore across listed allele in nanopore assembly (< 20 default) |
 | low_exact_allele_calls | WARN              | Low chewBBACA exact allele calls (< 90%) indicate that there may be issues in the assembly, possibly affecting the cgMLST profile.                           |
 | low_qc_score           | WARN              | Low QUAST-Analyzer QC score (< 4) indicates that there may be issues in the assembly, possibly affecting the cgMLST profile.                                 |
 | no_lpn_detected        | FAIL              | Very low (< 10% default) _L.pneumophila_ abundance flags that the sample may not be _L.pneumophila_ and sample is removed from the remainder of the pipeline |
-| failing_read_count     | FAIL              | Post-trimming read count below failing threshold (< 60,000 reads default) has been shown to lead to poor, uninformative assemblies and sample is removed.    |
+| failing_read_count     | FAIL              | Post-trimming read count below failing threshold (< 60,000 illumina reads or < 10,000 nanopore reads default) has been shown to lead to poor, uninformative assemblies and sample is removed.    |
+| failing_read_length    | FAIL              | Post-trimming nanopore read length below failing threshold (< 2,000 bps default) |
+| failing_read_quality   | FAIL              | Post-trimming nanopore read quality below failing threshold (< 14.0 default) |
+| failing_assembly_meandepth  | FAIL         | Nanopore assembly meandepth below failing threshold (< 15 default) |
+| failing_assembly_meanbaseq  | FAIL         | Nanopore assembly mean baseq below failing threshold (< 30 default) |
+| failing_allele_meandepth    | FAIL              | Read depth across listed allele in nanopore assembly below failing threshold (< 10 default) |
+| failing_allele_meanqscore   | FAIL              | Read qscore across listed allele in nanopore assembly below failing threshold (< 30 default) |
+
 
 **`MultiQC`**
 
-[MultiQC](https://seqera.io/multiqc/) is used to culminate the quality metrics from the tools mentioned earlier into an easily accessible html report with visual components. It includes results from [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/), [Kraken2](https://github.com/DerrickWood/kraken2), [QUAST](https://github.com/ablab/quast), [el_gato](https://github.com/appliedbinf/el_gato), [Trimmomatic](https://github.com/usadellab/Trimmomatic), and [chewBBACA](https://github.com/B-UMMI/chewBBACA).
+[MultiQC](https://seqera.io/multiqc/) is used to culminate the quality metrics from the tools mentioned earlier into an easily accessible html report with visual components. It includes results from [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/), [Kraken2](https://github.com/DerrickWood/kraken2), [QUAST](https://github.com/ablab/quast), [el_gato](https://github.com/appliedbinf/el_gato), [Trimmomatic](https://github.com/usadellab/Trimmomatic), [Nanoplot](https://github.com/wdecoster/nanoplot), [Nanoq](https://github.com/esteinig/nanoq), and [chewBBACA](https://github.com/B-UMMI/chewBBACA).
 
 ## Limitations
 
-This pipeline is intended to be run on _Legionella pneumophila_ paired illumina isolate sequencing data. In the future Nanopore long-read sequencing data will also be supported.
+This pipeline is intended to be run on _Legionella pneumophila_ paired illumina isolate sequencing data or Nanopore long-read isolate sequencing data.
 
 ## Citations
 
