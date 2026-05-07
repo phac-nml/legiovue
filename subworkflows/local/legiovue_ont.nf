@@ -44,12 +44,14 @@ INITIALIZE CHANNELS FROM PARAMS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-ch_quast_ref = file(params.quast_ref, checkIfExists: true)
-ch_kraken2_db = file(params.kraken2_db, checkIfExists: true)
-ch_quast_ref = file(params.quast_ref, checkIfExists: true)
-ch_multiqc_config_nanopore   = file(params.multiqc_config_nanopore, checkIfExists:true)
-ch_prepped_schema = file(params.prepped_schema, type: 'dir', checkIfExists: true)
-ch_schema_targets   = params.schema_targets ? file(params.schema_targets, type: 'dir', checkIfExists: true) : []
+ch_quast_ref                = file(params.quast_ref, checkIfExists: true)
+ch_kraken2_db               = file(params.kraken2_db, checkIfExists: true)
+ch_quast_ref                = file(params.quast_ref, checkIfExists: true)
+ch_el_gato_sbt              = params.el_gato_sbt ? file(params.el_gato_sbt, checkIfExists: true) : []
+ch_el_gato_profile          = params.el_gato_profile ? file(params.el_gato_profile, checkIfExists: true) : []
+ch_multiqc_config_nanopore  = file(params.multiqc_config_nanopore, checkIfExists:true)
+ch_prepped_schema           = file(params.prepped_schema, type: 'dir', checkIfExists: true)
+ch_schema_targets           = params.schema_targets ? file(params.schema_targets, type: 'dir', checkIfExists: true) : []
 
 // Empty version channel
 ch_versions = Channel.empty()
@@ -170,7 +172,9 @@ workflow LEGIOVUE_ONT {
 
     //run el_gato with Dragonflye assembly
     EL_GATO_ASSEMBLY(
-        DRAGONFLYE.out.assembly
+        DRAGONFLYE.out.assembly,
+        ch_el_gato_sbt,
+        ch_el_gato_profile
     )
     ch_versions = ch_versions.mix(EL_GATO_ASSEMBLY.out.versions)
 
