@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 """
 Analyze quast transposed results TSV file
 according to provided specifications
@@ -68,13 +67,25 @@ def init_parser() -> argparse.ArgumentParser:
         '--max_contigs',
         type=int,
         default=10,
-        help='Threshold for the number of contigs > 500bp assembled by SPAdes'
+        help='Threshold for the number of contigs assembled by Dragonflye to obtain scoring points'
     )
     parser.add_argument(
         '--min_align_percent',
-        type=int,
+        type=float,
         default=75,
-        help='Thresold for minimum quast genome fraction percentage'
+        help='Thresold for minimum QUAST genome fraction percentage to get scoring points'
+    )
+    parser.add_argument(
+        '--min_n50_score',
+        type=int,
+        default=250000,
+        help='Thresold for minimum QUAST N50 value to obtain scoring points'
+    )
+    parser.add_argument(
+        '--max_n50_score',
+        type=int,
+        default=3500000,
+        help='Thresold for maximum QUAST N50 score to get max scoring points'
     )
     
     # Version #
@@ -114,13 +125,11 @@ def parse_sample_line(sample_line: str, headers: list) -> dict:
     return dict(zip(headers, fields))
 
 
-def calculate_score(metric: int, bottom=100000, top=3500000):
-    """Calculate variable score based on a bottom and top range
+def calculate_n50_score(metric: int, bottom: int, top: int) -> float:
+    """Calculate N50 variable score based on a bottom and top range determined from testing
 
     Args:
         metric (int): Metric to score
-        bottom (int, optional): Bottom of the score range. Defaults to 100000.
-        top (int, optional): Top of the score range. Defaults to 3500000.
 
     Returns:
         float: 2-digit calculated score between 0-1
@@ -134,13 +143,16 @@ def calculate_score(metric: int, bottom=100000, top=3500000):
     return round((metric - bottom) / (top - bottom), 2)
 
 
-def analyze_sample(sample: dict, max_contigs: int, min_align_percent: int) -> dict:
+def analyze_sample(
+    sample: dict, max_contigs: int, min_align_percent: float,
+    min_n50_score: int, max_n50_score: int
+) -> dict:
     """Extract and values from the sample dictionary
 
     Args:
         sample (dict): Dictionary containing all sample values from quast input line
         max_contigs (int): Max contigs to allow before failing criteria
-        min_align_percent (int): Minimum align percentage allowed before failing criteria
+        min_align_percent (float): Minimum align percentage allowed before failing criteria
 
     Returns:
         dict: Sample scoring dict
@@ -169,7 +181,7 @@ def analyze_sample(sample: dict, max_contigs: int, min_align_percent: int) -> di
         num_contigs_score = 1
 
     # Evaluate "N50"
-    n50_score = calculate_score(n50)
+    n50_score = calculate_n50_score(n50, min_n50_score, max_n50_score)
     score += n50_score
 
     # Evaluate "Duplication ratio"
@@ -206,12 +218,18 @@ def analyze_sample(sample: dict, max_contigs: int, min_align_percent: int) -> di
 
     return {
         "sample": sample_name,
-        "num_contigs": num_contigs_score,
-        "N50": n50_score,
-        "duplication_ratio": dup_ratio_score,
-        "percent_alignment": alignment_score,
-        "assembly_length": assembly_length_score,
-        "GC_content": gc_content_score,
+        "num_contigs" : num_contigs,
+        "num_contigs_score": num_contigs_score,
+        "N50" : n50,
+        "N50_score": n50_score,
+        "duplication_ratio" : dup_ratio,
+        "duplication_ratio_score": dup_ratio_score,
+        "percent_alignment" : align_perc,
+        "percent_alignment_score": alignment_score,
+        "assembly_length" : assembly_length,
+        "assembly_length_score": assembly_length_score,
+        "GC_content_percent" : gc_content,
+        "GC_content_score": gc_content_score,
         "final_score": score,
         "score_rating": score_rating
     }
@@ -264,7 +282,10 @@ def main() -> None:
             sample_data = parse_sample_line(line.strip(), headers)
 
             # Analyze the sample and append the result
-            result = analyze_sample(sample_data, args.max_contigs, args.min_align_percent)
+            result = analyze_sample(
+                sample_data, args.max_contigs, args.min_align_percent,
+                args.min_n50_score, args.max_n50_score
+            )
             if result:
                 results_list.append(result)
 
