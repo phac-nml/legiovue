@@ -164,7 +164,7 @@ process SCORE_QUAST_NANOPORE {
 
     script:
     """
-    quast_analyzer.py \\
+    nanopore_quast_analyzer.py \\
         --max_contigs ${params.max_contigs_nanopore} \\
         --min_align_percent ${params.min_align_percent} \\
         --min_n50_score ${params.min_n50_score_nanopore} \\
@@ -175,7 +175,7 @@ process SCORE_QUAST_NANOPORE {
     # TODO Add in version to the script itself at some point
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        quast_analyzer: 0.1.0
+        nanopore_quast_analyzer: 0.1.0
     END_VERSIONS
     """
 
@@ -185,7 +185,7 @@ process SCORE_QUAST_NANOPORE {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        quast_analyzer: 0.1.0
+        nanopore_quast_analyzer: 0.1.0
     END_VERSIONS
     """
 }
