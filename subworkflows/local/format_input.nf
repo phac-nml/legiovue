@@ -23,33 +23,46 @@ workflow FORMAT_INPUT {
     // ensure channels exist in all code paths so they're visible to emit
     ch_paired_fastqs = Channel.empty()
     ch_nanopore_fastqs = Channel.empty()
-    if ( params.fastq_dir ) {
-        // Try paired-end pattern first; don't fail if none found
-        Channel
-            .fromFilePairs("${params.fastq_dir}/*_{R1,R2}*.fastq*", checkIfExists:false)
-            .map { it ->
-                def meta = [ id: it[0], irida_id: it[0] ]
-                return [ meta.id, meta, it[1] ]
-            }
-            .ifEmpty {
-                // Fallback: map all files in the dir as single-end (e.g. nanopore)
-                Channel.fromPath("${params.fastq_dir}/*.fastq*")
-                    .map { reads ->
-                        def id = reads.baseName.replaceAll(/\.fastq.*\$/, '')
-                        def meta = [ id: id, irida_id: id ]
-                        return [ meta.id, meta, [ file(reads) ] ]
-                    }
-            }
-            .set { ch_maybe_paired }
 
-        // Split into paired vs single (nanopore) channels based on file count
-        ch_maybe_paired
-            .filter { meta, fastqs -> fastqs.size() == 2 }
+    if (params.fastq_dir) {
+        // Channel 1: detect paired-end files using R1/R2 naming convention
+        ch_pairs = Channel
+            .fromFilePairs("${params.fastq_dir}/*_{R1,R2}*.fastq*", checkIfExists: false)
+            .map { sampleId, files ->
+                def meta = [ id: sampleId, irida_id: sampleId, single_end: false ]
+                return [ meta.id, meta, files ]
+            }
+
+        // Channel 2: detect unpaired files by excluding anything matching the R1/R2 pattern
+        ch_singles = Channel
+            .fromPath("${params.fastq_dir}/*.fastq*")
+            .filter { file -> !(file.name =~ /_(R1|R2)[\._]/) }
+            .map { file ->
+                def id = file.simpleName.replaceAll(/\.fastq.*$/, '')
+                def meta = [ id: id, irida_id: id, single_end: true ]
+                return [ meta.id, meta, [ file ] ]
+            }
+
+        // Merge both channels, group, validate, then split by single_end flag
+        ch_pairs
+            .mix(ch_singles)
+            .groupTuple()
+            .map { input ->
+                validateInputSamplesheet(input)
+            }
+            .map { meta, fastqs ->
+                return [ meta, fastqs.flatten() ]
+            }
+            .set { ch_all_fastqs }
+
+        ch_all_fastqs
+            .filter { meta, fastqs -> !meta.single_end }
             .set { ch_paired_fastqs }
 
-        ch_maybe_paired
-            .filter { meta, fastqs -> fastqs.size() == 1 }
+        ch_all_fastqs
+            .filter { meta, fastqs -> meta.single_end }
             .set { ch_nanopore_fastqs }
+
     } else {
         // Matching the above formatting by creating a list of the fastq file pairs
         //  Schema requires pairs at the moment so this is ok. If we want to support ONT
@@ -117,8 +130,8 @@ workflow FORMAT_INPUT {
         )
 
     emit:
-    paired = ch_paired_fastqs // channel of tuples: [ sample_id, meta, [fastq_1, fastq_2] ]
-    nanopore = ch_nanopore_fastqs // channel of tuples: [ sample_id, meta, [fastq_1] ]
+    paired = ch_paired_fastqs // channel of tuples: [meta, [fastq_1, fastq_2] ]
+    nanopore = ch_nanopore_fastqs // channel of tuples: [meta, [fastq_1] ]
 }
 
 /*
