@@ -169,52 +169,67 @@ workflow LEGIOVUE_ONT {
     SBT ALLELE ASSIGNMENT AND QUALITY EVALUATION
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
+    //initialize el_gato output channels to allow for conditional execution of el_gato downstream steps
+    ch_nanopore_sbt = channel.value([])
+    ch_allele_quality = channel.value([])
 
     //run el_gato with Dragonflye assembly
-    EL_GATO_ASSEMBLY(
-        DRAGONFLYE.out.assembly,
-        ch_el_gato_sbt,
-        ch_el_gato_profile
-    )
-    ch_versions = ch_versions.mix(EL_GATO_ASSEMBLY.out.versions)
+    if ( ! params.skip_el_gato ){
+        EL_GATO_ASSEMBLY(
+            DRAGONFLYE.out.assembly,
+            ch_el_gato_sbt,
+            ch_el_gato_profile
+        )
+        ch_versions = ch_versions.mix(EL_GATO_ASSEMBLY.out.versions)
 
-    //create el_gato report with elgato_report.py
-    EL_GATO_REPORT_NANOPORE(
-        EL_GATO_ASSEMBLY.out.json
-            .collect{ it[1] }
-    )
-    ch_versions = ch_versions.mix(EL_GATO_REPORT_NANOPORE.out.versions)
+        //create el_gato report with elgato_report.py
+        EL_GATO_REPORT_NANOPORE(
+            EL_GATO_ASSEMBLY.out.json
+                .collect{ it[1] }
+        )
+        ch_versions = ch_versions.mix(EL_GATO_REPORT_NANOPORE.out.versions)
 
-    //concat all el gato results into single tsv
-    CSVTK_CONCAT_SBT_DATA_NANOPORE(
-        EL_GATO_ASSEMBLY.out.report
-            .collect{ it[1] }
-    )
+        //concat all el gato results into single tsv
+        CSVTK_CONCAT_SBT_DATA_NANOPORE(
+            EL_GATO_ASSEMBLY.out.report
+                .collect{ it[1] }
+        )
 
-    //map trimmed reads to el_gato alleles with minimap2
-    MINIMAP2_ALLELES(
-        EL_GATO_ASSEMBLY.out.alleles,
-        NANOQ.out.trimmed_reads
-    )
-    ch_versions = ch_versions.mix(MINIMAP2_ALLELES.out.versions)
+        //set output channel for el_gato results to allow for conditional execution
+        ch_nanopore_sbt = CSVTK_CONCAT_SBT_DATA_NANOPORE.out.tsv.collect().ifEmpty([])
 
-    //calculate coverage with samtools
-    SAMTOOLS_COVERAGE_ALLELES(
-        MINIMAP2_ALLELES.out.alleles_sam
-    )
-    ch_versions = ch_versions.mix(SAMTOOLS_COVERAGE_ALLELES.out.versions)
+        //map trimmed reads to el_gato alleles with minimap2
+        if ( ! params.skip_plotting ){
+        MINIMAP2_ALLELES(
+            EL_GATO_ASSEMBLY.out.alleles,
+            NANOQ.out.trimmed_reads
+        )
+        ch_versions = ch_versions.mix(MINIMAP2_ALLELES.out.versions)
 
-    //determine per base depth and qscore for alleles with pysamstats
-    PYSAMSTATS_NANOPORE(
-        SAMTOOLS_COVERAGE_ALLELES.out.alleles_bam
-    )
-    ch_versions = ch_versions.mix(PYSAMSTATS_NANOPORE.out.versions)
+        //calculate coverage with samtools
+        SAMTOOLS_COVERAGE_ALLELES(
+            MINIMAP2_ALLELES.out.alleles_sam
+        )
+        ch_versions = ch_versions.mix(SAMTOOLS_COVERAGE_ALLELES.out.versions)
 
-    //plot allele depth and qscore with plotting utility
-    PLOT_EL_GATO_ALLELES_NANOPORE(
-        PYSAMSTATS_NANOPORE.out.allele_stats_tsv
-    )
-    ch_versions = ch_versions.mix(PLOT_EL_GATO_ALLELES_NANOPORE.out.versions)
+        //set output channel for allele quality to allow for conditional execution
+        ch_allele_quality = SAMTOOLS_COVERAGE_ALLELES.out.alleles_coverage
+
+        //determine per base depth and qscore for alleles with pysamstats
+        PYSAMSTATS_NANOPORE(
+            SAMTOOLS_COVERAGE_ALLELES.out.alleles_bam
+        )
+        ch_versions = ch_versions.mix(PYSAMSTATS_NANOPORE.out.versions)
+
+        //plot allele depth and qscore with plotting utility
+        PLOT_EL_GATO_ALLELES_NANOPORE(
+            PYSAMSTATS_NANOPORE.out.allele_stats_tsv
+        )
+        ch_versions = ch_versions.mix(PLOT_EL_GATO_ALLELES_NANOPORE.out.versions)
+
+        }
+
+    }
 
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -249,7 +264,6 @@ workflow LEGIOVUE_ONT {
     //create channels for outputs with all samples included
     ch_nanopore_quast_report     = QUAST_NANOPORE.out.report.collect().ifEmpty([])
     ch_nanopore_quast_score      = SCORE_QUAST_NANOPORE.out.report.collect().ifEmpty([])
-    ch_nanopore_sbt              = CSVTK_CONCAT_SBT_DATA_NANOPORE.out.tsv.collect().ifEmpty([])
     ch_nanopore_cgmlst_stats     = CHEWBBACA_ALLELE_CALL_NANOPORE.out.statistics.collect().ifEmpty([])
 
     // Group all singular inputs by sample before combining
@@ -257,7 +271,7 @@ workflow LEGIOVUE_ONT {
         .join(NANOPLOT.out.untrimmed_NanoStats)
         .join(NANOQ.out.report)
         .join(SAMTOOLS_COVERAGE_ASSEMBLY.out.assembly_coverage)
-        .join(SAMTOOLS_COVERAGE_ALLELES.out.alleles_coverage)
+        .join(ch_allele_quality)
         
     //input for collection of all qc data into single csv per sample
     COMBINE_SAMPLE_DATA_NANOPORE(
@@ -293,7 +307,7 @@ workflow LEGIOVUE_ONT {
             .collect{ it[1] },
         SCORE_QUAST_NANOPORE.out.report
             .ifEmpty([]),
-        CSVTK_CONCAT_SBT_DATA_NANOPORE.out.tsv
+        ch_nanopore_sbt
             .ifEmpty([]),
         BRACKEN_NANOPORE.out.breakdown
             .collect{ it[1] },
