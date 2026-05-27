@@ -11,8 +11,8 @@ process NANOQ {
         tuple val(meta), path(nanopore_fastqs) 
 
     output:
-        tuple val(meta), path ("Trimmed_${meta.id}.fastq"), emit: trimmed_reads
-        tuple val(meta), path ("${meta.id}_nanoq.txt"), emit: report
+        tuple val(meta), path ("./${meta.id}.fastq"), emit: trimmed_reads
+        tuple val(meta), path ("./${meta.id}_nanoq.txt"), emit: report
         path "versions.yml", emit: versions
 
     script:
@@ -20,7 +20,7 @@ process NANOQ {
     nanoq \\
         --min-len 1000 \\
         --input $nanopore_fastqs \\
-        --output Trimmed_${meta.id}.fastq \\
+        --output ${meta.id}.fastq \\
         --output-type u \\
         --stats \\
         --header \\
@@ -36,7 +36,7 @@ process NANOQ {
 
     stub:
     """
-    touch Trimmed_${meta.id}.fastq
+    touch ${meta.id}.fastq
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

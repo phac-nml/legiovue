@@ -11,20 +11,20 @@ process NANOPLOT {
         tuple val(meta), path(nanopore_fastqs) 
     
     output:
-        path "./${meta.id}_Untrimmed/"
-        tuple val(meta), path("./${meta.id}_Untrimmed/${meta.id}_Untrimmed_NanoStats.txt"), emit: untrimmed_NanoStats
-        tuple val(meta), path("./${meta.id}_Untrimmed/NanoPlot-report.html"), emit: untrimmed_report
+        path "./${meta.id}/"
+        tuple val(meta), path("./${meta.id}/${meta.id}_NanoStats.txt"), emit: untrimmed_NanoStats
+        tuple val(meta), path("./${meta.id}/NanoPlot-report.html"), emit: untrimmed_report
         path "versions.yml", emit: versions
 
     script:
     """
     NanoPlot \\
         --fastq $nanopore_fastqs \\
-        --outdir ./${meta.id}_Untrimmed/ \\
+        --outdir ./${meta.id}/ \\
         --no_static \\
 
     #rename output files to include sample name \\
-    mv ./${meta.id}_Untrimmed/NanoStats.txt ./${meta.id}_Untrimmed/${meta.id}_Untrimmed_NanoStats.txt \\
+    mv ./${meta.id}/NanoStats.txt ./${meta.id}/${meta.id}_NanoStats.txt \\
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -34,8 +34,8 @@ process NANOPLOT {
 
     stub:
     """
-    mkdir -p ${meta.id}_Untrimmed
-    touch ${meta.id}_Untrimmed/${meta.id}_Untrimmed_NanoStats.txt
+    mkdir -p ${meta.id}
+    touch ${meta.id}/${meta.id}_NanoStats.txt
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
