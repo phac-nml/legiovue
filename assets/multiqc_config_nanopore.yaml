@@ -55,7 +55,7 @@ nanostat/legacy:
           title: "Median Quality"
           description: "Median read quality"
           hidden: false
-          
+
 #nanoq file search patterns
 nanoq:
   contents: Nanoq Read Summary

@@ -76,7 +76,7 @@ process COMBINE_SAMPLE_DATA_NANOPORE {
         path(assembly_cov_txt),
         path(allele_cov_txt)
     path(quast_report)
-    path(scored_quast_report)  
+    path(scored_quast_report)
     path(sbt_tsv)
     path(chewbbaca_stats)
 

@@ -21,12 +21,12 @@ include {samplesheetToList } from 'plugin/nf-schema'
 workflow FORMAT_INPUT {
     main:
     // ensure channels exist in all code paths so they're visible to emit
-    ch_paired_fastqs = Channel.empty()
-    ch_nanopore_fastqs = Channel.empty()
+    ch_paired_fastqs = channel.empty()
+    ch_nanopore_fastqs = channel.empty()
 
     if (params.fastq_dir) {
         // Channel 1: detect paired-end files using R1/R2 naming convention
-        ch_pairs = Channel
+        ch_pairs = channel
             .fromFilePairs("${params.fastq_dir}/*_{R1,R2}*.fastq*", checkIfExists: false)
             .map { sampleId, files ->
                 def meta = [ id: sampleId, irida_id: sampleId, single_end: false ]
@@ -34,7 +34,7 @@ workflow FORMAT_INPUT {
             }
 
         // Channel 2: detect unpaired files by excluding anything matching the R1/R2 pattern
-        ch_singles = Channel
+        ch_singles = channel
             .fromPath("${params.fastq_dir}/*.fastq*")
             .filter { file -> !(file.name =~ /_(R1|R2)[\._]/) }
             .map { file ->
@@ -68,7 +68,7 @@ workflow FORMAT_INPUT {
         //  Schema requires pairs at the moment so this is ok. If we want to support ONT
         //  data later will need to adjust the logic
         def processedIDs = [] as Set
-        ch_paired_fastqs = Channel
+        ch_paired_fastqs = channel
             .fromList(samplesheetToList(params.input, "assets/schema_input.json"))
             .map { meta, fastq_1, fastq_2 ->
                 if (!meta.id) {
@@ -130,8 +130,8 @@ workflow FORMAT_INPUT {
         )
 
     emit:
-    paired = ch_paired_fastqs // channel of tuples: [meta, [fastq_1, fastq_2] ]
-    nanopore = ch_nanopore_fastqs // channel of tuples: [meta, [fastq_1] ]
+    paired   = ch_paired_fastqs // channel of tuples: [ meta, [fastq_1, fastq_2] ]
+    nanopore = ch_nanopore_fastqs // channel of tuples: [ meta, [fastq_1] ]
 }
 
 /*

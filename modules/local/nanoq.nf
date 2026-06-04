@@ -8,7 +8,7 @@ process NANOQ {
         'biocontainers/nanoq:0.10.0--hc1c3326_4 ' }"
 
     input:
-        tuple val(meta), path(nanopore_fastqs) 
+        tuple val(meta), path(nanopore_fastqs)
 
     output:
         tuple val(meta), path ("./${meta.id}.fastq"), emit: trimmed_reads

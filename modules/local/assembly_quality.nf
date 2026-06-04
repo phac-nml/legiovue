@@ -7,7 +7,7 @@ process MINIMAP2_ASSEMBLY {
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/minimap2:2.28--he4a0461_3' :
         'biocontainers/minimap2:2.28--he4a0461_3' }"
-    
+
     input:
     tuple val(meta), path(assembly)
     tuple val(meta), path(trimmed_reads)
@@ -58,7 +58,7 @@ process SAMTOOLS_COVERAGE_ASSEMBLY {
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
         'https://depot.galaxyproject.org/singularity/samtools:1.14--hb421002_0' :
         'biocontainers/samtools:1.14--hb421002_0' }"
-    
+
     input:
     tuple val(meta), path(assembly_sam)
 
@@ -82,7 +82,7 @@ process SAMTOOLS_COVERAGE_ASSEMBLY {
     samtools coverage \\
         ./${meta.id}.bam \\
         -o ./${meta.id}_assembly_coverage.txt \\
-    
+
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         samtools: \$(echo \$(samtools --version 2>&1) | sed 's/^.*samtools //; s/Using.*\$//' )

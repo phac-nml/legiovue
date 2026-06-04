@@ -59,7 +59,6 @@ workflow LEGIOVUE_MAIN {
 
     // Format the input to match based on the type of input - folder, file, or samplesheet
     FORMAT_INPUT()
-    
 
     //
     // WORKFLOW: Run pipeline

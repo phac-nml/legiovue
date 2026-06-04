@@ -260,7 +260,7 @@ def grab_allele_data(file_path: Path, outdict: dict) -> dict:
                 # Update outdict with the extracted values
                 outdict['asd_meandepth'] = asd_meandepth
                 outdict['asd_meanbaseq'] = asd_meanbaseq
-            
+
             elif row['#rname'] == 'mip':  # Check if the row is for mip
                 mip_meandepth = float(row['meandepth'])  # Extract meandepth as float
                 mip_meanbaseq = float(row['meanbaseq'])  # Extract meanbaseq as float
@@ -338,7 +338,7 @@ def main() -> None:
     outdir = Path(args.outdir)
     if not outdir.exists() or not outdir.is_dir():
         raise ValueError('Input out directory {args.outdir} does not exist')
-    
+
     # Parse each given file to add to our outdict
     sample = str(args.sample)
     outdict = {'sample': sample}
@@ -364,7 +364,7 @@ def main() -> None:
             failed_reason = ['no_lpn_detected']
         elif outdict['lpn_abundance'] < 75:
             warn_qual_criteria.append('low_lpn_abundance')
-    
+
     # Pre Trimming Nanoplot
     outdict['Pretrim_Number_of_Reads'] = 0
     outdict['Pretrim_Median_Read_Length'] = 0
@@ -537,7 +537,7 @@ def main() -> None:
             failed = True
             failed_reason = ['failing_asd_meanbaseq']
         elif outdict['asd_meanbaseq'] < 35:
-            warn_qual_criteria.append('low_asd_meanbaseq') 
+            warn_qual_criteria.append('low_asd_meanbaseq')
 
         if outdict['mip_meandepth'] < 10:
             failed = True

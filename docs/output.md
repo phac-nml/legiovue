@@ -325,7 +325,7 @@ Finally summary scoring and metrics
 
 - `assembly/quast/` or `assembly/quast_nanopore/`
   - `scored_quast_report.csv`: Scored quast report based on determined thresholds
-</details>
+  </details>
 
 Scored QUAST report based on adapted thresholds from [Gorzynski et al.](<10.1016/S2666-5247(22)00231-2>) to determine if the sample has any metrics that significantly deviate from the expected results
 
@@ -335,7 +335,7 @@ Scored QUAST report based on adapted thresholds from [Gorzynski et al.](<10.1016
 
 - `qc/`
   - `overall.qc.csv` or `nanopore_overall.qc.csv`: Final collated overall summary report
-</details>
+  </details>
 
 The final collated summary report that is created using the outputs from the other pipeline steps and checks some final quality criteria.
 
@@ -347,27 +347,27 @@ The `qc_status` column will be any of the following statuses:
 
 The `qc_message` column contains the reason for the `qc_status` and includes:
 
-| Message                | Associated Status | Flag Reason                                                                                                                                                  |
-| ---------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| low_lpn_abundance      | WARN              | Low (< 75%) _L. pneumophila_ abundance is not expected with isolate sequencing and may indicate contamination.                                               |
-| low_read_count         | WARN              | Low read count (< 150,000 illumina reads or < 30,000 nanopore reads default) has been shown to lead to poor, uninformative assemblies.                                                           |
-| low_read_length        | WARN              | Low post-trimming nanopore read length (< 4,000 bps default) |
-| low_read_quality       | WARN              | Low post-trimming nanopore read quality ( < 17.0 default) |
-| low_n50                | WARN              | Low N50 scores (< 100,000) have been shown to negatively affect clustering outputs by inflating observed allele differences.                                 |
-| low_assembly_meandepth | WARN              | Low mean read depth across nanopore assembly (< 30 default) |
-| low_assembly_meanbaseq | WARN              | low mean baseq across nanopore assembly (< 35 default) |
-| low_allele_meandepth   | WARN              | low mean read depth across listed allele in nanopore assembly (< 35 default) |
-| low_allele_meanqscore  | WARN              | low mean read qscore across listed allele in nanopore assembly (< 20 default) |
-| low_exact_allele_calls | WARN              | Low chewBBACA exact allele calls (< 90%) indicate that there may be issues in the assembly, possibly affecting the cgMLST profile.                           |
-| low_qc_score           | WARN              | Low QUAST-Analyzer QC score (< 4) indicates that there may be issues in the assembly, possibly affecting the cgMLST profile.                                 |
-| no_lpn_detected        | FAIL              | Very low (< 10% default) _L.pneumophila_ abundance flags that the sample may not be _L.pneumophila_ and sample is removed from the remainder of the pipeline |
-| failing_read_count     | FAIL              | Post-trimming read count below failing threshold (< 60,000 illumina reads or < 10,000 nanopore reads default) has been shown to lead to poor, uninformative assemblies and sample is removed.    |
-| failing_read_length    | FAIL              | Post-trimming nanopore read length below failing threshold (< 2,000 bps default) |
-| failing_read_quality   | FAIL              | Post-trimming nanopore read quality below failing threshold (< 14.0 default) |
-| failing_assembly_meandepth  | FAIL         | Nanopore assembly meandepth below failing threshold (< 15 default) |
-| failing_assembly_meanbaseq  | FAIL         | Nanopore assembly mean baseq below failing threshold (< 30 default) |
-| failing_allele_meandepth    | FAIL              | Read depth across listed allele in nanopore assembly below failing threshold (< 10 default) |
-| failing_allele_meanqscore   | FAIL              | Read qscore across listed allele in nanopore assembly below failing threshold (< 30 default) |
+| Message                    | Associated Status | Flag Reason                                                                                                                                                                                   |
+| -------------------------- | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| low_lpn_abundance          | WARN              | Low (< 75%) _L. pneumophila_ abundance is not expected with isolate sequencing and may indicate contamination.                                                                                |
+| low_read_count             | WARN              | Low read count (< 150,000 illumina reads or < 30,000 nanopore reads default) has been shown to lead to poor, uninformative assemblies.                                                        |
+| low_read_length            | WARN              | Low post-trimming nanopore read length (< 4,000 bps default)                                                                                                                                  |
+| low_read_quality           | WARN              | Low post-trimming nanopore read quality ( < 17.0 default)                                                                                                                                     |
+| low_n50                    | WARN              | Low N50 scores (< 100,000) have been shown to negatively affect clustering outputs by inflating observed allele differences.                                                                  |
+| low_assembly_meandepth     | WARN              | Low mean read depth across nanopore assembly (< 30 default)                                                                                                                                   |
+| low_assembly_meanbaseq     | WARN              | low mean baseq across nanopore assembly (< 35 default)                                                                                                                                        |
+| low_allele_meandepth       | WARN              | low mean read depth across listed allele in nanopore assembly (< 35 default)                                                                                                                  |
+| low_allele_meanqscore      | WARN              | low mean read qscore across listed allele in nanopore assembly (< 20 default)                                                                                                                 |
+| low_exact_allele_calls     | WARN              | Low chewBBACA exact allele calls (< 90%) indicate that there may be issues in the assembly, possibly affecting the cgMLST profile.                                                            |
+| low_qc_score               | WARN              | Low QUAST-Analyzer QC score (< 4) indicates that there may be issues in the assembly, possibly affecting the cgMLST profile.                                                                  |
+| no_lpn_detected            | FAIL              | Very low (< 10% default) _L.pneumophila_ abundance flags that the sample may not be _L.pneumophila_ and sample is removed from the remainder of the pipeline                                  |
+| failing_read_count         | FAIL              | Post-trimming read count below failing threshold (< 60,000 illumina reads or < 10,000 nanopore reads default) has been shown to lead to poor, uninformative assemblies and sample is removed. |
+| failing_read_length        | FAIL              | Post-trimming nanopore read length below failing threshold (< 2,000 bps default)                                                                                                              |
+| failing_read_quality       | FAIL              | Post-trimming nanopore read quality below failing threshold (< 14.0 default)                                                                                                                  |
+| failing_assembly_meandepth | FAIL              | Nanopore assembly meandepth below failing threshold (< 15 default)                                                                                                                            |
+| failing_assembly_meanbaseq | FAIL              | Nanopore assembly mean baseq below failing threshold (< 30 default)                                                                                                                           |
+| failing_allele_meandepth   | FAIL              | Read depth across listed allele in nanopore assembly below failing threshold (< 10 default)                                                                                                   |
+| failing_allele_meanqscore  | FAIL              | Read qscore across listed allele in nanopore assembly below failing threshold (< 30 default)                                                                                                  |
 
 ---
 
@@ -385,7 +385,7 @@ The LegioVue Run Report HTML file is the final summary of all the samples run by
 
 ### Final QC Column Definitions
 
-The final output QC CSV file  for illumina inputs contains the following columns and they are defined as such:
+The final output QC CSV file for illumina inputs contains the following columns and they are defined as such:
 
 | Column | Description | Data Type | Notes |
 | sample | The name of the sample | String | |
@@ -406,20 +406,20 @@ The final output QC CSV file  for illumina inputs contains the following columns
 | qc_status | Overall quality control outcome based on the predefined metrics and thresholds for L.pn | String | Will be "PASS", "WARN", or "FAIL" |
 | qc_message | Quality control message for failing/warning samples | String | See [Final QC Checks](#final-qc-checks) for descriptions of warnings |
 
-The final output QC CSV file  for nanopore inputs contains the following columns and they are defined as such:
+The final output QC CSV file for nanopore inputs contains the following columns and they are defined as such:
 
 | Column | Description | Data Type | Notes |
 | sample | The name of the sample | String | |
-| lpn_abundance | Abundance of L. pneumophila reads within the sample calculated from kraken/bracken | Number | |
+| lpn*abundance | Abundance of L. pneumophila reads within the sample calculated from kraken/bracken | Number | |
 | Pretrim_Number_of_Reads | Number of RAW Nanopore reads | Number ||
 | Pretrim_Median_Read_Length | Median read length of RAW Nanopore reads | Number ||
 | Pretrim_Median_Read_Quality | Median read qscore of RAW Nanopore reads | Number ||
-| Pretrim_Percent_Reads_>Q15 | Percentage of RAW Nanopore reads with qscores >15 ||
-| Post_Trim_Number_of_Reads | Total number of reads kept after read filtering | Integer | |
+| Pretrim_Percent_Reads*>Q15 | Percentage of RAW Nanopore reads with qscores >15 ||
+| Post*Trim_Number_of_Reads | Total number of reads kept after read filtering | Integer | |
 | Post_Trim_Median_Read_Length | Median read length of reads kept after read filtering | Number ||
 | Post_Trim_Median_Read_Quality | Median read qscore of reads kept after read filtering | Number ||
-| Post_Trim_Percent_Reads_>Q15 | Percentage of reads kept after read filtering with qscores >15 ||
-| Percent_Reads_Passing_Filter | Percentage of read pairs retained after read filtering | Number | |
+| Post_Trim_Percent_Reads*>Q15 | Percentage of reads kept after read filtering with qscores >15 ||
+| Percent*Reads_Passing_Filter | Percentage of read pairs retained after read filtering | Number | |
 | n50 | The contig length such that at least half of the nucleotides in the assembly belong to contigs of this length or greater | Integer | Calculated by `QUAST` |
 | num_contigs | The number of assembled contigs in the de novo assembly | Integer | Calculated by `QUAST` |
 | pct_gc | Percentage of guanine and cytosine bases in the assembled genome | Number | Calculated by `QUAST` |
@@ -430,8 +430,8 @@ The final output QC CSV file  for nanopore inputs contains the following columns
 | assembly_qc_score | Summarized score of assembly QC from 0 - 6 based on set assembly criteria | Number | See [QUAST Scoring Script](#quast-scoring-script) for more detail |
 | st | Sequence type based on Legionella pneumophila database with `el_gato` | Integer | |
 | st_approach | Method used by `el_gato` to determine the sequence type | String | Either "reads", "assembly", or "NA" |
-| *allele*_meandepth | Mean depth of sequence across alleles found by `el_gato` | Number | Calculated by `Minimap2` and `Samtools` |
-| *allele*_meanbaseq | Mean base qscore of sequence across alleles found by `el_gato` | Number | Calculated by `Minimap2` and `Samtools` |
+| \_allele*\_meandepth | Mean depth of sequence across alleles found by `el_gato` | Number | Calculated by `Minimap2` and `Samtools` |
+| _allele_\_meanbaseq | Mean base qscore of sequence across alleles found by `el_gato` | Number | Calculated by `Minimap2` and `Samtools` |
 | chewbbaca_exc | EXaCt match (100% DNA identity) with previously identified alleles | Integer | |
 | chewbbaca_inf | INFerred new alleles that had no exact match in the schema but are highly similar to loci in the schema | Integer | |
 | chewbbaca_pct_exc | Percentage of EXaCt match (100% DNA identity) with previously identified alleles | Number | |

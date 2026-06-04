@@ -1,18 +1,8 @@
-#!/usr/bin/env nextflow
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-PIPELINE PARAMETERS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-params.fastq_dir = "./"
-params.input = "samples.csv"
-
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 IMPORT MODULES / SUBWORKFLOWS / FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-
 include {KRAKEN2_CLASSIFY_NANOPORE              } from '../../modules/local/kraken.nf'
 include {BRACKEN_NANOPORE                       } from '../../modules/local/bracken.nf'
 include {CREATE_ABUNDANCE_FILTER                } from '../../modules/local/utils.nf'
@@ -40,24 +30,6 @@ include {MULTIQC_NANOPORE                       } from '../../modules/local/mult
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-INITIALIZE CHANNELS FROM PARAMS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-ch_quast_ref                = file(params.quast_ref, checkIfExists: true)
-ch_kraken2_db               = file(params.kraken2_db, checkIfExists: true)
-ch_quast_ref                = file(params.quast_ref, checkIfExists: true)
-ch_el_gato_sbt              = params.el_gato_sbt ? file(params.el_gato_sbt, checkIfExists: true) : []
-ch_el_gato_profile          = params.el_gato_profile ? file(params.el_gato_profile, checkIfExists: true) : []
-ch_multiqc_config_nanopore  = file(params.multiqc_config_nanopore, checkIfExists:true)
-ch_prepped_schema           = file(params.prepped_schema, type: 'dir', checkIfExists: true)
-ch_schema_targets           = params.schema_targets ? file(params.schema_targets, type: 'dir', checkIfExists: true) : []
-
-// Empty version channel
-ch_versions = Channel.empty()
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 RUN WORKFLOW
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
@@ -67,7 +39,23 @@ workflow LEGIOVUE_ONT {
     nanopore
 
     main:
-    
+    /*
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    INITIALIZE CHANNELS FROM PARAMS
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    */
+    ch_quast_ref                = file(params.quast_ref, checkIfExists: true)
+    ch_kraken2_db               = file(params.kraken2_db, checkIfExists: true)
+    ch_quast_ref                = file(params.quast_ref, checkIfExists: true)
+    ch_el_gato_sbt              = params.el_gato_sbt ? file(params.el_gato_sbt, checkIfExists: true) : []
+    ch_el_gato_profile          = params.el_gato_profile ? file(params.el_gato_profile, checkIfExists: true) : []
+    ch_multiqc_config_nanopore  = file(params.multiqc_config_nanopore, checkIfExists:true)
+    ch_prepped_schema           = file(params.prepped_schema, type: 'dir', checkIfExists: true)
+    ch_schema_targets           = params.schema_targets ? file(params.schema_targets, type: 'dir', checkIfExists: true) : []
+
+    // Empty version channel
+    ch_versions = channel.empty()
+
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     Kraken2 and Bracken Classification and Abundance Filtering
@@ -103,7 +91,7 @@ workflow LEGIOVUE_ONT {
             fail: true
                 return tuple(meta, [])          // To allow tracking samples failures later on
         }.set{ ch_abundance_filter }
-    
+
     /*
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     INITIAL READ QC AND ASSEMBLY
@@ -267,12 +255,12 @@ workflow LEGIOVUE_ONT {
     ch_nanopore_cgmlst_stats     = CHEWBBACA_ALLELE_CALL_NANOPORE.out.statistics.collect().ifEmpty([])
 
     // Group all singular inputs by sample before combining
-    def grouped_inputs = BRACKEN_NANOPORE.out.abundance
+    grouped_inputs = BRACKEN_NANOPORE.out.abundance
         .join(NANOPLOT.out.untrimmed_NanoStats)
         .join(NANOQ.out.report)
         .join(SAMTOOLS_COVERAGE_ASSEMBLY.out.assembly_coverage)
         .join(ch_allele_quality)
-        
+
     //input for collection of all qc data into single csv per sample
     COMBINE_SAMPLE_DATA_NANOPORE(
         grouped_inputs,
@@ -300,7 +288,7 @@ workflow LEGIOVUE_ONT {
     MultiQC Summary HTML
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     */
-    
+
     MULTIQC_NANOPORE(
         ch_multiqc_config_nanopore,
         NANOPLOT.out.untrimmed_NanoStats
@@ -320,5 +308,4 @@ workflow LEGIOVUE_ONT {
         CUSTOM_DUMPSOFTWAREVERSIONS_NANOPORE.out.mqc_yml
     )
     ch_versions = ch_versions.mix(MULTIQC_NANOPORE.out.versions)
-    
 }

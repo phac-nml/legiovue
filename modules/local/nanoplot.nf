@@ -8,8 +8,8 @@ process NANOPLOT {
         'biocontainers/nanoplot:1.44.1--pyhdfd78af_0' }"
 
     input:
-        tuple val(meta), path(nanopore_fastqs) 
-    
+        tuple val(meta), path(nanopore_fastqs)
+
     output:
         path "./${meta.id}/"
         tuple val(meta), path("./${meta.id}/${meta.id}_NanoStats.txt"), emit: untrimmed_NanoStats
