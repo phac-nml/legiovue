@@ -156,6 +156,60 @@
                     "default": 220000,
                     "description": "Thresold for maximum QUAST N50 score to get max scoring points",
                     "minimum": 0
+                },
+                "min_reads_nanopore": {
+                    "type": "integer",
+                    "default": 10000,
+                    "description": "Minimum number of nanopore reads to keep sample in pipeline",
+                    "minimum": 0
+                },
+                "min_length_nanopore": {
+                    "type": "integer",
+                    "default": 2000,
+                    "description": "Minimum read length for nanopore reads",
+                    "minimum": 0
+                },
+                "min_quality_nanopore": {
+                    "type": "number",
+                    "default": 14.0,
+                    "description": "Minimum read quality for nanopore reads",
+                    "minimum": 0
+                },
+                "max_contigs_nanopore": {
+                    "type": "integer",
+                    "default": 10,
+                    "description": "Maximum number of contigs for nanopore assemblies",
+                    "minimum": 0
+                },
+                "min_reads_warn_nanopore": {
+                    "type": "integer",
+                    "default": 30000,
+                    "description": "Nanopore read count threshold for a QC warning",
+                    "minimum": 0
+                },
+                "min_read_length_warn_nanopore": {
+                    "type": "integer",
+                    "default": 4000,
+                    "description": "Nanopore read length threshold for a QC warning",
+                    "minimum": 0
+                },
+                "min_read_quality_warn_nanopore": {
+                    "type": "number",
+                    "default": 17.0,
+                    "description": "Nanopore read quality threshold for a QC warning",
+                    "minimum": 0
+                },
+                "min_n50_score_nanopore": {
+                    "type": "integer",
+                    "default": 250000,
+                    "description": "Minimum N50 for nanopore assemblies",
+                    "minimum": 0
+                },
+                "max_n50_score_nanopore": {
+                    "type": "integer",
+                    "default": 35000000,
+                    "description": "Maximum N50 for nanopore assemblies",
+                    "minimum": 0
                 }
             }
         },

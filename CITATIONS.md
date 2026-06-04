@@ -51,3 +51,34 @@
 [MultiQC](https://seqera.io/multiqc/)
 
 > Ewels P, Magnusson M, Lundin S, Käller M. (2016). MultiQC: summarize analysis results for multiple tools and samples in a single report. Bioinformatics. 32(19):3047-8. doi: 10.1093/bioinformatics/btw354
+
+[Nanoplot](https://github.com/wdecoster/nanoplot)
+
+> De Coster W, Rademakers R. (2023). NanoPack2: population-scale evaluation of long-read sequencing data. Bioinformatics. 39(5):1367-4811. doi: 10.1093/bioinformatics/btad311
+
+[Nanoq](https://github.com/esteinig/nanoq)
+
+> Steinig and Coin (2022). Nanoq: ultra-fast quality control for nanopore reads. Journal of Open Source Software, 7(69), 2991, https://doi.org/10.21105/joss.02991
+
+[Dragonflye](https://github.com/rpetit3/dragonflye)
+
+> Petit III, R. A. dragonflye: assemble bacterial isolate genomes from Nanopore reads (Version 1.1.2).
+
+[MiniMap2](https://github.com/lh3/minimap2)
+
+> Li, H. (2018). Minimap2: pairwise alignment for nucleotide sequences. Bioinformatics, 34:3094-3100. doi:10.1093/bioinformatics/bty191
+> Li, H. (2021). New strategies to improve minimap2 alignment accuracy. Bioinformatics, 37:4572-4574. doi:10.1093/bioinformatics/btab705
+
+[Samtools](https://github.com/samtools/samtools)
+
+> Twelve years of SAMtools and BCFtools
+> Petr Danecek, James K Bonfield, Jennifer Liddle, John Marshall, Valeriu Ohan, Martin O Pollard, Andrew Whitwham, Thomas Keane, Shane A McCarthy, Robert M Davies, Heng Li
+> GigaScience, Volume 10, Issue 2, February 2021, giab008, https://doi.org/10.1093/gigascience/giab008
+
+[Pysamstats](https://github.com/alimanfoo/pysamstats)
+
+> Miles A. (2014). pysamstats. Available at https://github.com/alimanfoo/pysamstats
+
+[Python](https://github.com/python)
+
+> Python Software Foundation. Python Language Reference, version 3.8. Available at http://www.python.org

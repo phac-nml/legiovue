@@ -16,6 +16,7 @@ nextflow.enable.dsl = 2
 */
 include { FORMAT_INPUT } from './subworkflows/local/format_input.nf'
 include { LEGIOVUE } from './workflows/legiovue.nf'
+include { LEGIOVUE_ONT } from './subworkflows/local/legiovue_ont.nf'
 // NF-Schema parts
 include { validateParameters; paramsSummaryLog } from 'plugin/nf-schema'
 
@@ -63,7 +64,10 @@ workflow LEGIOVUE_MAIN {
     // WORKFLOW: Run pipeline
     //
     LEGIOVUE (
-        FORMAT_INPUT.out.pass
+        FORMAT_INPUT.out.paired
+    )
+    LEGIOVUE_ONT (
+        FORMAT_INPUT.out.nanopore
     )
 }
 /*

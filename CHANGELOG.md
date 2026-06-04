@@ -3,6 +3,25 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0]
+
+Update to include support for nanopore sequencing data.
+
+### `Added`
+
+- `legiovue_ont.nf` new subworkflow to handle nanopore reads and associated modules.
+- `dragonflye.nf`, `nanoplot.nf`, `nanoq.nf`, `assembly_quality.nf`, and `allele_quality.nf` new modules to support the nanopore sequence analysis.
+- `nanopore_combine_qc_data.py`, `nanopore_plot_genome_cov.R`, and `nanopore_quast_analyzer.py` to handle qc collection and, allele plotting, and assembly analysis.
+- `multiqc_config_nanopore.yaml` to produce multiqc report for the nanopore branch.
+
+### `Changed`
+
+- `nextflow.config` added nanopore parameters to match existing illumina parameters.
+- `modules.config` addition of new nanopore specific modules and updated publish directory paths to improve output organization.
+- `format_input.nf` adjusted to differentiate between single-end and paired-end reads.
+- `main.nf` adjustment to handle both paired-end and single-end sequence data and add `legiovue_ont.nf` subworkflow.
+- `bracken.nf`, `chewbbaca.nf`, `el_gato.nf`, `kraken.nf`, `multiqc.nf`, `plotting.nf`, `qc.nf`, `quast.nf`, and `utils.nf` all updated to contain processes to support nanopore sequencing data.
+
 ## [0.4.0]
 
 Overall small adjustments and bugfixes to:

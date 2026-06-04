@@ -58,3 +58,70 @@ process COMBINE_SAMPLE_DATA {
     END_VERSIONS
     """
 }
+
+process COMBINE_SAMPLE_DATA_NANOPORE {
+    tag "$meta.id"
+    label 'process_low'
+
+    conda "conda-forge::pandas=2.2.1"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/pandas:2.2.1' :
+        'biocontainers/pandas:2.2.1' }"
+
+    input:
+    tuple val(meta),
+        path(bracken_report),
+        path(pretrim_nanoplot_txt),
+        path(trim_nanoq_txt),
+        path(assembly_cov_txt),
+        path(allele_cov_txt)
+    path(quast_report)
+    path(scored_quast_report)
+    path(sbt_tsv)
+    path(chewbbaca_stats)
+
+    output:
+    tuple val(meta), path("./${meta.id}.qc.csv"), emit: csv
+    path "versions.yml", emit: versions
+
+    when:
+    task.ext.when == null || task.ext.when
+
+    script:
+    """
+    nanopore_combine_qc_data.py \\
+        --sample ${meta.id} \\
+        --bracken_tsv $bracken_report \\
+        --pretrim_nanoplot_txt $pretrim_nanoplot_txt \\
+        --trim_nanoq_txt $trim_nanoq_txt \\
+        --quast_tsv $quast_report \\
+        --quast_score_csv $scored_quast_report \\
+        --assembly_cov_txt $assembly_cov_txt \\
+        --st_tsv $sbt_tsv \\
+        --allele_cov_txt $allele_cov_txt \\
+        --chewbbaca_stats_tsv $chewbbaca_stats \\
+        --min_reads ${params.min_reads_nanopore} \\
+        --min_reads_warn ${params.min_reads_warn_nanopore} \\
+        --min_length ${params.min_length_nanopore} \\
+        --min_length_warn ${params.min_read_length_warn_nanopore} \\
+        --min_qual ${params.min_quality_nanopore} \\
+        --min_qual_warn ${params.min_read_quality_warn_nanopore} \\
+        --min_abundance_percent ${params.min_abundance_percent} \\
+        --outdir ./ \\
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        nanopore_combine_qc_data: 0.3.0
+    END_VERSIONS
+    """
+
+    stub:
+    """
+    touch ${meta.id}.csv
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        nanopore_combine_qc_data: 0.3.0
+    END_VERSIONS
+    """
+}

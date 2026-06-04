@@ -100,6 +100,7 @@ process EL_GATO_ASSEMBLY {
 
     output:
     tuple val(meta), path("${meta.id}_ST.tsv"), emit: report
+    tuple val(meta), path("./out/identified_alleles.fna"), emit: alleles
     tuple val(meta), path("${meta.id}_run.log"), emit: log
     tuple val(meta), path("${meta.id}_assembly.json"), emit: json
     path "versions.yml", emit: versions
@@ -183,6 +184,47 @@ process EL_GATO_REPORT {
     stub:
     """
     touch el_gato_report.pdf
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        el_gato: \$(el_gato.py --version | sed 's/^el_gato version: //')
+    END_VERSIONS
+    """
+}
+
+process EL_GATO_REPORT_NANOPORE {
+    label 'process_low'
+
+    conda "bioconda::el_gato=1.20.2"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/el_gato:1.20.2--py311h7e72e81_0' :
+        'biocontainers/el_gato:1.20.2--py311h7e72e81_0' }"
+
+    input:
+    path assembly_jsons
+
+    output:
+    path "*.pdf", emit: pdf
+    path "versions.yml", emit: versions
+
+    when:
+    task.ext.when == null || task.ext.when
+
+    script:
+    """
+    elgato_report.py \\
+        -i $assembly_jsons \\
+        -o el_gato_report_nanopore.pdf
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        el_gato: \$(el_gato.py --version | sed 's/^el_gato version: //')
+    END_VERSIONS
+    """
+
+    stub:
+    """
+    touch el_gato_report_nanopore.pdf
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

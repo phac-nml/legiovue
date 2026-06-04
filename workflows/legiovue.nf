@@ -34,9 +34,10 @@ include { MULTIQC                           } from '../modules/local/multiqc.nf'
 */
 workflow LEGIOVUE {
     take:
-    ch_paired_fastqs       // channel: [ val(meta), [ file(fastq_1), file(fastq_2) ] ]
+    paired       // channel: [ val(meta), [ file(fastq_1), file(fastq_2) ] ]
 
     main:
+    paired.view()
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
     // 0. Initialize channels from params and make version channel
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
@@ -57,7 +58,7 @@ workflow LEGIOVUE {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
     // Classification and Abundance
     KRAKEN2_CLASSIFY(
-        ch_paired_fastqs,
+        paired,
         ch_kraken2_db
     )
     ch_versions = ch_versions.mix(KRAKEN2_CLASSIFY.out.versions)
@@ -94,7 +95,7 @@ workflow LEGIOVUE {
     //  it or its missing some after trimming those will be rechecked
     TRIMMOMATIC(
         ch_abundance_filter.pass
-            .join(ch_paired_fastqs, by: [0])
+            .join(paired, by: [0])
     )
     ch_versions = ch_versions.mix(TRIMMOMATIC.out.versions)
 

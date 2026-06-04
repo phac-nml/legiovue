@@ -1,10 +1,10 @@
 process QUAST {
     label 'process_medium'
 
-    conda "bioconda::quast=5.2.0"
+    conda "bioconda::quast=5.3.0"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/quast:5.2.0--py39pl5321h2add14b_1' :
-        'biocontainers/quast:5.2.0--py39pl5321h2add14b_1' }"
+        'https://depot.galaxyproject.org/singularity/quast:5.3.0--py313pl5321h5ca1c30_2' :
+        'biocontainers/quast:5.3.0--py313pl5321h5ca1c30_2' }"
 
     input:
     path contigs
@@ -26,11 +26,11 @@ process QUAST {
         --threads $task.cpus \\
         -o ./ \\
         -r $reference \\
-        *.contigs.fa
+        $contigs
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        quast: \$(quast.py --version 2>&1 | sed 's/^.*QUAST v//; s/ .*\$//')
+        quast: \$(quast.py --version | sed 's/^.*QUAST v//; s/ .*\$//')
     END_VERSIONS
     """
 
@@ -43,15 +43,13 @@ process QUAST {
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        quast: \$(quast.py --version 2>&1 | sed 's/^.*QUAST v//; s/ .*\$//')
+        quast: \$(quast.py --version | sed 's/^.*QUAST v//; s/ .*\$//')
     END_VERSIONS
     """
 }
 
 process SCORE_QUAST {
     label 'process_single'
-
-    publishDir "${params.outdir}", pattern: "scored_quast_report.csv", mode: 'copy'
 
     conda "conda-forge::python=3.10.4"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -92,6 +90,102 @@ process SCORE_QUAST {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         quast_analyzer: 0.1.0
+    END_VERSIONS
+    """
+}
+
+process QUAST_NANOPORE {
+    label 'process_medium'
+
+    conda "bioconda::quast=5.3.0"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/quast:5.3.0--py313pl5321h5ca1c30_2' :
+        'biocontainers/quast:5.3.0--py313pl5321h5ca1c30_2' }"
+
+    input:
+    path(assembly)
+    path reference
+
+    output:
+    path "transposed_report.tsv", emit: report
+    path "report.html", emit: html_report
+    path "report.pdf", emit: pdf_report
+    path "*_stats", emit: stats_folders
+    path "versions.yml", emit: versions
+
+    when:
+    task.ext.when == null || task.ext.when
+
+    script:
+    """
+    quast \\
+        --threads $task.cpus \\
+        -o ./ \\
+        -r $reference \\
+        $assembly
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        quast: \$(quast.py --version | sed 's/^.*QUAST v//; s/ .*\$//')
+    END_VERSIONS
+    """
+
+    stub:
+    """
+    touch transposed_report.tsv
+    touch report.html
+    touch report.pdf
+    mkdir quast_stats
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        quast: \$(quast.py --version | sed 's/^.*QUAST v//; s/ .*\$//')
+    END_VERSIONS
+    """
+}
+
+process SCORE_QUAST_NANOPORE {
+    label 'process_single'
+
+    conda "conda-forge::python=3.10.4"
+    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
+        'https://depot.galaxyproject.org/singularity/python:3.10.4' :
+        'biocontainers/python:3.10.4' }"
+
+    input:
+    path transposed_report
+
+    output:
+    path "scored_quast_report.csv", emit: report
+    path "versions.yml", emit: versions
+
+    when:
+    task.ext.when == null || task.ext.when
+
+    script:
+    """
+    nanopore_quast_analyzer.py \\
+        --max_contigs ${params.max_contigs_nanopore} \\
+        --min_align_percent ${params.min_align_percent} \\
+        --min_n50_score ${params.min_n50_score_nanopore} \\
+        --max_n50_score ${params.max_n50_score_nanopore} \\
+        $transposed_report \\
+        --outfile scored_quast_report.csv
+
+    # TODO Add in version to the script itself at some point
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        nanopore_quast_analyzer: 0.1.0
+    END_VERSIONS
+    """
+
+    stub:
+    """
+    touch scored_quast_report.csv
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        nanopore_quast_analyzer: 0.1.0
     END_VERSIONS
     """
 }
