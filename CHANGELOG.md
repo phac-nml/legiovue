@@ -3,6 +3,14 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.1]
+
+Update `el_gato` to version `1.23.0`
+
+### `Changed`
+
+- Update `el_gato` to version `1.23.0` [#36](https://github.com/phac-nml/legiovue/pull/36)
+
 ## [0.4.0]
 
 Overall small adjustments and bugfixes to:
@@ -106,6 +114,7 @@ Updates focusing on getting LegioVue setup to run in IRIDA-Next along with fixin
 
 - LegioVue pipeline created and initial beta code added
 
+[0.4.1]: https://github.com/phac-nml/legiovue/releases/tag/0.4.1
 [0.4.0]: https://github.com/phac-nml/legiovue/releases/tag/0.4.0
 [0.3.0]: https://github.com/phac-nml/legiovue/releases/tag/0.3.0
 [0.2.0]: https://github.com/phac-nml/legiovue/releases/tag/0.2.0

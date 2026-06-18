@@ -101,7 +101,7 @@ Simply python program that takes in the bracken abundance report and determines 
 
 ### Sequence Typing
 
-_In silico_ sequence typing and allele reporting using [el_gato](https://github.com/appliedbinf/el_gato)
+_In silico_ sequence typing and allele reporting using [el_gato](https://github.com/CDCgov/el_gato)
 
 #### el_gato Reads
 
@@ -142,7 +142,7 @@ _Note: if the ST results are inconclusive after both approaches have been tried,
   - `el_gato_report.pdf`: Final el_gato summary report including reads and assembly approaches
   </details>
 
-Tabular summaries of locus information for all samples run through [el_gato](https://github.com/appliedbinf/el_gato)
+Tabular summaries of locus information for all samples run through [el_gato](https://github.com/CDCgov/el_gato)
 
 ![el_gato report](images/el_gato_report.png)
 
