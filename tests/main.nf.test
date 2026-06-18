@@ -137,7 +137,7 @@ nextflow_pipeline {
 
             lines = path("$launchDir/results/overall.qc.csv").text
             assert lines.contains("sample,lpn_abundance,num_paired_trimmed_reads,pct_paired_reads_passing_qc,n50,num_contigs,pct_gc,assembly_len,largest_contig,assembly_qc_score,st,st_approach,chewbbaca_exc,chewbbaca_inf,chewbbaca_pct_exc,qc_status,qc_message")
-            assert lines.contains("in1,100.0,4662,93.24,716,19,43.59,95953,1810,2.0,MD-,reads,0,0,0.0,WARN,low_read_count;low_n50;low_qc_score;low_exact_allele_calls")
+            assert lines.contains("in1,100.0,4662,93.24,716,19,43.59,95953,1810,2.0,MD-,assembly,0,0,0.0,WARN,low_read_count;low_n50;low_qc_score;low_exact_allele_calls")
             assert lines.contains("in2,100.0,12,100.0,0,0,0,0,0,0,NA,NA,0,0,0.0,FAIL,failing_read_count")
 
             // ChewBBACA Allele Call data
@@ -158,7 +158,7 @@ nextflow_pipeline {
 
             lines = path("$launchDir/results/el_gato/el_gato_st.tsv").text
             assert lines.contains("Sample\tST\tflaA\tpilE\tasd\tmip\tmompS\tproA\tneuA_neuAH\tapproach")
-            assert lines.contains("in1\tMD-\t-\t-\t-\t-\t-\t-\t-\treads")
+            assert lines.contains("in1\tMD-\t-\t-\t-\t-\t-\t-\t-\tassembly")
 
             // el_gato expected subdirectories and files
             assert path("$launchDir/results/el_gato/el_gato_report.pdf").exists()
@@ -181,7 +181,7 @@ nextflow_pipeline {
             assert iridanext_samples.in1.findAll { it.path == "spades/in1.contigs.fa" }.size() == 1
 
             assert iridanext_metadata.in1.num_paired_trimmed_reads == "4662"
-            assert iridanext_metadata.in1.st_approach == "reads"
+            assert iridanext_metadata.in1.st_approach == "assembly"
             assert iridanext_metadata.in1.qc_status == "WARN"
             assert iridanext_metadata.in1.qc_message == "low_read_count;low_n50;low_qc_score;low_exact_allele_calls"
 
@@ -252,7 +252,7 @@ nextflow_pipeline {
 
             lines = path("$launchDir/results/overall.qc.csv").text
             assert lines.contains("sample,lpn_abundance,num_paired_trimmed_reads,pct_paired_reads_passing_qc,n50,num_contigs,pct_gc,assembly_len,largest_contig,assembly_qc_score,st,st_approach,chewbbaca_exc,chewbbaca_inf,chewbbaca_pct_exc,qc_status,qc_message,irida_id")
-            assert lines.contains("sample1,100.0,4662,93.24,716,19,43.59,95953,1810,2.0,MD-,reads,0,0,0.0,WARN,low_read_count;low_n50;low_qc_score;low_exact_allele_calls,add_sample1")
+            assert lines.contains("sample1,100.0,4662,93.24,716,19,43.59,95953,1810,2.0,MD-,assembly,0,0,0.0,WARN,low_read_count;low_n50;low_qc_score;low_exact_allele_calls,add_sample1")
             assert lines.contains("sample2,100.0,12,100.0,0,0,0,0,0,0,NA,NA,0,0,0.0,FAIL,failing_read_count,add_sample2")
 
             // ChewBBACA Allele Call data
@@ -273,7 +273,7 @@ nextflow_pipeline {
 
             lines = path("$launchDir/results/el_gato/el_gato_st.tsv").text
             assert lines.contains("Sample\tST\tflaA\tpilE\tasd\tmip\tmompS\tproA\tneuA_neuAH\tapproach")
-            assert lines.contains("sample1\tMD-\t-\t-\t-\t-\t-\t-\t-\treads")
+            assert lines.contains("sample1\tMD-\t-\t-\t-\t-\t-\t-\t-\tassembly")
 
             // el_gato expected subdirectories and files
             assert path("$launchDir/results/el_gato/el_gato_report.pdf").exists()
@@ -296,7 +296,7 @@ nextflow_pipeline {
             assert iridanext_samples.add_sample1.findAll { it.path == "spades/sample1.contigs.fa" }.size() == 1
 
             assert iridanext_metadata.add_sample1.num_paired_trimmed_reads == "4662"
-            assert iridanext_metadata.add_sample1.st_approach == "reads"
+            assert iridanext_metadata.add_sample1.st_approach == "assembly"
             assert iridanext_metadata.add_sample1.qc_status == "WARN"
             assert iridanext_metadata.add_sample1.qc_message == "low_read_count;low_n50;low_qc_score;low_exact_allele_calls"
 
