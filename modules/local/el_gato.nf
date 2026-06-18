@@ -2,10 +2,10 @@ process EL_GATO_READS {
     tag "$meta.id"
     label 'process_medium'
 
-    conda "bioconda::el_gato=1.20.2"
+    conda "bioconda::el_gato=1.23.0"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/el_gato:1.20.2--py311h7e72e81_0' :
-        'biocontainers/el_gato:1.20.2--py311h7e72e81_0' }"
+        'https://depot.galaxyproject.org/singularity/el_gato:1.23.0--py311h106432d_0' :
+        'biocontainers/el_gato:1.23.0--py311h106432d_0' }"
 
     input:
     tuple val(meta), path(reads)
@@ -88,10 +88,10 @@ process EL_GATO_ASSEMBLY {
     //  Due to an issue in el_gato with samples that can't find any loci
     label 'error_ignore'
 
-    conda "bioconda::el_gato=1.20.2"
+    conda "bioconda::el_gato=1.23.0"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/el_gato:1.20.2--py311h7e72e81_0' :
-        'biocontainers/el_gato:1.20.2--py311h7e72e81_0' }"
+        'https://depot.galaxyproject.org/singularity/el_gato:1.23.0--py311h106432d_0' :
+        'biocontainers/el_gato:1.23.0--py311h106432d_0' }"
 
     input:
     tuple val(meta), path(assembly)
@@ -152,10 +152,10 @@ process EL_GATO_ASSEMBLY {
 process EL_GATO_REPORT {
     label 'process_low'
 
-    conda "bioconda::el_gato=1.20.2"
+    conda "bioconda::el_gato=1.23.0"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/el_gato:1.20.2--py311h7e72e81_0' :
-        'biocontainers/el_gato:1.20.2--py311h7e72e81_0' }"
+        'https://depot.galaxyproject.org/singularity/el_gato:1.23.0--py311h106432d_0' :
+        'biocontainers/el_gato:1.23.0--py311h106432d_0' }"
 
     input:
     path read_jsons
