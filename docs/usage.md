@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This pipeline is intended to be run on _Legionella pneumophila_ paired illumina isolate sequencing data. It generates _de novo_ assemblies using [`SPAdes`](https://github.com/ablab/spades), sequence types (ST) using [`el_gato`](https://github.com/appliedbinf/el_gato), cgMLST calls with [`chewBBACA`](https://chewbbaca.readthedocs.io/en/latest/index.html), and a summary QC report. The outputs of the pipeline can be used for other downstream applications. All parameters have been determined based on outbreak dataset testing.
+This pipeline is intended to be run on _Legionella pneumophila_ paired illumina isolate sequencing data. It generates _de novo_ assemblies using [`SPAdes`](https://github.com/ablab/spades), sequence types (ST) using [`el_gato`](https://github.com/CDCgov/el_gato), cgMLST calls with [`chewBBACA`](https://chewbbaca.readthedocs.io/en/latest/index.html), and a summary QC report. The outputs of the pipeline can be used for other downstream applications. All parameters have been determined based on outbreak dataset testing.
 
 ## Index
 

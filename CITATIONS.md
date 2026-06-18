@@ -32,9 +32,9 @@
 > WebQUAST: online evaluation of genome assemblies,
 > Nucleic Acids Research (2023) 51 (W1): W601–W606. doi: 10.1093/nar/gkad406
 
-[el_gato](https://github.com/appliedbinf/el_gato)
+[el_gato](https://github.com/CDCgov/el_gato)
 
-> Alan Collins, Dev Mashruwala, Andrew Conley, Lavanya Rishishwar, Emily T. Norris, Anna Gaines, Will Overholt. Epidemiology of Legionella : Genome-bAsed Typing. Available online at: https://github.com/appliedbinf/el_gato
+> Alan Collins, Dev Mashruwala, Andrew Conley, Lavanya Rishishwar, Emily T. Norris, Anna Gaines, Will Overholt. Epidemiology of Legionella : Genome-bAsed Typing. Available online at: https://github.com/CDCgov/el_gato
 
 [chewBBACA](https://github.com/B-UMMI/chewBBACA)
 

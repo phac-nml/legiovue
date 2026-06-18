@@ -141,7 +141,7 @@ Quality thresholds and score effects have been updated in this pipeline to bette
 
 **`el_gato`**
 
-[el_gato](https://github.com/appliedbinf/el_gato) performs _in silico_ Sequence-based Typing (SBT) of _Legionella pneumophila_ sequences based on the identification and comparison of 7 loci (_flaA, pilE, asd, mip, mompS, proA, neuA/neuAh_) against an allele database. In this pipeline SBT is first called on Illumina paired-end reads using a mapping/alignment approach that is recommended by the `el_gato` developers. If samples are not initially assigned a sequence type (ST = `MA?` or `MD-`), `el_gato` is run again on the assembled genome using an _in silico_ PCR-based approach. The resulting allele and ST calls are reported in `el_gato_st.tsv`.
+[el_gato](https://github.com/CDCgov/el_gato) performs _in silico_ Sequence-based Typing (SBT) of _Legionella pneumophila_ sequences based on the identification and comparison of 7 loci (_flaA, pilE, asd, mip, mompS, proA, neuA/neuAh_) against an allele database. In this pipeline SBT is first called on Illumina paired-end reads using a mapping/alignment approach that is recommended by the `el_gato` developers. If samples are not initially assigned a sequence type (ST = `MA?` or `MD-`), `el_gato` is run again on the assembled genome using an _in silico_ PCR-based approach. The resulting allele and ST calls are reported in `el_gato_st.tsv`.
 
 _Note: if the ST results are inconclusive after both approaches have been tried, users are encouraged to review the `possible_mlsts.txt` intermediate output for that sample in the pipeline results folder under `el_gato/reads/`_
 
@@ -186,7 +186,7 @@ The `qc_message` column contains the reason for the `qc_status` and includes:
 
 **`MultiQC`**
 
-[MultiQC](https://seqera.io/multiqc/) is used to culminate the quality metrics from the tools mentioned earlier into an easily accessible html report with visual components. It includes results from [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/), [Kraken2](https://github.com/DerrickWood/kraken2), [QUAST](https://github.com/ablab/quast), [el_gato](https://github.com/appliedbinf/el_gato), [Trimmomatic](https://github.com/usadellab/Trimmomatic), and [chewBBACA](https://github.com/B-UMMI/chewBBACA).
+[MultiQC](https://seqera.io/multiqc/) is used to culminate the quality metrics from the tools mentioned earlier into an easily accessible html report with visual components. It includes results from [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/), [Kraken2](https://github.com/DerrickWood/kraken2), [QUAST](https://github.com/ablab/quast), [el_gato](https://github.com/CDCgov/el_gato), [Trimmomatic](https://github.com/usadellab/Trimmomatic), and [chewBBACA](https://github.com/B-UMMI/chewBBACA).
 
 ## Limitations
 
