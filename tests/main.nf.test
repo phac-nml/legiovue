@@ -123,8 +123,8 @@ nextflow_pipeline {
             // Status
             //
             assert workflow.success
-            // One fail which is from el_gato assemblies on low data
-            assert workflow.trace.failed().size() == 1
+            // No fails with el_gato on low data anymore
+            assert workflow.trace.failed().size() == 0
 
             //
             // Channels and Files Exist
@@ -238,8 +238,8 @@ nextflow_pipeline {
             // Status
             //
             assert workflow.success
-            // One fail which is from el_gato assemblies on low data
-            assert workflow.trace.failed().size() == 1
+            // No fails on low data with el_gato anymore
+            assert workflow.trace.failed().size() == 0
 
             //
             // Channels and Files Exist
