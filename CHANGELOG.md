@@ -5,12 +5,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.4.2]
 
-Small fix to samples with minimal (< 5) reads in Kraken/Bracken for [Issue #38](https://github.com/phac-nml/legiovue/issues/38)
+Small fix to samples with minimal reads to prevent them from going into Kraken/Bracken and tracking them in the final results
 
 ### `Changed`
 
-- Added an initial read count check for Kraken2 and added a way to track those samples that failed [PR #39](https://github.com/phac-nml/legiovue/pull/39)
+- Added an initial read count check for Kraken2 and added a way to track the samples that failed [PR #39](https://github.com/phac-nml/legiovue/pull/39)
   - Added to full workflow test a sample to trigger and test this check
+  - Fixes [Issue #38](https://github.com/phac-nml/legiovue/issues/38)
 
 ## [0.4.1]
 

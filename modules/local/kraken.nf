@@ -12,34 +12,26 @@ process KRAKEN2_CLASSIFY {
     path db
 
     output:
-    tuple val(meta), path('*-classified.tsv'), optional: true, emit: classified
-    tuple val(meta), path('*-kreport.tsv'), optional: true, emit: report
-    tuple val(meta), path('empty.txt'), optional: true, emit: no_reads
+    tuple val(meta), path('*-classified.tsv'), emit: classified
+    tuple val(meta), path('*-kreport.tsv'), emit: report
     path "versions.yml", emit: versions
 
     when:
     task.ext.when == null || task.ext.when
 
     script:
-    def gzipped = reads[0].toString().endsWith('.gz')
-    def gz_arg = gzipped ? "--gzip-compressed" : ""
-    def gz_cat = gzipped ? "zcat ${reads[0]}" : "cat ${reads[0]}"
+    def gz_arg = reads[0].toString().endsWith('.gz') ? "--gzip-compressed" : ""
     """
-    # Need at least a few reads to not fail, going with 5
-    if [ \$($gz_cat | head -n 20 | wc -l) -eq 20 ]; then
-        kraken2 \\
-            --paired \\
-            $gz_arg \\
-            --confidence 0.1 \\
-            --threads $task.cpus \\
-            --output ${meta.id}-classified.tsv \\
-            --report ${meta.id}-kreport.tsv \\
-            --memory-mapping \\
-            --db $db \\
-            $reads
-    else
-        touch empty.txt
-    fi
+    kraken2 \\
+        --paired \\
+        $gz_arg \\
+        --confidence 0.1 \\
+        --threads $task.cpus \\
+        --output ${meta.id}-classified.tsv \\
+        --report ${meta.id}-kreport.tsv \\
+        --memory-mapping \\
+        --db $db \\
+        $reads
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
