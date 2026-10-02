@@ -56,8 +56,17 @@ workflow LEGIOVUE {
     // 1. Kraken and Bracken Check with maybe(?) Host Removal (TODO)
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
     // Classification and Abundance
+    // We need at least a bit of data to run kraken2 so filter inputs below that threshold
+    ch_paired_fastqs
+        .branch{ meta, fastqs ->
+            pass: fastqs[0].exists() && fastqs[0].size() > 500
+                return tuple(meta, fastqs)
+            fail: true
+                return tuple(meta, [], []) // For tracking the sample at the very end
+        }.set{ ch_paired_initial_fastqs }
+
     KRAKEN2_CLASSIFY(
-        ch_paired_fastqs,
+        ch_paired_initial_fastqs.pass,
         ch_kraken2_db
     )
     ch_versions = ch_versions.mix(KRAKEN2_CLASSIFY.out.versions)
@@ -94,7 +103,7 @@ workflow LEGIOVUE {
     //  it or its missing some after trimming those will be rechecked
     TRIMMOMATIC(
         ch_abundance_filter.pass
-            .join(ch_paired_fastqs, by: [0])
+            .join(ch_paired_initial_fastqs.pass, by: [0])
     )
     ch_versions = ch_versions.mix(TRIMMOMATIC.out.versions)
 
@@ -246,10 +255,12 @@ workflow LEGIOVUE {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
     // 8. QC + Summaries
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
-    // To track the non-Lp failing samples have to mix in abundance filter fail
-    //  It was reformatted earlier to match the [ val(meta), file() ]
-    //  structure of the trimmomatic summary output
-    ch_trimmomatic      = TRIMMOMATIC.out.summary.mix(ch_abundance_filter.fail)
+    // To track the non-Lp failing samples have to mix in abundance filter fails and no reads fails
+    //  Both were reformatted earlier based on how they need to get into the results
+    ch_trimmomatic      = TRIMMOMATIC.out.summary.mix(ch_abundance_filter.fail) // Channel [ val(meta), file() ]
+    ch_qc_sample_input  = BRACKEN.out.abundance
+                            .join(ch_trimmomatic, by:[0])
+                            .mix(ch_paired_initial_fastqs.fail) // Channel [ val(meta), file(), file() ]
 
     // Create some value channels using `.collect()`
     ch_quast_report     = QUAST.out.report.collect().ifEmpty([])
@@ -259,8 +270,7 @@ workflow LEGIOVUE {
 
     // Single QC and then Summary QC
     COMBINE_SAMPLE_DATA(
-        BRACKEN.out.abundance
-            .join(ch_trimmomatic, by:[0]),
+        ch_qc_sample_input,
         ch_quast_report,
         ch_quast_score,
         ch_el_gato_report,
