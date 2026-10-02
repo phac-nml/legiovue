@@ -109,6 +109,9 @@ nextflow_pipeline {
     //--- Test 6
     test("Data Run Fastq Dir Test") {
         tag "success"
+        tag "directory"
+        tag "full_run"
+        tag "here"
 
         when {
             params {
@@ -139,6 +142,7 @@ nextflow_pipeline {
             assert lines.contains("sample,lpn_abundance,num_paired_trimmed_reads,pct_paired_reads_passing_qc,n50,num_contigs,pct_gc,assembly_len,largest_contig,assembly_qc_score,st,st_approach,chewbbaca_exc,chewbbaca_inf,chewbbaca_pct_exc,qc_status,qc_message")
             assert lines.contains("in1,100.0,4662,93.24,716,19,43.59,95953,1810,2.0,MD-,assembly,0,0,0.0,WARN,low_read_count;low_n50;low_qc_score;low_exact_allele_calls")
             assert lines.contains("in2,100.0,12,100.0,0,0,0,0,0,0,NA,NA,0,0,0.0,FAIL,failing_read_count")
+            assert lines.contains("empty,0,0,0,0,0,0,0,0,0,NA,NA,0,0,0.0,FAIL,no_lpn_detected,empty")
 
             // ChewBBACA Allele Call data
             assert path("$launchDir/results/chewbbaca/allele_calls/results_statistics.tsv").exists()
@@ -184,6 +188,11 @@ nextflow_pipeline {
             assert iridanext_metadata.in1.st_approach == "assembly"
             assert iridanext_metadata.in1.qc_status == "WARN"
             assert iridanext_metadata.in1.qc_message == "low_read_count;low_n50;low_qc_score;low_exact_allele_calls"
+            assert iridanext_metadata.in2.num_paired_trimmed_reads == "12"
+            assert iridanext_metadata.in2.qc_message == "failing_read_count"
+            assert iridanext_metadata.empty.lpn_abundance == "0"
+            assert iridanext_metadata.empty.num_paired_trimmed_reads == "0"
+            assert iridanext_metadata.empty.qc_message == "no_lpn_detected"
 
             // Bracken final output (depends on kraken output)
             assert path("$launchDir/results/kraken_bracken/in1-abundances.tsv").exists()
@@ -223,6 +232,8 @@ nextflow_pipeline {
     //--- Test 7
     test("Data Run Samplesheet Test with IRIDA ID and sbt profile") {
         tag "success"
+        tag "samplesheet"
+        tag "full_run"
 
         when {
             params {

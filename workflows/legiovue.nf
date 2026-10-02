@@ -62,6 +62,13 @@ workflow LEGIOVUE {
     )
     ch_versions = ch_versions.mix(KRAKEN2_CLASSIFY.out.versions)
 
+    // Want to track no data inputs
+    //  This is getting past to the ending tracking as meta, [], []
+    ch_no_reads = KRAKEN2_CLASSIFY.out.no_reads
+        .map { meta, _file ->
+            tuple(meta, [], [])
+        }
+
     BRACKEN(
         KRAKEN2_CLASSIFY.out.report,
         ch_kraken2_db
@@ -246,10 +253,14 @@ workflow LEGIOVUE {
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
     // 8. QC + Summaries
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
-    // To track the non-Lp failing samples have to mix in abundance filter fail
-    //  It was reformatted earlier to match the [ val(meta), file() ]
-    //  structure of the trimmomatic summary output
-    ch_trimmomatic      = TRIMMOMATIC.out.summary.mix(ch_abundance_filter.fail)
+    // To track the non-Lp failing samples have to mix in abundance filter fail and no reads
+    //  Both were reformatted earlier based on how they need to get in
+    ch_trimmomatic      = TRIMMOMATIC.out.summary.mix(ch_abundance_filter.fail) // [ val(meta), file() ]
+    ch_bracken          = BRACKEN.out.abundance
+                            .join(ch_trimmomatic, by:[0])
+                            .mix(ch_no_reads) // [ val(meta), file(), file() ]
+
+    ch_bracken.view()
 
     // Create some value channels using `.collect()`
     ch_quast_report     = QUAST.out.report.collect().ifEmpty([])
@@ -259,8 +270,7 @@ workflow LEGIOVUE {
 
     // Single QC and then Summary QC
     COMBINE_SAMPLE_DATA(
-        BRACKEN.out.abundance
-            .join(ch_trimmomatic, by:[0]),
+        ch_bracken,
         ch_quast_report,
         ch_quast_score,
         ch_el_gato_report,
