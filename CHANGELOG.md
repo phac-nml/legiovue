@@ -5,7 +5,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.4.2]
 
-Small fix to samples with 0 reads in Kraken/Bracken for [Issue #38](https://github.com/phac-nml/legiovue/issues/38)
+Small fix to samples with minimal (< 5) reads in Kraken/Bracken for [Issue #38](https://github.com/phac-nml/legiovue/issues/38)
 
 ### `Changed`
 
