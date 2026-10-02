@@ -21,8 +21,9 @@ process KRAKEN2_CLASSIFY {
     task.ext.when == null || task.ext.when
 
     script:
-    def gz_arg = reads[0].toString().endsWith('.gz') ? "--gzip-compressed" : ""
-    def gz_cat = reads[0].toString().endsWith('.gz') ? "zcat ${reads[0]}" : "cat ${reads[0]}"
+    def gzipped = reads[0].toString().endsWith('.gz')
+    def gz_arg = gzipped ? "--gzip-compressed" : ""
+    def gz_cat = gzipped ? "zcat ${reads[0]}" : "cat ${reads[0]}"
     """
     # Need at least a few reads to not fail, going with 5
     if [ \$($gz_cat | head -n 20 | wc -l) -eq 20 ]; then

@@ -111,7 +111,6 @@ nextflow_pipeline {
         tag "success"
         tag "directory"
         tag "full_run"
-        tag "here"
 
         when {
             params {
