@@ -20,7 +20,7 @@ process KRAKEN2_CLASSIFY {
     task.ext.when == null || task.ext.when
 
     script:
-    def gz_arg = reads[0].endsWith('.gz') ? "--gzip-compressed" : ""
+    def gz_arg = reads[0].toString().endsWith('.gz') ? "--gzip-compressed" : ""
     """
     kraken2 \\
         --paired \\

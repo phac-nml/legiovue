@@ -22,6 +22,7 @@ process COMBINE_SAMPLE_DATA {
     task.ext.when == null || task.ext.when
 
     script:
+    def bracken_arg             = bracken_report ? "-br $bracken_report" : ""
     def trimmomatic_arg         = trimmomatic_summary ? "-tr $trimmomatic_summary" : ""
     def quast_report_arg        = quast_report ? "-qa $quast_report" : ""
     def scored_quast_report_arg = scored_quast_report ? "-fs $scored_quast_report" : ""
@@ -31,7 +32,7 @@ process COMBINE_SAMPLE_DATA {
     """
     combine_qc_data.py \\
         -s ${meta.id} \\
-        -br $bracken_report \\
+        $bracken_arg \\
         $trimmomatic_arg \\
         $quast_report_arg \\
         $scored_quast_report_arg \\
