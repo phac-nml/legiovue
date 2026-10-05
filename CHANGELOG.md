@@ -3,6 +3,16 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.2]
+
+Small fix to samples with minimal reads to prevent them from going into Kraken/Bracken and tracking them in the final results
+
+### `Changed`
+
+- Added an initial read count check for Kraken2 and added a way to track the samples that failed [PR #39](https://github.com/phac-nml/legiovue/pull/39)
+  - Added to full workflow test a sample to trigger and test this check
+  - Fixes [Issue #38](https://github.com/phac-nml/legiovue/issues/38)
+
 ## [0.4.1]
 
 Update `el_gato` to version `1.23.0`
@@ -114,6 +124,7 @@ Updates focusing on getting LegioVue setup to run in IRIDA-Next along with fixin
 
 - LegioVue pipeline created and initial beta code added
 
+[0.4.2]: https://github.com/phac-nml/legiovue/releases/tag/0.4.2
 [0.4.1]: https://github.com/phac-nml/legiovue/releases/tag/0.4.1
 [0.4.0]: https://github.com/phac-nml/legiovue/releases/tag/0.4.0
 [0.3.0]: https://github.com/phac-nml/legiovue/releases/tag/0.3.0
